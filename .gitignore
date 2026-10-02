@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Environment variables (QUAN TRỌNG: Không bao giờ đẩy file chứa token lên Git)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Binary files
+*.exe
