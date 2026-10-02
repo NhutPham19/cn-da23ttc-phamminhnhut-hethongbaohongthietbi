@@ -1,7 +1,7 @@
 // server.js - Máy chủ Express tiếp nhận Webhook Zalo Bot
 require('dotenv').config();
 const express = require('express');
-const { guiTinNhanZalo } = require('./zaloDichVu');
+const { guiTinNhanZalo } = require('./src/services/zaloDichVu');
 
 const app = express();
 app.use(express.json());

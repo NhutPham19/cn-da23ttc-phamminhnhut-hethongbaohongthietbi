@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "tunnel": "node tuDongTunnel.js"
+    "tunnel": "node scripts/tuDongTunnel.js"
   },
   "keywords": [],
   "author": "",
