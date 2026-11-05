@@ -1,0 +1,25 @@
+# Bỏ qua node_modules để cài đặt sạch trong container
+node_modules/
+
+# Bỏ qua file môi trường bí mật (không đóng gói bí mật vào Image)
+.env
+.env.local
+.env.*.local
+
+# Bỏ qua Git
+.git/
+.gitignore
+
+# Bỏ qua nhật ký logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Bỏ qua thư mục kiểm thử khi đóng gói production (nếu muốn)
+tests/
+
+# Bỏ qua các tệp tạm của hệ điều hành và IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

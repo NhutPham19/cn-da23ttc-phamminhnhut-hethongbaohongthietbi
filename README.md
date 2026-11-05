@@ -58,5 +58,32 @@ Mở 2 cửa sổ Terminal:
 
 ---
 
+## 🐳 Triển khai với Docker & Docker Compose
+
+Dự án đã được đóng gói container hóa hoàn chỉnh với `Dockerfile` (Node.js 22 Slim, OpenSSL, non-root user) và `docker-compose.yml`:
+
+### Cách 1: Sử dụng Docker Compose (Khuyên dùng)
+```bash
+# Khởi chạy ứng dụng dưới nền (tự động build image và đọc file .env)
+docker compose up --build -d
+
+# Xem logs máy chủ trực tiếp
+docker compose logs -f
+
+# Dừng container
+docker compose down
+```
+
+### Cách 2: Sử dụng Docker CLI truyền thống
+```bash
+# 1. Build Docker image
+docker build -t hethong-baohong-app .
+
+# 2. Chạy container kèm file môi trường .env
+docker run -d -p 7000:7000 --env-file .env --name hethong-baohong-app hethong-baohong-app
+```
+
+---
+
 ## 🛡️ Bản quyền & Bảo mật
 Toàn bộ thông tin bí mật (Bot Token, Secret Token, Database Password) được quản lý qua biến môi trường `.env` và được loại trừ trong `.gitignore`.

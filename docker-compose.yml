@@ -1,0 +1,24 @@
+# ==============================================================================
+# docker-compose.yml - Quản lý container Hệ thống Quản trị & Báo hỏng Thiết bị
+# ==============================================================================
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hethong-baohong-app
+    restart: unless-stopped
+    ports:
+      - "7000:7000"
+    env_file:
+      - .env
+    environment:
+      - PORT=7000
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:7000/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
