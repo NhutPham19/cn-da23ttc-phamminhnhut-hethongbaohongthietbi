@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bản Phác Thảo Giao Diện Web Quản Lý Báo Hỏng Thiết Bị (Chuẩn Hóa Tiếng Việt)</title>
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --mau-chinh: #1E40AF;
+      --mau-chinh-hover: #1E3A8A;
+      --mau-chinh-nhe: #EFF6FF;
+      --mau-nen-trang: #F8FAFC;
+      --mau-nen-the: #FFFFFF;
+      --mau-vien: #E2E8F0;
+      --mau-chu-chinh: #0F172A;
+      --mau-chu-phu: #475569;
+      --mau-chu-mo: #94A3B8;
+
+      /* Nhãn trạng thái Pastel */
+      --tt-cho-chu: #92400E;
+      --tt-cho-nen: #FEF3C7;
+      --tt-cho-vien: #FDE68A;
+
+      --tt-dang-chu: #1E40AF;
+      --tt-dang-nen: #DBEAFE;
+      --tt-dang-vien: #BFDBFE;
+
+      --tt-xong-chu: #065F46;
+      --tt-xong-nen: #D1FAE5;
+      --tt-xong-vien: #A7F3D0;
+
+      --tt-huy-chu: #991B1B;
+      --tt-huy-nen: #FEE2E2;
+      --tt-huy-vien: #FECACA;
+
+      /* Mức ưu tiên */
+      --ut-khan-cap: #DC2626;
+      --ut-cao: #D97706;
+      --ut-binh-thuong: #475569;
+      --ut-thap: #64748B;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+      background-color: var(--mau-nen-trang);
+      color: var(--mau-chu-chinh);
+      line-height: 1.5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Thanh điều hướng bản phác thảo */
+    .thanh-chuyen-mau {
+      background: #0F172A;
+      color: #F8FAFC;
+      padding: 10px 20px;
+      font-size: 13px;
+      position: sticky;
+      top: 0;
+      z-index: 1050;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .thanh-chuyen-mau .btn-outline-light.active {
+      background: #3B82F6;
+      border-color: #3B82F6;
+      color: #FFFFFF;
+    }
+
+    /* Khung giao diện phác thảo */
+    .vung-phac-thao {
+      display: none;
+      padding: 24px 0;
+      min-height: calc(100vh - 60px);
+    }
+
+    .vung-phac-thao.hien-thi {
+      display: block;
+    }
+
+    /* Card & Bảng chuẩn hành chính */
+    .the-trang {
+      background: var(--mau-nen-the);
+      border: 1px solid var(--mau-vien);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      padding: 20px;
+    }
+
+    .topbar-co-quan {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--mau-vien);
+      padding: 12px 24px;
+    }
+
+    .logo-he-thong-svg {
+      width: 36px;
+      height: 36px;
+      fill: var(--mau-chinh);
+      flex-shrink: 0;
+    }
+
+    .tab-hanh-chinh {
+      border-bottom: 2px solid var(--mau-vien);
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tab-hanh-chinh .nut-tab {
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--mau-chu-phu);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px 16px;
+      margin-bottom: -2px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .tab-hanh-chinh .nut-tab:hover {
+      color: var(--mau-chinh);
+      background: var(--mau-chinh-nhe);
+      border-radius: 6px 6px 0 0;
+    }
+
+    .tab-hanh-chinh .nut-tab.active {
+      color: var(--mau-chinh);
+      border-bottom-color: var(--mau-chinh);
+      background: var(--mau-chinh-nhe);
+      border-radius: 6px 6px 0 0;
+    }
+
+    /* Badge trạng thái */
+    .huy-hieu-tt {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 9999px;
+      border-width: 1px;
+      border-style: solid;
+      white-space: nowrap;
+    }
+
+    .huy-hieu-tt.cho-xu-ly {
+      background-color: var(--tt-cho-nen);
+      color: var(--tt-cho-chu);
+      border-color: var(--tt-cho-vien);
+    }
+
+    .huy-hieu-tt.dang-xu-ly {
+      background-color: var(--tt-dang-nen);
+      color: var(--tt-dang-chu);
+      border-color: var(--tt-dang-vien);
+    }
+
+    .huy-hieu-tt.hoan-thanh {
+      background-color: var(--tt-xong-nen);
+      color: var(--tt-xong-chu);
+      border-color: var(--tt-xong-vien);
+    }
+
+    .huy-hieu-tt.da-huy {
+      background-color: var(--tt-huy-nen);
+      color: var(--tt-huy-chu);
+      border-color: var(--tt-huy-vien);
+    }
+
+    /* Bảng dữ liệu thoáng mắt */
+    .bang-hanh-chinh {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .bang-hanh-chinh thead th {
+      background: #F8FAFC;
+      color: var(--mau-chu-phu);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--mau-vien);
+      white-space: nowrap;
+    }
+
+    .bang-hanh-chinh tbody td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--mau-vien);
+      vertical-align: middle;
+      font-size: 14px;
+      background: #FFFFFF;
+      transition: background-color 0.1s ease;
+    }
+
+    .bang-hanh-chinh tbody tr:hover td {
+      background-color: #F8FAFC;
+    }
+
+    /* Nút bấm chuẩn */
+    .btn-chinh {
+      background: var(--mau-chinh);
+      color: #FFFFFF;
+      border: 1px solid var(--mau-chinh);
+      font-weight: 500;
+      padding: 6px 14px;
+      font-size: 13px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .btn-chinh:hover {
+      background: var(--mau-chinh-hover);
+      border-color: var(--mau-chinh-hover);
+      color: #FFFFFF;
+    }
+
+    .btn-phu {
+      background: #FFFFFF;
+      color: var(--mau-chu-chinh);
+      border: 1px solid var(--mau-vien);
+      font-weight: 500;
+      padding: 6px 14px;
+      font-size: 13px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .btn-phu:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+      color: var(--mau-chu-chinh);
+    }
+
+    /* Khung Timeline lịch sử */
+    .dong-thoi-gian {
+      position: relative;
+      padding-left: 24px;
+      border-left: 2px solid var(--mau-vien);
+      margin-left: 8px;
+    }
+
+    .muc-thoi-gian {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .muc-thoi-gian::before {
+      content: '';
+      position: absolute;
+      left: -31px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--mau-chinh);
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 0 0 2px var(--mau-vien);
+    }
+
+    /* Thanh tiến độ nằm ngang (Horizontal Bar) cho Báo cáo */
+    .thanh-thong-ke-item {
+      margin-bottom: 14px;
+    }
+
+    .thanh-thong-ke-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .thanh-thong-ke-track {
+      height: 8px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .thanh-thong-ke-fill {
+      height: 100%;
+      background: var(--mau-chinh);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================= -->
+  <!-- THANH ĐIỀU HƯỚNG BẢN PHÁC THẢO (CHUYỂN NHANH GIỮA CÁC MÀN HÌNH)         -->
+  <!-- ========================================================================= -->
+  <div class="thanh-chuyen-mau d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-primary px-2 py-1">BẢN XEM TRƯỚC</span>
+      <strong>HỆ THỐNG QUẢN LÝ BÁO HỎNG THIẾT BỊ NỘI BỘ</strong>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-sm btn-outline-light active" onclick="chuyenManHinh('manHinhDangNhap')">
+        1. Đăng Nhập (index.html)
+      </button>
+      <button class="btn btn-sm btn-outline-light" onclick="chuyenManHinh('manHinhDashboardTab1')">
+        2. Dashboard: Tab 1 - Danh sách Yêu cầu
+      </button>
+      <button class="btn btn-sm btn-outline-light" onclick="chuyenManHinh('manHinhDashboardTab2')">
+        3. Dashboard: Tab 2 - Báo Cáo & Hiệu Suất
+      </button>
+      <button class="btn btn-sm btn-outline-light" onclick="chuyenManHinh('manHinhModalChiTiet')">
+        4. Modal Chi Tiết (2 Cột)
+      </button>
+      <button class="btn btn-sm btn-outline-light" onclick="chuyenManHinh('manHinhToast409')">
+        5. Cảnh Báo Đồng Thời (Toast Lịch Thiệp)
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 1. MÀN HÌNH ĐĂNG NHẬP (public/index.html)                                  -->
+  <!-- ========================================================================= -->
+  <section id="manHinhDangNhap" class="vung-phac-thao hien-thi">
+    <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 80vh;">
+      <div class="the-trang p-4 p-md-5" style="max-width: 440px; width: 100%; border-top: 4px solid var(--mau-chinh);">
+        
+        <!-- Logo & Header tổng quát -->
+        <div class="text-center mb-4">
+          <div class="d-inline-block mb-3">
+            <img src="logo.svg" alt="Biểu trưng Hệ thống" width="56" height="56">
+          </div>
+          <div class="fw-bold text-dark mt-1" style="font-size: 19px; letter-spacing: -0.01em;">HỆ THỐNG QUẢN LÝ BÁO HỎNG THIẾT BỊ</div>
+          <p class="text-muted small mt-1 mb-0">Cổng thông tin tiếp nhận & điều phối sự cố nội bộ</p>
+        </div>
+
+        <!-- Cảnh báo lỗi inline thông thường khi nhập sai -->
+        <div class="alert alert-danger py-2 px-3 small d-flex align-items-center gap-2 mb-3" style="background: #FEE2E2; border-color: #FECACA; color: #991B1B;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <span>Tên đăng nhập hoặc mật khẩu không chính xác.</span>
+        </div>
+
+        <!-- Form Đăng nhập -->
+        <form onsubmit="return false;">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Tên đăng nhập / Email</label>
+            <input type="text" class="form-control" placeholder="admin@domain.vn" value="admin@domain.vn" style="border-radius: 6px; padding: 10px 12px; font-size: 14px;">
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label small fw-semibold text-secondary mb-0">Mật khẩu</label>
+              <a href="#" class="small text-decoration-none" style="color: var(--mau-chinh); font-size: 12px;">Quên mật khẩu?</a>
+            </div>
+            <div class="input-group">
+              <input type="password" class="form-control" value="Matkhau123@" style="border-radius: 6px 0 0 6px; padding: 10px 12px; font-size: 14px;">
+              <button class="btn btn-outline-secondary" type="button" style="border-radius: 0 6px 6px 0; border-color: #CBD5E1;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn w-100 fw-semibold text-white py-2" style="background: var(--mau-chinh); border-radius: 6px; font-size: 15px;" onclick="chuyenManHinh('manHinhDashboardTab1')">
+            Đăng nhập hệ thống
+          </button>
+        </form>
+
+        <div class="text-center mt-4 pt-3 border-top small text-muted" style="font-size: 12px;">
+          © 2026 Hệ thống Quản trị Báo hỏng Thiết bị Nội bộ.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 2. MÀN HÌNH DASHBOARD: TAB 1 - DANH SÁCH YÊU CẦU & ĐIỀU PHỐI              -->
+  <!-- ========================================================================= -->
+  <section id="manHinhDashboardTab1" class="vung-phac-thao">
+    <!-- Header đơn vị -->
+    <header class="topbar-co-quan">
+      <div class="container-fluid d-flex justify-content-between align-items-center">
+      <!-- Cụm Logo & Tên Đơn vị -->
+      <div class="d-flex align-items-center gap-3">
+        <img src="logo.svg" alt="Biểu trưng Hệ thống" width="38" height="38">
+        <div>
+          <div class="fw-bold text-dark" style="font-size: 16px;">HỆ THỐNG QUẢN LÝ BÁO HỎNG THIẾT BỊ</div>
+          <div class="text-muted" style="font-size: 11px;">Bảng điều khiển tác nghiệp & tiếp nhận sự cố</div>
+        </div>
+      </div>
+
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-none d-md-flex align-items-center gap-2 small text-secondary">
+            <span class="spinner-grow spinner-grow-sm text-success" role="status" style="width: 8px; height: 8px;"></span>
+            <span>Đồng bộ tự động (20s)</span>
+          </div>
+
+          <button class="btn btn-sm btn-phu">
+            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Làm mới
+          </button>
+
+          <div class="vr my-1 d-none d-md-block"></div>
+
+          <div class="d-flex align-items-center gap-2">
+            <div class="text-end d-none d-sm-block">
+              <div class="fw-semibold small">Lê Hoàng Nam</div>
+              <div class="small text-muted" style="font-size: 11px;">Quản trị viên</div>
+            </div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 36px; height: 36px; background: var(--mau-chinh); font-size: 13px;">
+              AD
+            </div>
+          </div>
+
+          <button class="btn btn-sm btn-outline-danger" onclick="chuyenManHinh('manHinhDangNhap')">
+            Đăng xuất
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Thân Dashboard -->
+    <main class="container-fluid py-4 px-md-4">
+      
+      <!-- Thanh Điều hướng 2 Tab (Nguyên tắc Progressive Disclosure) -->
+      <div class="tab-hanh-chinh">
+        <button class="nut-tab active" onclick="chuyenManHinh('manHinhDashboardTab1')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Danh sách Yêu cầu & Điều phối
+        </button>
+        <button class="nut-tab" onclick="chuyenManHinh('manHinhDashboardTab2')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          Báo cáo & Hiệu suất xử lý
+        </button>
+      </div>
+
+      <!-- Hàng 4 Thẻ Đếm Nhanh -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="the-trang d-flex align-items-center justify-content-between p-3">
+            <div>
+              <div class="small text-muted fw-semibold">Tổng số yêu cầu</div>
+              <div class="h3 fw-bold mb-0 mt-1 font-mono">142</div>
+            </div>
+            <div class="p-2 rounded" style="background: #F1F5F9; color: #475569;">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="the-trang d-flex align-items-center justify-content-between p-3" style="border-left: 4px solid var(--tt-cho-chu);">
+            <div>
+              <div class="small text-muted fw-semibold">Chờ tiếp nhận</div>
+              <div class="h3 fw-bold mb-0 mt-1 font-mono text-warning" style="color: #B45309 !important;">18</div>
+            </div>
+            <div class="p-2 rounded" style="background: var(--tt-cho-nen); color: var(--tt-cho-chu);">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="the-trang d-flex align-items-center justify-content-between p-3" style="border-left: 4px solid var(--mau-chinh);">
+            <div>
+              <div class="small text-muted fw-semibold">Đang xử lý</div>
+              <div class="h3 fw-bold mb-0 mt-1 font-mono text-primary">24</div>
+            </div>
+            <div class="p-2 rounded" style="background: var(--tt-dang-nen); color: var(--tt-dang-chu);">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="the-trang d-flex align-items-center justify-content-between p-3" style="border-left: 4px solid var(--tt-xong-chu);">
+            <div>
+              <div class="small text-muted fw-semibold">Đã hoàn thành</div>
+              <div class="h3 fw-bold mb-0 mt-1 font-mono text-success">96</div>
+            </div>
+            <div class="p-2 rounded" style="background: var(--tt-xong-nen); color: var(--tt-xong-chu);">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thanh Bộ lọc Tinh gọn (1 hàng duy nhất trên Desktop) -->
+      <div class="the-trang mb-3 p-3">
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </span>
+              <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm theo mã #YC, tên thiết bị, phòng..." style="font-size: 13px;">
+            </div>
+          </div>
+
+          <div class="col-6 col-md-2">
+            <select class="form-select form-select-sm" style="font-size: 13px; height: 38px;">
+              <option value="">Tất cả trạng thái</option>
+              <option value="CHO_XU_LY">Chờ xử lý</option>
+              <option value="DANG_XU_LY">Đang xử lý</option>
+              <option value="HOAN_THANH">Đã hoàn thành</option>
+              <option value="HUY">Đã hủy</option>
+            </select>
+          </div>
+
+          <div class="col-6 col-md-2">
+            <select class="form-select form-select-sm" style="font-size: 13px; height: 38px;">
+              <option value="">Tất cả mức ưu tiên</option>
+              <option value="KHAN_CAP">Khẩn cấp</option>
+              <option value="CAO">Cao</option>
+              <option value="BINH_THUONG">Bình thường</option>
+              <option value="THAP">Thấp</option>
+            </select>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <div class="form-check form-switch d-flex align-items-center gap-2 m-0">
+              <input class="form-check-input" type="checkbox" id="locCuaToi">
+              <label class="form-check-label small fw-semibold text-secondary" for="locCuaToi">Chỉ xem yêu cầu tôi phụ trách</label>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-1 text-end">
+            <button class="btn btn-sm btn-phu w-100" title="Đặt lại bộ lọc">
+              Đặt lại
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bảng Danh sách Yêu cầu (7 cột thoáng mắt, tối đa 2 nút/dòng) -->
+      <div class="the-trang p-0 overflow-hidden">
+        <div class="table-responsive">
+          <table class="bang-hanh-chinh">
+            <thead>
+              <tr>
+                <th>Mã YC & Thời gian</th>
+                <th>Thiết bị</th>
+                <th>Vị trí / Phòng</th>
+                <th>Mức ưu tiên</th>
+                <th>Trạng thái</th>
+                <th>Người phụ trách</th>
+                <th class="text-end">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dòng 1: Chờ xử lý -->
+              <tr>
+                <td>
+                  <div class="fw-bold font-mono text-dark">#YC202610290012</div>
+                  <div class="text-muted small" style="font-size: 11px;">29/10/2026 10:45</div>
+                </td>
+                <td>
+                  <div class="fw-semibold">Máy chiếu Panasonic</div>
+                  <div class="text-muted small" style="font-size: 11px;">Thiết bị Trình chiếu</div>
+                </td>
+                <td>
+                  <span class="fw-medium">Phòng 203</span>
+                </td>
+                <td>
+                  <span class="badge" style="color: var(--ut-cao); background: #FEF3C7; border: 1px solid #FDE68A;">Cao</span>
+                </td>
+                <td>
+                  <span class="huy-hieu-tt cho-xu-ly">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span>
+                    Chờ xử lý
+                  </span>
+                </td>
+                <td>
+                  <span class="text-muted fst-italic">Chưa phân công</span>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2">
+                    <button class="btn-chinh">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                      Tiếp nhận
+                    </button>
+                    <button class="btn-phu" onclick="chuyenManHinh('manHinhModalChiTiet')">
+                      Chi tiết
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Dòng 2: Đang xử lý -->
+              <tr>
+                <td>
+                  <div class="fw-bold font-mono text-dark">#YC202610290008</div>
+                  <div class="text-muted small" style="font-size: 11px;">29/10/2026 09:15</div>
+                </td>
+                <td>
+                  <div class="fw-semibold">Điều hòa Daikin 2HP</div>
+                  <div class="text-muted small" style="font-size: 11px;">Điện lạnh</div>
+                </td>
+                <td>
+                  <span class="fw-medium">Phòng Máy tính 2</span>
+                </td>
+                <td>
+                  <span class="badge" style="color: var(--ut-khan-cap); background: #FEE2E2; border: 1px solid #FECACA;">Khẩn cấp</span>
+                </td>
+                <td>
+                  <span class="huy-hieu-tt dang-xu-ly">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span>
+                    Đang xử lý
+                  </span>
+                </td>
+                <td>
+                  <div class="fw-semibold small">Trần Văn Bình</div>
+                  <div class="text-muted" style="font-size: 11px;">Kỹ thuật viên</div>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2">
+                    <button class="btn btn-sm btn-success d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                      Hoàn thành
+                    </button>
+                    <button class="btn-phu" onclick="chuyenManHinh('manHinhModalChiTiet')">
+                      Chi tiết
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Dòng 3: Đã hoàn thành -->
+              <tr>
+                <td>
+                  <div class="fw-bold font-mono text-dark">#YC202610280045</div>
+                  <div class="text-muted small" style="font-size: 11px;">28/10/2026 15:30</div>
+                </td>
+                <td>
+                  <div class="fw-semibold">Micro không dây Shure</div>
+                  <div class="text-muted small" style="font-size: 11px;">Âm thanh</div>
+                </td>
+                <td>
+                  <span class="fw-medium">Hội trường A</span>
+                </td>
+                <td>
+                  <span class="badge" style="color: var(--ut-binh-thuong); background: #F1F5F9; border: 1px solid #E2E8F0;">Bình thường</span>
+                </td>
+                <td>
+                  <span class="huy-hieu-tt hoan-thanh">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span>
+                    Đã hoàn thành
+                  </span>
+                </td>
+                <td>
+                  <div class="fw-semibold small">Nguyễn Văn An</div>
+                </td>
+                <td class="text-end">
+                  <button class="btn-phu" onclick="chuyenManHinh('manHinhModalChiTiet')">
+                    Xem chi tiết
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Phân trang -->
+        <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+          <div class="small text-muted">Hiển thị 1 - 3 trong tổng số <strong>142</strong> yêu cầu</div>
+          <nav>
+            <ul class="pagination pagination-sm m-0">
+              <li class="page-item disabled"><a class="page-link" href="#">Trang trước</a></li>
+              <li class="page-item active"><a class="page-link" href="#" style="background: var(--mau-chinh); border-color: var(--mau-chinh);">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item"><a class="page-link" href="#">Trang sau</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 3. MÀN HÌNH DASHBOARD: TAB 2 - BÁO CÁO & HIỆU SUẤT XỬ LÝ (VIỆT HÓA 100%) -->
+  <!-- ========================================================================= -->
+  <section id="manHinhDashboardTab2" class="vung-phac-thao">
+    <div class="container-fluid py-4 px-md-4">
+      
+      <!-- Thanh Điều hướng 2 Tab -->
+      <div class="tab-hanh-chinh">
+        <button class="nut-tab" onclick="chuyenManHinh('manHinhDashboardTab1')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Danh sách Yêu cầu & Điều phối
+        </button>
+        <button class="nut-tab active" onclick="chuyenManHinh('manHinhDashboardTab2')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          Báo cáo & Hiệu suất xử lý
+        </button>
+      </div>
+
+      <!-- Bộ lọc thời gian báo cáo -->
+      <div class="the-trang mb-4 p-3">
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-md-3">
+            <label class="form-label small fw-semibold text-secondary mb-1">Từ ngày</label>
+            <input type="date" class="form-control form-control-sm" value="2026-10-01">
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label small fw-semibold text-secondary mb-1">Đến ngày</label>
+            <input type="date" class="form-control form-control-sm" value="2026-10-29">
+          </div>
+          <div class="col-12 col-md-3 align-self-end">
+            <button class="btn btn-sm btn-chinh">
+              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+              Lọc báo cáo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Thẻ Chỉ số Hiệu suất & Thời gian Xử lý (Việt hóa 100%) -->
+      <div class="row g-3 mb-4">
+        <!-- 1. Tỷ lệ hoàn thành -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="the-trang p-3">
+            <div class="text-muted small fw-semibold">Tỷ lệ hoàn thành sự cố</div>
+            <div class="h2 fw-bold text-success font-mono my-1">91.4%</div>
+            <div class="small text-muted" style="font-size: 12px;">96 / 105 yêu cầu đã tiếp nhận</div>
+          </div>
+        </div>
+
+        <!-- 2. Tỷ lệ tiếp nhận đúng hạn (thay thế cụm "SLA phản hồi < 30p") -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="the-trang p-3">
+            <div class="text-muted small fw-semibold">Tỷ lệ tiếp nhận đúng hạn (&lt; 30 phút)</div>
+            <div class="h2 fw-bold text-primary font-mono my-1">88.5%</div>
+            <div class="small text-muted" style="font-size: 12px;">Cam kết phản hồi người báo hỏng</div>
+          </div>
+        </div>
+
+        <!-- 3. Thời gian tiếp nhận trung bình -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="the-trang p-3">
+            <div class="text-muted small fw-semibold">Thời gian tiếp nhận trung bình</div>
+            <div class="h2 fw-bold text-dark font-mono my-1">18 <span style="font-size: 16px;">phút</span></div>
+            <div class="small text-muted" style="font-size: 12px;">Từ lúc gửi yêu cầu đến khi KTV nhận</div>
+          </div>
+        </div>
+
+        <!-- 4. Thời gian khắc phục sự cố trung bình (Thay thế cụm "MTTR Kép Resolve & Repair") -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="the-trang p-3" style="border-top: 3px solid var(--mau-chinh);">
+            <div class="text-muted small fw-semibold">Thời gian xử lý sự cố trung bình</div>
+            <div class="d-flex justify-content-between align-items-baseline my-1">
+              <div>
+                <span class="h4 fw-bold font-mono text-dark">2.4</span> <span class="small text-muted">giờ</span>
+                <div class="text-muted" style="font-size: 11px;">Tổng thời gian giải quyết</div>
+              </div>
+              <div class="vr mx-2"></div>
+              <div>
+                <span class="h4 fw-bold font-mono text-primary">1.6</span> <span class="small text-muted">giờ</span>
+                <div class="text-muted" style="font-size: 11px;">Thời gian KTV sửa thực tế</div>
+              </div>
+            </div>
+            <div class="small text-muted border-top pt-1 mt-1" style="font-size: 11px;">(Đo lường từ lúc tiếp nhận đến hoàn thành)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 Biểu đồ Thanh Ngang Sạch Sẽ (Top vị trí & Danh mục thiết bị) -->
+      <div class="row g-4">
+        <!-- Top 5 Vị trí phát sinh sự cố -->
+        <div class="col-12 col-lg-6">
+          <div class="the-trang h-100">
+            <div class="fw-bold mb-3 d-flex justify-content-between align-items-center">
+              <span>Top 5 Phòng phát sinh sự cố nhiều nhất</span>
+              <span class="badge bg-light text-secondary border">Tháng này</span>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Phòng 103</span>
+                <span class="font-mono text-muted">14 sự cố</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 85%; background: var(--ut-khan-cap);"></div>
+              </div>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Phòng Máy tính 1</span>
+                <span class="font-mono text-muted">11 sự cố</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 68%;"></div>
+              </div>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Hội trường A</span>
+                <span class="font-mono text-muted">8 sự cố</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 48%;"></div>
+              </div>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Phòng Họp 2</span>
+                <span class="font-mono text-muted">6 sự cố</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 35%;"></div>
+              </div>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Phòng Ban Quản lý</span>
+                <span class="font-mono text-muted">4 sự cố</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 25%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thống kê theo Danh mục thiết bị -->
+        <div class="col-12 col-lg-6">
+          <div class="the-trang h-100">
+            <div class="fw-bold mb-3 d-flex justify-content-between align-items-center">
+              <span>Sự cố theo Danh mục thiết bị</span>
+              <span class="badge bg-light text-secondary border">Tổng hợp</span>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Máy chiếu & Thiết bị Trình chiếu</span>
+                <span class="font-mono text-muted">48 sự cố (34%)</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 70%;"></div>
+              </div>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Điện lạnh & Điều hòa không khí</span>
+                <span class="font-mono text-muted">38 sự cố (27%)</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 55%; background: #0284C7;"></div>
+              </div>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Hệ thống Âm thanh & Micro</span>
+                <span class="font-mono text-muted">26 sự cố (18%)</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 38%; background: #D97706;"></div>
+              </div>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Máy vi tính & Mạng nội bộ</span>
+                <span class="font-mono text-muted">20 sự cố (14%)</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 28%; background: #475569;"></div>
+              </div>
+            </div>
+
+            <div class="thanh-thong-ke-item">
+              <div class="thanh-thong-ke-label">
+                <span>Khác / Chưa phân loại</span>
+                <span class="font-mono text-muted">10 sự cố (7%)</span>
+              </div>
+              <div class="thanh-thong-ke-track">
+                <div class="thanh-thong-ke-fill" style="width: 14%; background: #94A3B8;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 4. MODAL CHI TIẾT 2 CỘT (Thông tin sự cố & Lịch sử xử lý)                 -->
+  <!-- ========================================================================= -->
+  <section id="manHinhModalChiTiet" class="vung-phac-thao">
+    <div class="container py-4">
+      <div class="the-trang p-0" style="max-width: 900px; margin: 0 auto; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);">
+        
+        <!-- Modal Header -->
+        <div class="p-3 px-4 border-bottom d-flex justify-content-between align-items-center bg-light">
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="h5 fw-bold font-mono text-dark mb-0">#YC202610290012</span>
+              <span class="huy-hieu-tt cho-xu-ly">Chờ xử lý</span>
+            </div>
+            <div class="small text-muted mt-1">Tiếp nhận qua Zalo Bot • 29/10/2026 10:45:12</div>
+          </div>
+          <button class="btn btn-sm btn-outline-secondary" onclick="chuyenManHinh('manHinhDashboardTab1')">
+            Đóng [ESC]
+          </button>
+        </div>
+
+        <!-- Modal Body: Bố cục 2 cột thoáng đãng -->
+        <div class="p-4">
+          <div class="row g-4">
+            
+            <!-- Cột trái: Chi tiết & Ảnh & Thao tác điều phối -->
+            <div class="col-12 col-md-7 border-end-md">
+              <h6 class="fw-bold text-secondary text-uppercase small mb-3">Thông tin chi tiết sự cố</h6>
+
+              <div class="mb-3">
+                <div class="small text-muted">Thiết bị báo hỏng:</div>
+                <div class="fw-bold">Máy chiếu Panasonic PT-LB300</div>
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <div class="small text-muted">Vị trí phòng:</div>
+                  <div class="fw-semibold">Phòng 203</div>
+                </div>
+                <div class="col-6">
+                  <div class="small text-muted">Mức độ ưu tiên:</div>
+                  <span class="badge" style="color: var(--ut-cao); background: #FEF3C7; border: 1px solid #FDE68A;">Ưu tiên Cao</span>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="small text-muted">Mô tả hiện trạng:</div>
+                <div class="p-2 rounded bg-light border small text-dark">
+                  Máy chiếu bật nguồn quạt quay nhưng đèn báo lỗi nhấp nháy liên tục, không lên hình ảnh. Cần hỗ trợ kiểm tra gấp.
+                </div>
+              </div>
+
+              <!-- Ảnh hiện trường -->
+              <div class="mb-4">
+                <div class="small text-muted mb-1">Hình ảnh gửi qua Zalo:</div>
+                <div class="rounded border p-2 bg-light text-center" style="max-width: 240px;">
+                  <div class="bg-secondary rounded text-white d-flex flex-column align-items-center justify-content-center p-4" style="height: 140px;">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="small mt-2">Ảnh chụp hiện trường</span>
+                  </div>
+                  <a href="#" class="small text-decoration-none mt-2 d-inline-block text-primary">Xem ảnh gốc kích thước đầy đủ</a>
+                </div>
+              </div>
+
+              <!-- Thanh công cụ điều phối phụ -->
+              <div class="p-3 rounded border bg-light">
+                <div class="small fw-bold text-secondary mb-2">Thao tác điều phối:</div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-sm btn-outline-primary">
+                    Chuẩn hóa thông tin (Phòng / Loại)
+                  </button>
+                  <button class="btn btn-sm btn-outline-primary">
+                    Phân công Kỹ thuật viên
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger">
+                    Hủy yêu cầu
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cột phải: Dòng thời gian Nhật ký xử lý -->
+            <div class="col-12 col-md-5">
+              <h6 class="fw-bold text-secondary text-uppercase small mb-3">Nhật ký xử lý (Audit Log)</h6>
+
+              <div class="dong-thoi-gian">
+                <div class="muc-thoi-gian">
+                  <div class="fw-bold small">Tiếp nhận tự động qua Zalo Bot</div>
+                  <div class="text-muted" style="font-size: 11px;">29/10/2026 10:45:12 • Hệ thống</div>
+                  <div class="small text-secondary mt-1">Người gửi: 098****123 (Người báo sự cố)</div>
+                </div>
+
+                <div class="muc-thoi-gian">
+                  <div class="fw-bold small text-primary">Phân loại & Gán mức ưu tiên</div>
+                  <div class="text-muted" style="font-size: 11px;">29/10/2026 10:48:00 • Lê Hoàng Nam (Admin)</div>
+                  <div class="small text-secondary mt-1">Gán mức ưu tiên CAO và chọn danh mục Thiết bị Trình chiếu.</div>
+                </div>
+
+                <div class="muc-thoi-gian">
+                  <div class="fw-bold small text-muted">Chờ Kỹ thuật viên tiếp nhận xử lý...</div>
+                  <div class="text-muted" style="font-size: 11px;">Trạng thái hiện tại</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-3 px-4 border-top d-flex justify-content-between align-items-center bg-light">
+          <span class="small text-muted">Kỹ thuật viên phụ trách: <strong>Chưa phân công</strong></span>
+          <div class="d-flex gap-2">
+            <button class="btn-chinh">
+              Tiếp nhận yêu cầu này
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 5. CẢNH BÁO XUNG ĐỘT (TOAST THÔNG THƯỜNG - KHÔNG LỘ KỸ THUẬT NỘI BỘ)      -->
+  <!-- ========================================================================= -->
+  <section id="manHinhToast409" class="vung-phac-thao">
+    <div class="container py-4">
+      <div class="the-trang p-4" style="max-width: 650px; margin: 0 auto;">
+        <h5 class="fw-bold text-dark mb-2">Mô Phỏng Cảnh Báo Khi Có Người Khác Cập Nhật Cùng Lúc</h5>
+        <p class="text-muted small mb-4">
+          Khi hai cán bộ cùng mở và thao tác trên một yêu cầu gần như đồng thời, hệ thống sẽ bảo vệ tính toàn vẹn dữ liệu và hiển thị hộp cảnh báo lịch thiệp, dễ hiểu cho người dùng, hoàn toàn không xuất hiện các mã lỗi khó hiểu hay tên thuật toán nội bộ.
+        </p>
+
+        <!-- Khung Toast Cảnh Báo Nghiệp Vụ Thông Thường -->
+        <div class="p-3 rounded border my-3 shadow-sm" style="background: #FFFBEB; border-color: #FDE68A !important;">
+          <div class="d-flex align-items-start gap-3">
+            <div class="p-2 rounded-circle" style="background: #FEF3C7; color: #D97706;">
+              <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-bold" style="color: #92400E; font-size: 14px;">Dữ liệu vừa được cập nhật bởi cán bộ khác!</div>
+              <div class="small mt-1" style="color: #78350F;">
+                Yêu cầu <strong>#YC202610290012</strong> vừa được KTV Trần Văn Bình tiếp nhận xử lý. Danh sách dữ liệu đã được tự động làm mới để hiển thị trạng thái mới nhất.
+              </div>
+              <div class="mt-2">
+                <button class="btn btn-sm btn-outline-warning text-dark fw-semibold px-3" style="border-color: #D97706; background: #FEF3C7;">
+                  Tải lại danh sách
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <button class="btn btn-sm btn-phu" onclick="chuyenManHinh('manHinhDashboardTab1')">
+            Quay lại Màn hình Danh sách
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Script điều khiển chuyển đổi giữa các màn hình xem trước -->
+  <script>
+    function chuyenManHinh(idManHinh) {
+      document.querySelectorAll('.vung-phac-thao').forEach(el => el.classList.remove('hien-thi'));
+      const target = document.getElementById(idManHinh);
+      if (target) {
+        target.classList.add('hien-thi');
+      }
+
+      // Cập nhật trạng thái active trên thanh công cụ
+      document.querySelectorAll('.thanh-chuyen-mau button').forEach(btn => btn.classList.remove('active'));
+      const mapping = {
+        'manHinhDangNhap': 0,
+        'manHinhDashboardTab1': 1,
+        'manHinhDashboardTab2': 2,
+        'manHinhModalChiTiet': 3,
+        'manHinhToast409': 4
+      };
+      const idx = mapping[idManHinh];
+      if (idx !== undefined) {
+        const btns = document.querySelectorAll('.thanh-chuyen-mau button');
+        if (btns[idx]) btns[idx].classList.add('active');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

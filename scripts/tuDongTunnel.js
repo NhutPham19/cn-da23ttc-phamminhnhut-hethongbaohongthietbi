@@ -5,12 +5,13 @@ const { spawn } = require('child_process');
 const CLOUDFLARED_PATH = 'C:\\PROGRA~2\\cloudflared\\cloudflared.exe';
 const BOT_TOKEN = process.env.ZALO_BOT_TOKEN;
 const SECRET_TOKEN = process.env.ZALO_SECRET_TOKEN;
+const PORT = process.env.PORT || 7000;
 
 console.log('=============================================================');
-console.log('🚀 Đang khởi động Cloudflare Tunnel và tự động đăng ký Zalo...');
+console.log(`🚀 Đang khởi động Cloudflare Tunnel (Cổng ${PORT}) và tự động đăng ký Zalo...`);
 console.log('=============================================================');
 
-const tunnel = spawn(CLOUDFLARED_PATH, ['tunnel', '--url', 'http://localhost:3000']);
+const tunnel = spawn(CLOUDFLARED_PATH, ['tunnel', '--url', `http://localhost:${PORT}`]);
 
 let daDangKy = false;
 

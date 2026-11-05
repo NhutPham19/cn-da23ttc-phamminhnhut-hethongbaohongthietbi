@@ -5,14 +5,26 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
+    "build": "npx prisma generate",
+    "test": "node --test",
+    "seed": "node prisma/hatGiong.js",
     "tunnel": "node scripts/tuDongTunnel.js"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^18.0.5",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^10.3.1",
+    "prisma": "^6.19.3"
   }
 }

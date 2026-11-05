@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảng Điều Khiển — Hệ Thống Quản Lý Báo Hỏng Thiết Bị</title>
+  
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Giao diện chuẩn hành chính / Institutional Light Mode -->
+  <link rel="stylesheet" href="css/giaoDien.css">
+</head>
+<body>
+
+  <!-- ========================================================================= -->
+  <!-- 1. THANH TOPBAR HỆ THỐNG (INSTITUTIONAL TOPBAR)                           -->
+  <!-- ========================================================================= -->
+  <header class="topbar-he-thong">
+    <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <!-- Cụm Logo & Tên Hệ Thống -->
+      <div class="d-flex align-items-center gap-3">
+        <img src="logo.svg" alt="Biểu trưng Hệ thống" width="38" height="38">
+        <div>
+          <div class="fw-bold text-dark" style="font-size: 16px; letter-spacing: -0.01em;">HỆ THỐNG QUẢN LÝ BÁO HỎNG THIẾT BỊ</div>
+          <div class="text-muted small d-none d-sm-block" style="font-size: 11px;">Bảng điều khiển tác nghiệp & tiếp nhận sự cố</div>
+        </div>
+      </div>
+
+      <!-- Cụm Tiện ích & Thông tin Người dùng -->
+      <div class="d-flex align-items-center gap-2 gap-md-3">
+        <!-- Đèn báo đồng bộ 20s -->
+        <div class="d-none d-md-flex align-items-center gap-2 small text-secondary">
+          <span class="spinner-grow spinner-grow-sm text-success" role="status" style="width: 8px; height: 8px;"></span>
+          <span style="font-size: 12px;">Đồng bộ tự động</span>
+        </div>
+
+        <!-- Nút Làm Mới thủ công -->
+        <button id="nutLamMoi" class="btn btn-sm btn-phu" title="Tải lại dữ liệu">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <span class="d-none d-sm-inline">Làm mới</span>
+        </button>
+
+        <div class="vr my-1 d-none d-md-block"></div>
+
+        <!-- Thông tin cán bộ đang đăng nhập -->
+        <div class="d-flex align-items-center gap-2">
+          <div class="text-end d-none d-sm-block">
+            <div id="tenNguoiDung" class="fw-semibold small text-dark">Đang tải...</div>
+            <span id="nhanVaiTro" class="badge bg-light text-secondary border" style="font-size: 10px;">...</span>
+          </div>
+          <div id="avatarChuCai" class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 36px; height: 36px; background: var(--mau-chinh); font-size: 13px;">
+            --
+          </div>
+        </div>
+
+        <!-- Nút Đổi Mật Khẩu -->
+        <button id="nutMoModalDoiMatKhau" class="btn btn-sm btn-outline-secondary" title="Đổi mật khẩu tài khoản">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+          </svg>
+          <span class="d-none d-md-inline">Đổi mật khẩu</span>
+        </button>
+
+        <!-- Nút Đăng Xuất -->
+        <button id="nutDangXuat" class="btn btn-sm btn-outline-danger" title="Đăng xuất khỏi hệ thống">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="d-sm-none">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          <span class="d-none d-sm-inline">Đăng xuất</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 2. THÂN DASHBOARD & THANH ĐIỀU HƯỚNG 2 TAB                                -->
+  <!-- ========================================================================= -->
+  <main class="container-fluid py-4 px-md-4">
+    
+    <!-- Thanh Chuyển Tab (Progressive Disclosure - Tách Tác Nghiệp & Báo Cáo) -->
+    <div class="tab-dieu-huong">
+      <button id="tabYeuCau" class="nut-tab active" type="button">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Danh sách Yêu cầu & Điều phối
+      </button>
+
+      <!-- Tab Báo cáo: Chỉ hiển thị cho Admin -->
+      <button id="tabBaoCao" class="nut-tab d-none" type="button">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        Báo cáo & Hiệu suất xử lý
+      </button>
+
+      <!-- Tab Quản lý Nhân sự: Chỉ hiển thị cho Admin -->
+      <button id="tabNhanSu" class="nut-tab d-none" type="button">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+        Quản lý Nhân sự
+      </button>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 1: DANH SÁCH YÊU CẦU & ĐIỀU PHỐI (MÀN HÌNH CHÍNH)                  -->
+    <!-- ======================================================================= -->
+    <section id="khuVucTabYeuCau">
+      
+      <!-- 4 Thẻ Đếm Nhanh Số Lượng Yêu Cầu -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="the-trang d-flex align-items-center justify-content-between p-3">
+            <div>
+              <div class="small text-muted fw-semibold">Tổng số yêu cầu</div>
+              <div id="demTongSo" class="h3 fw-bold mb-0 mt-1 font-mono text-dark">0</div>
+            </div>
+            <div class="p-2 rounded" style="background: #F1F5F9; color: #475569;">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="the-trang d-flex align-items-center justify-content-between p-3" style="border-left: 4px solid var(--tt-cho-chu);">
+            <div>
+              <div class="small text-muted fw-semibold">Chờ tiếp nhận</div>
+              <div id="demChoXuLy" class="h3 fw-bold mb-0 mt-1 font-mono" style="color: #B45309;">0</div>
+            </div>
+            <div class="p-2 rounded" style="background: var(--tt-cho-nen); color: var(--tt-cho-chu);">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="the-trang d-flex align-items-center justify-content-between p-3" style="border-left: 4px solid var(--mau-chinh);">
+            <div>
+              <div class="small text-muted fw-semibold">Đang xử lý</div>
+              <div id="demDangXuLy" class="h3 fw-bold mb-0 mt-1 font-mono text-primary">0</div>
+            </div>
+            <div class="p-2 rounded" style="background: var(--tt-dang-nen); color: var(--tt-dang-chu);">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="the-trang d-flex align-items-center justify-content-between p-3" style="border-left: 4px solid var(--tt-xong-chu);">
+            <div>
+              <div class="small text-muted fw-semibold">Đã hoàn thành</div>
+              <div id="demHoanThanh" class="h3 fw-bold mb-0 mt-1 font-mono text-success">0</div>
+            </div>
+            <div class="p-2 rounded" style="background: var(--tt-xong-nen); color: var(--tt-xong-chu);">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thanh Bộ Lọc Tinh Gọn (1 Hàng trên Desktop) -->
+      <div class="the-trang mb-3 p-3">
+        <div class="row g-2 align-items-center">
+          <!-- Ô tìm kiếm từ khóa -->
+          <div class="col-12 col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </span>
+              <input type="text" id="locTuKhoa" class="form-control border-start-0 ps-0" placeholder="Tìm theo mã #YC, tên thiết bị, phòng..." style="font-size: 13px;">
+            </div>
+          </div>
+
+          <!-- Lọc Trạng thái -->
+          <div class="col-6 col-md-2">
+            <select id="locTrangThai" class="form-select" style="font-size: 13px;">
+              <option value="">Tất cả trạng thái</option>
+              <option value="CHO_XU_LY">Chờ xử lý</option>
+              <option value="DANG_XU_LY">Đang xử lý</option>
+              <option value="HOAN_THANH">Đã hoàn thành</option>
+              <option value="HUY">Đã hủy</option>
+            </select>
+          </div>
+
+          <!-- Lọc Mức ưu tiên -->
+          <div class="col-6 col-md-2">
+            <select id="locMucUuTien" class="form-select" style="font-size: 13px;">
+              <option value="">Tất cả mức ưu tiên</option>
+              <option value="KHAN_CAP">Khẩn cấp</option>
+              <option value="CAO">Cao</option>
+              <option value="BINH_THUONG">Bình thường</option>
+              <option value="THAP">Thấp</option>
+            </select>
+          </div>
+
+          <!-- Lọc "Của tôi phụ trách" -->
+          <div class="col-12 col-md-3">
+            <div class="form-check form-switch d-flex align-items-center gap-2 m-0 ps-0">
+              <input class="form-check-input ms-0 me-2" type="checkbox" id="locCuaToi">
+              <label class="form-check-label small fw-semibold text-secondary" for="locCuaToi">Chỉ xem việc tôi phụ trách</label>
+            </div>
+          </div>
+
+          <!-- Nút Đặt lại & Xuất CSV -->
+          <div class="col-12 col-md-1 d-flex gap-1 justify-content-end">
+            <button id="nutDatLaiLoc" class="btn btn-sm btn-phu" title="Đặt lại bộ lọc về mặc định">
+              Đặt lại
+            </button>
+            <button id="nutXuatCsv" class="btn btn-sm btn-outline-success" title="Xuất báo cáo danh sách yêu cầu ra file CSV (Excel tiếng Việt chuẩn UTF-8)">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              CSV
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bảng Danh Sách Yêu Cầu (7 Cột Thoáng Mắt, Max 2 nút/dòng) -->
+      <div class="the-trang p-0 overflow-hidden">
+        <div class="table-responsive">
+          <table class="bang-du-lieu">
+            <thead>
+              <tr>
+                <th>Mã YC & Thời gian</th>
+                <th>Thiết bị</th>
+                <th>Vị trí / Phòng</th>
+                <th>Mức ưu tiên</th>
+                <th>Trạng thái</th>
+                <th>Người phụ trách</th>
+                <th class="text-end">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="thanBangYeuCau">
+              <!-- Render động từ template mauDongYeuCau -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Trạng thái trống (khi không có dữ liệu) -->
+        <div id="vungDuLieuRong" class="text-center py-5 d-none">
+          <svg width="44" height="44" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-muted mb-2">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          <div class="fw-semibold text-secondary">Không tìm thấy yêu cầu báo hỏng nào</div>
+          <div class="small text-muted">Hãy thử thay đổi điều kiện lọc hoặc từ khóa tìm kiếm.</div>
+        </div>
+
+        <!-- Thanh Phân Trang -->
+        <div id="vungPhanTrang" class="d-flex justify-content-between align-items-center flex-wrap gap-2 p-3 border-top bg-light">
+          <div id="thongTinTrang" class="small text-muted">
+            Đang tải dữ liệu...
+          </div>
+          <nav aria-label="Phân trang yêu cầu">
+            <ul id="danhSachSoTrang" class="pagination pagination-sm m-0">
+              <!-- Render động các nút trang -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 2: BÁO CÁO & HIỆU SUẤT XỬ LÝ (DÀNH RIÊNG CHO ADMIN)                -->
+    <!-- ======================================================================= -->
+    <section id="khuVucTabBaoCao" class="d-none">
+      
+      <!-- 4 Thẻ Chỉ Số Định Lượng Hiệu Suất (Việt hóa 100%) -->
+      <div class="row g-3 mb-4">
+        <!-- 1. Tỷ lệ hoàn thành sự cố -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="the-trang p-3">
+            <div class="text-muted small fw-semibold">Tỷ lệ hoàn thành sự cố</div>
+            <div id="chiSoTiLeHoanThanh" class="h2 fw-bold text-success font-mono my-1">0%</div>
+            <div class="small text-muted" style="font-size: 12px;">Yêu cầu đã khắc phục xong</div>
+          </div>
+        </div>
+
+        <!-- 2. Tỷ lệ tiếp nhận đúng hạn -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="the-trang p-3">
+            <div class="text-muted small fw-semibold">Tỷ lệ tiếp nhận đúng hạn (&lt; 30 phút)</div>
+            <div id="chiSoTiLeDungHan" class="h2 fw-bold text-primary font-mono my-1">0%</div>
+            <div class="small text-muted" style="font-size: 12px;">Cam kết phản hồi người báo hỏng</div>
+          </div>
+        </div>
+
+        <!-- 3. Thời gian tiếp nhận trung bình -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="the-trang p-3">
+            <div class="text-muted small fw-semibold">Thời gian tiếp nhận trung bình</div>
+            <div id="chiSoThoiGianPhanHoi" class="h2 fw-bold text-dark font-mono my-1">0 <span style="font-size: 16px;">phút</span></div>
+            <div class="small text-muted" style="font-size: 12px;">Từ lúc gửi yêu cầu đến khi KTV nhận</div>
+          </div>
+        </div>
+
+        <!-- 4. Thời gian khắc phục sự cố trung bình (Kép: Resolve & Repair) -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="the-trang p-3" style="border-top: 3px solid var(--mau-chinh);">
+            <div class="text-muted small fw-semibold">Thời gian xử lý sự cố trung bình</div>
+            <div class="d-flex justify-content-between align-items-baseline my-1">
+              <div>
+                <span id="chiSoMttrResolve" class="h4 fw-bold font-mono text-dark">0.0</span> <span class="small text-muted">giờ</span>
+                <div class="text-muted" style="font-size: 11px;">Tổng thời gian giải quyết</div>
+              </div>
+              <div class="vr mx-2"></div>
+              <div>
+                <span id="chiSoMttrRepair" class="h4 fw-bold font-mono text-primary">0.0</span> <span class="small text-muted">giờ</span>
+                <div class="text-muted" style="font-size: 11px;">Thời gian KTV sửa thực tế</div>
+              </div>
+            </div>
+            <div class="small text-muted border-top pt-1 mt-1" style="font-size: 11px;">(Đo lường từ lúc tiếp nhận đến hoàn thành)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 Biểu Đồ Thanh Ngang Sạch Sẽ (Top Vị trí & Phân loại Danh mục) -->
+      <div class="row g-4">
+        <!-- Top 5 Vị trí / Phòng -->
+        <div class="col-12 col-lg-6">
+          <div class="the-trang p-4 h-100">
+            <div class="fw-bold text-dark mb-3 d-flex justify-content-between align-items-center">
+              <span>Top 5 Phòng phát sinh sự cố nhiều nhất</span>
+              <span class="badge bg-light text-secondary border">Thống kê tổng hợp</span>
+            </div>
+            <div id="danhSachTopPhong">
+              <!-- Render động các thanh thống kê -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Thống kê theo Danh mục thiết bị -->
+        <div class="col-12 col-lg-6">
+          <div class="the-trang p-4 h-100">
+            <div class="fw-bold text-dark mb-3 d-flex justify-content-between align-items-center">
+              <span>Sự cố theo Danh mục thiết bị</span>
+              <span class="badge bg-light text-secondary border">Phân loại</span>
+            </div>
+            <div id="danhSachTopDanhMuc">
+              <!-- Render động các thanh thống kê -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 3: QUẢN LÝ NHÂN SỰ (ADMIN ONLY)                                    -->
+    <!-- ======================================================================= -->
+    <section id="khuVucTabNhanSu" class="d-none">
+      
+      <!-- Thanh Tiêu đề & Công cụ Nhân sự -->
+      <div class="the-trang mb-3 p-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          <h5 class="fw-bold text-dark mb-1">Quản lý Nhân sự & Kỹ thuật viên</h5>
+          <div class="text-muted small">
+            💡 <strong>Mẹo:</strong> Nhắc Kỹ thuật viên nhắn tin lệnh <code>id</code> vào Zalo Bot để lấy <strong>Mã Chat Zalo</strong> gắn vào hồ sơ giúp tự động nhận thông báo giao việc.
+          </div>
+        </div>
+        <button id="nutThemNhanSu" type="button" class="btn btn-chinh d-flex align-items-center gap-2">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          Thêm Nhân sự mới
+        </button>
+      </div>
+
+      <!-- Bảng Danh sách Nhân sự (Chống XSS 100%) -->
+      <div class="the-trang p-0 overflow-hidden">
+        <div class="table-responsive">
+          <table class="bang-du-lieu" id="bangNhanSu">
+            <thead>
+              <tr>
+                <th style="width: 80px;">Mã NV</th>
+                <th style="width: 130px;">Tài khoản</th>
+                <th>Họ và tên</th>
+                <th style="width: 100px;">Vai trò</th>
+                <th>Email / SĐT</th>
+                <th>Zalo Chat ID</th>
+                <th style="width: 140px;">Trạng thái</th>
+                <th style="width: 160px;" class="text-end">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="thanBangNhanSu">
+              <!-- Render động bằng DOM createElement / textContent -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 3. HỆ THỐNG CÁC MODAL NGHIỆP VỤ (2 CỘT, KHÔNG RỐI MẮT)                    -->
+  <!-- ========================================================================= -->
+
+  <!-- MODAL 1: CHI TIẾT YÊU CẦU (BỐ CỤC 2 CỘT KÈM AUDIT LOG) -->
+  <div class="modal fade" id="modalChiTietYeuCau" tabindex="-1" aria-labelledby="tieuDeModalChiTiet" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow">
+        
+        <div class="modal-header bg-light border-bottom py-3">
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h2 class="h5 fw-bold font-mono text-dark mb-0" id="chiTietMaYc">#YC...</h2>
+              <span id="chiTietTrangThaiBadge" class="huy-hieu-tt cho-xu-ly">Chờ xử lý</span>
+            </div>
+            <div class="small text-muted mt-1" id="chiTietThoiGianTao">Thời gian tạo: ...</div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <div class="row g-4">
+            
+            <!-- Cột trái: Chi tiết Sự cố & Ảnh & Thanh thao tác điều phối -->
+            <div class="col-12 col-md-7 border-end-md">
+              <h6 class="fw-bold text-secondary text-uppercase small mb-3">Thông tin sự cố</h6>
+
+              <div class="mb-3">
+                <div class="small text-muted">Thiết bị báo hỏng:</div>
+                <div class="d-flex align-items-center gap-2">
+                  <div id="chiTietTenThietBi" class="fw-bold fs-6 text-dark">-</div>
+                  <span id="chiTietDanhMucBadge" class="badge bg-primary-subtle text-primary border border-primary-subtle">Chưa phân loại</span>
+                </div>
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <div class="small text-muted">Vị trí phòng:</div>
+                  <div id="chiTietViTriPhong" class="fw-semibold text-dark">-</div>
+                </div>
+                <div class="col-6">
+                  <div class="small text-muted">Mức độ ưu tiên:</div>
+                  <div id="chiTietMucUuTien" class="fw-semibold">-</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="small text-muted">Mô tả hiện trạng sự cố:</div>
+                <div id="chiTietMoTaLoi" class="p-2 rounded bg-light border small text-dark mt-1" style="min-height: 60px; white-space: pre-wrap;">-</div>
+              </div>
+
+              <!-- Ghi chú kết quả xử lý của KTV (nếu có) -->
+              <div id="khungGhiChuKetQua" class="mb-3 d-none">
+                <div class="small text-muted fw-semibold">Ghi chú kết quả của KTV:</div>
+                <div id="chiTietGhiChuKetQua" class="p-2 rounded bg-light border small text-success mt-1" style="white-space: pre-wrap;">-</div>
+              </div>
+
+              <!-- Ảnh hiện trường -->
+              <div class="mb-4">
+                <div class="small text-muted mb-1">Hình ảnh hiện trường:</div>
+                <div id="khungCoAnh" class="rounded border p-2 bg-light text-center d-none" style="max-width: 240px;">
+                  <img id="chiTietHinhAnh" src="" alt="Ảnh hiện trường" class="img-fluid rounded mb-2" style="max-height: 160px; object-fit: cover;">
+                  <div>
+                    <a id="linkAnhGoc" href="#" target="_blank" rel="noopener noreferrer" class="small text-decoration-none text-primary">Xem ảnh gốc sắc nét</a>
+                  </div>
+                </div>
+                <div id="khungKhongAnh" class="small text-muted fst-italic">
+                  (Yêu cầu này không đính kèm hình ảnh)
+                </div>
+              </div>
+
+              <!-- Cụm công cụ điều phối phụ (Phân công / Hủy) -->
+              <div class="p-3 rounded border bg-light">
+                <div class="small fw-bold text-secondary mb-2">Thao tác điều phối:</div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button id="nutMoModalPhanCong" type="button" class="btn btn-sm btn-outline-primary d-none">
+                    Phân công KTV
+                  </button>
+                  <button id="nutYeuCauHuy" type="button" class="btn btn-sm btn-outline-danger">
+                    Hủy yêu cầu
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Cột phải: Dòng thời gian Nhật ký xử lý (Audit Log) -->
+            <div class="col-12 col-md-5">
+              <h6 class="fw-bold text-secondary text-uppercase small mb-3">Nhật ký xử lý</h6>
+              <div id="danhSachLichSuXuLy" class="dong-thoi-gian">
+                <!-- Render động từ template mauMucLichSu -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer bg-light border-top d-flex justify-content-between align-items-center py-2 px-3">
+          <div class="small text-muted">
+            KTV phụ trách: <strong id="chiTietKtvPhuTrach" class="text-dark">Chưa phân công</strong>
+          </div>
+          <div class="d-flex gap-2">
+            <button id="nutHanhDongChinhModal" type="button" class="btn btn-chinh">
+              Tiếp nhận yêu cầu
+            </button>
+            <button type="button" class="btn btn-phu" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: CẬP NHẬT TRẠNG THÁI (DÀNH CHO KTV & ADMIN) -->
+  <div class="modal fade" id="modalCapNhatTrangThai" tabindex="-1" aria-labelledby="tieuDeModalCapNhat" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light border-bottom py-3">
+          <h5 class="modal-title h6 fw-bold text-dark mb-0" id="tieuDeModalCapNhat">Cập nhật tiến độ xử lý</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <form id="bieuMauCapNhatTrangThai" novalidate>
+          <div class="modal-body p-4">
+            <input type="hidden" id="capNhatIdYeuCau">
+            
+            <div class="mb-3">
+              <label for="capNhatTrangThaiMoi" class="form-label small fw-semibold text-secondary">Trạng thái mới</label>
+              <select id="capNhatTrangThaiMoi" class="form-select" required>
+                <option value="DANG_XU_LY">Đang xử lý (Tiếp nhận sự cố)</option>
+                <option value="HOAN_THANH">Đã hoàn thành (Khắc phục xong)</option>
+                <option value="HUY">Đã hủy (Không hợp lệ / Trùng lặp)</option>
+              </select>
+            </div>
+
+            <div class="mb-2">
+              <label for="capNhatGhiChuKetQua" class="form-label small fw-semibold text-secondary">
+                Ghi chú kết quả xử lý <span id="dauSaoBatBuoc" class="text-danger d-none">*</span>
+              </label>
+              <textarea id="capNhatGhiChuKetQua" class="form-control" rows="3" placeholder="Nhập kết quả xử lý, linh kiện thay thế hoặc lý do hủy..."></textarea>
+              <div class="form-text small" style="font-size: 11px;">Bắt buộc nhập ghi chú khi chọn trạng thái Hoàn thành hoặc Đã hủy.</div>
+            </div>
+          </div>
+          <div class="modal-footer bg-light border-top py-2">
+            <button type="button" class="btn btn-phu" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="submit" id="nutXacNhanCapNhat" class="btn btn-chinh">Lưu cập nhật</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL 4: PHÂN CÔNG KỸ THUẬT VIÊN (ADMIN ONLY) -->
+  <div class="modal fade" id="modalPhanCong" tabindex="-1" aria-labelledby="tieuDeModalPhanCong" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light border-bottom py-3">
+          <h5 class="modal-title h6 fw-bold text-dark mb-0" id="tieuDeModalPhanCong">Phân công kỹ thuật viên phụ trách</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <form id="bieuMauPhanCong" novalidate>
+          <div class="modal-body p-4">
+            <input type="hidden" id="phanCongIdYeuCau">
+
+            <div class="mb-3">
+              <label for="phanCongMaKtv" class="form-label small fw-semibold text-secondary">Chọn Kỹ thuật viên</label>
+              <select id="phanCongMaKtv" class="form-select" required>
+                <option value="">-- Chọn kỹ thuật viên --</option>
+              </select>
+            </div>
+            <div class="form-text small" style="font-size: 11px;">Kỹ thuật viên sẽ nhận được thông báo phân công công việc qua Zalo Bot (nếu đã kết nối).</div>
+          </div>
+          <div class="modal-footer bg-light border-top py-2">
+            <button type="button" class="btn btn-phu" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="submit" id="nutXacNhanPhanCong" class="btn btn-chinh">Xác nhận phân công</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: THÊM / CẬP NHẬT NHÂN SỰ (ADMIN ONLY) -->
+  <div class="modal fade" id="modalNguoiDung" tabindex="-1" aria-labelledby="tieuDeModalNguoiDung" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light border-bottom py-3">
+          <h5 class="modal-title h6 fw-bold text-dark mb-0" id="tieuDeModalNguoiDung">Thêm nhân sự mới</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <form id="bieuMauNguoiDung" novalidate>
+          <div class="modal-body p-4">
+            <input type="hidden" id="nguoiDungId">
+
+            <div class="mb-3">
+              <label for="nguoiDungTaiKhoan" class="form-label small fw-semibold text-secondary">
+                Tài khoản đăng nhập <span class="text-danger" id="dauSaoTaiKhoan">*</span>
+              </label>
+              <input type="text" id="nguoiDungTaiKhoan" class="form-control" placeholder="vd: ktv_hung" required maxlength="50">
+              <div class="form-text small" id="goiYTaiKhoan" style="font-size: 11px;">Tài khoản viết liền không dấu, không thể thay đổi sau khi tạo.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="nguoiDungHoTen" class="form-label small fw-semibold text-secondary">
+                Họ và tên <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="nguoiDungHoTen" class="form-control" placeholder="vd: Nguyễn Văn Hùng" required maxlength="100">
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label for="nguoiDungVaiTro" class="form-label small fw-semibold text-secondary">
+                  Vai trò <span class="text-danger">*</span>
+                </label>
+                <select id="nguoiDungVaiTro" class="form-select" required>
+                  <option value="KTV">Kỹ thuật viên</option>
+                  <option value="ADMIN">Quản trị viên</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label for="nguoiDungSdt" class="form-label small fw-semibold text-secondary">
+                  Số điện thoại <span class="text-danger">*</span>
+                </label>
+                <input type="tel" id="nguoiDungSdt" class="form-control" placeholder="vd: 0912345678" maxlength="10" required pattern="0[0-9]{9}">
+                <div class="form-text small" style="font-size: 11px;">Bắt buộc 10 chữ số (bắt đầu bằng 0).</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="nguoiDungEmail" class="form-label small fw-semibold text-secondary">Địa chỉ Email</label>
+              <input type="email" id="nguoiDungEmail" class="form-control" placeholder="vd: hung@tvu.edu.vn" maxlength="100">
+            </div>
+
+            <div class="mb-3">
+              <label for="nguoiDungChatIdZalo" class="form-label small fw-semibold text-secondary">Mã Chat ID Zalo</label>
+              <input type="text" id="nguoiDungChatIdZalo" class="form-control font-mono" placeholder="Nhắn 'id' vào Bot để lấy mã">
+              <div class="form-text small" style="font-size: 11px;">Dùng để tự động bắn tin Zalo cho KTV khi có phân công công việc mới.</div>
+            </div>
+
+            <div class="mb-2">
+              <label for="nguoiDungMatKhau" class="form-label small fw-semibold text-secondary" id="nhanMatKhau">
+                Mật khẩu <span class="text-danger" id="dauSaoMatKhau">*</span>
+              </label>
+              <input type="password" id="nguoiDungMatKhau" class="form-control" placeholder="Tối thiểu 6 ký tự">
+              <div class="form-text small" id="goiYMatKhau" style="font-size: 11px;">Để trống sẽ tự động đặt mặc định là tvu123. Tối thiểu 6 ký tự.</div>
+            </div>
+          </div>
+          <div class="modal-footer bg-light border-top py-2">
+            <button type="button" class="btn btn-phu" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="submit" id="nutLuuNguoiDung" class="btn btn-chinh">Lưu thông tin</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 6: ĐỔI MẬT KHẨU CÁ NHÂN & BẮT BUỘC ĐỔI LẦN ĐẦU -->
+  <div class="modal fade" id="modalDoiMatKhau" tabindex="-1" aria-labelledby="tieuDeModalDoiMatKhau" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light border-bottom py-3">
+          <h5 class="modal-title h6 fw-bold text-dark mb-0" id="tieuDeModalDoiMatKhau">Đổi mật khẩu tài khoản</h5>
+          <button type="button" class="btn-close" id="nutDongModalDoiMk" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <form id="bieuMauDoiMatKhau" novalidate>
+          <div class="modal-body p-4">
+            <!-- Cảnh báo nếu bắt buộc đổi mật khẩu lần đầu -->
+            <div id="canhBaoDoiMkLanDau" class="alert alert-warning d-none py-2 px-3 small mb-3">
+              <strong>⚠️ Đổi mật khẩu lần đầu:</strong> Bạn đang đăng nhập bằng mật khẩu mặc định (<code>tvu123</code>). Vì lý do an toàn bảo mật, vui lòng thiết lập mật khẩu mới trước khi thao tác tiếp.
+            </div>
+
+            <div class="mb-3">
+              <label for="doiMkHienTai" class="form-label small fw-semibold text-secondary">
+                Mật khẩu hiện tại <span class="text-danger">*</span>
+              </label>
+              <input type="password" id="doiMkHienTai" class="form-control" placeholder="Nhập mật khẩu hiện tại..." required>
+            </div>
+
+            <div class="mb-3">
+              <label for="doiMkMoi" class="form-label small fw-semibold text-secondary">
+                Mật khẩu mới <span class="text-danger">*</span>
+              </label>
+              <input type="password" id="doiMkMoi" class="form-control" placeholder="Tối thiểu 6 ký tự" required minlength="6">
+              <div class="form-text small" style="font-size: 11px;">Tối thiểu 6 ký tự, khác mật khẩu hiện tại.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="doiMkXacNhan" class="form-label small fw-semibold text-secondary">
+                Xác nhận mật khẩu mới <span class="text-danger">*</span>
+              </label>
+              <input type="password" id="doiMkXacNhan" class="form-control" placeholder="Nhập lại mật khẩu mới..." required minlength="6">
+            </div>
+
+            <div id="hopLoiDoiMk" class="alert alert-danger d-none py-2 px-3 small mb-0"></div>
+          </div>
+          <div class="modal-footer bg-light border-top py-2">
+            <button type="button" class="btn btn-phu" id="nutHuyDoiMk" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="submit" id="nutLuuDoiMk" class="btn btn-chinh">Lưu mật khẩu mới</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 4. KHUNG TOAST THÔNG BÁO VÀNG HỔ PHÁCH (XỬ LÝ KHÓA LẠC QUAN HTTP 409)     -->
+  <!-- ========================================================================= -->
+  <div class="toast-container toast-container-goc p-3">
+    <div id="toastThongBao" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex p-3 rounded" style="background: #FFFBEB; border: 1px solid #FDE68A;">
+        <div class="toast-body p-0">
+          <div class="d-flex align-items-start gap-2">
+            <div class="p-1 rounded-circle" style="background: #FEF3C7; color: #D97706;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="fw-bold" style="color: #92400E; font-size: 13px;" id="toastTieuDe">Dữ liệu vừa được cập nhật bởi cán bộ khác!</div>
+              <div class="small mt-1" style="color: #78350F; font-size: 12px;" id="toastNoiDung">Danh sách đã tự động được làm mới để hiển thị thông tin mới nhất.</div>
+              <div class="mt-2">
+                <button type="button" id="nutToastTaiLai" class="btn btn-sm" style="border: 1px solid #D97706; background: #FEF3C7; font-size: 11px; padding: 2px 10px;">
+                  Tải lại danh sách
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-close ms-auto my-auto" data-bs-dismiss="toast" aria-label="Đóng"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 5. TEMPLATES HTML ĐỂ RENDER ĐỘNG AN TOÀN (CHỐNG XSS 100%)                 -->
+  <!-- ========================================================================= -->
+
+  <!-- Mẫu 1 dòng dữ liệu yêu cầu trên bảng -->
+  <template id="mauDongYeuCau">
+    <tr>
+      <td>
+        <div class="dong-ma-yc fw-bold font-mono text-dark"></div>
+        <div class="dong-thoi-gian-tao text-muted small" style="font-size: 11px;"></div>
+      </td>
+      <td>
+        <div class="dong-ten-thiet-bi fw-semibold"></div>
+        <div class="dong-ten-danh-muc text-muted small" style="font-size: 11px;"></div>
+      </td>
+      <td>
+        <span class="dong-vi-tri-phong fw-medium"></span>
+      </td>
+      <td>
+        <span class="dong-muc-uu-tien badge"></span>
+      </td>
+      <td>
+        <span class="dong-trang-thai huy-hieu-tt">
+          <span class="cham-trang-thai"></span>
+          <span class="chu-trang-thai"></span>
+        </span>
+      </td>
+      <td>
+        <span class="dong-ktv-phu-trach small"></span>
+      </td>
+      <td class="text-end">
+        <div class="d-inline-flex gap-2">
+          <button class="nut-thao-tac-chinh btn-chinh" type="button"></button>
+          <button class="nut-xem-chi-tiet btn-phu" type="button">Chi tiết</button>
+        </div>
+      </td>
+    </tr>
+  </template>
+
+  <!-- Mẫu 1 mốc thời gian trong Audit Log -->
+  <template id="mauMucLichSu">
+    <div class="muc-thoi-gian">
+      <div class="lich-su-tieu-de fw-bold small text-dark"></div>
+      <div class="lich-su-thoi-gian text-muted" style="font-size: 11px;"></div>
+      <div class="lich-su-ghi-chu small text-secondary mt-1" style="white-space: pre-wrap;"></div>
+    </div>
+  </template>
+
+  <!-- Mẫu 1 thanh ngang thống kê Top vị trí / danh mục -->
+  <template id="mauThanhThongKe">
+    <div class="thanh-thong-ke-item">
+      <div class="thanh-thong-ke-label">
+        <span class="thong-ke-ten"></span>
+        <span class="thong-ke-so-luong font-mono text-muted"></span>
+      </div>
+      <div class="thanh-thong-ke-track">
+        <div class="thanh-thong-ke-fill"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Bootstrap 5.3 Bundle JS (bao gồm Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Thư viện Thông báo SweetAlert2 Toast & Dialog -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Logic điều phối Dashboard (Chống XSS 100%, Polling 20s, Khóa Lạc Quan 409) -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

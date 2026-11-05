@@ -1,0 +1,118 @@
+// Prisma Schema - Hệ Thống Tiếp Nhận & Theo Dõi Báo Hỏng Thiết Bị Zalo Bot
+// Chuẩn hóa: Đổi id thành ma_nguoi_dung, ma_danh_muc, ma_phong, ma_yeu_cau_bao_hong...
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 1. BẢNG NGƯỜI DÙNG (ADMIN & KỸ THUẬT VIÊN)
+model nguoi_dung {
+  ma_nguoi_dung        Int                 @id @default(autoincrement())
+  tai_khoan            String              @unique @db.VarChar(50)
+  mat_khau_hash        String              @db.VarChar(255)
+  ho_ten               String              @db.VarChar(100)
+  email                String?             @db.VarChar(100)
+  so_dien_thoai        String?             @db.VarChar(20)
+  vai_tro              String              @default("KTV") @db.VarChar(20) // "ADMIN" hoặc "KTV"
+  chat_id_zalo         String?             @db.VarChar(50)
+  trang_thai_hoat_dong Boolean             @default(true)
+  doi_mat_khau_lan_dau Boolean             @default(true)
+  thoi_gian_tao        DateTime            @default(now())
+
+  // Quan hệ
+  danh_sach_yeu_cau    yeu_cau_bao_hong[]
+
+  @@map("nguoi_dung")
+}
+
+// 2. BẢNG DANH MỤC PHÂN LOẠI THIẾT BỊ
+model danh_muc_thiet_bi {
+  ma_danh_muc       Int                 @id @default(autoincrement())
+  ten_loai          String              @db.VarChar(100)
+  bieu_tuong        String?             @db.VarChar(50)
+  mo_ta             String?             @db.Text
+
+  // Quan hệ
+  danh_sach_yeu_cau yeu_cau_bao_hong[]
+
+  @@map("danh_muc_thiet_bi")
+}
+
+// 3. BẢNG PHÒNG HỌC / KHU VỰC
+model phong {
+  ma_phong          Int                 @id @default(autoincrement())
+  ten_phong         String              @unique @db.VarChar(100)
+
+  // Quan hệ
+  danh_sach_yeu_cau yeu_cau_bao_hong[]
+
+  @@map("phong")
+}
+
+// 4. BẢNG TRUNG TÂM: YÊU CẦU BÁO HỎNG
+model yeu_cau_bao_hong {
+  ma_yeu_cau_bao_hong  Int                 @id @default(autoincrement())
+  ma_yeu_cau           String              @unique @db.VarChar(20) // Mã tra cứu hiển thị (#YCyyyymmddxxxx)
+  ten_thiet_bi         String              @db.VarChar(100)        // Chuỗi thô người dùng gõ
+  vi_tri_phong         String              @db.VarChar(100)        // Chuỗi thô người dùng gõ
+  mo_ta_loi            String              @db.Text
+  duong_dan_anh        String?             @db.Text
+  trang_thai           String              @default("CHO_XU_LY") @db.VarChar(30) // CHO_XU_LY, DANG_XU_LY, HOAN_THANH, HUY
+  muc_do_uu_tien       String              @default("BINH_THUONG") @db.VarChar(20) // KHAN_CAP, CAO, BINH_THUONG, THAP
+  ma_nguoi_bao_zalo    String              @db.VarChar(50)
+
+  // Khóa ngoại liên kết (Cho phép NULL để tránh gãy dữ liệu)
+  ma_ky_thuat_vien     Int?
+  ma_danh_muc          Int?
+  ma_phong             Int?
+
+  thoi_gian_tao        DateTime            @default(now())
+  thoi_gian_tiep_nhan  DateTime?
+  thoi_gian_hoan_thanh DateTime?
+  ghi_chu_ket_qua      String?             @db.Text
+
+  // Quan hệ liên kết
+  ky_thuat_vien        nguoi_dung?         @relation(fields: [ma_ky_thuat_vien], references: [ma_nguoi_dung], onDelete: SetNull)
+  danh_muc             danh_muc_thiet_bi?  @relation(fields: [ma_danh_muc], references: [ma_danh_muc], onDelete: SetNull)
+  phong_hoc            phong?              @relation(fields: [ma_phong], references: [ma_phong], onDelete: SetNull)
+  lich_su_xu_ly        lich_su_xu_ly[]
+
+  @@index([ma_nguoi_bao_zalo, thoi_gian_tao])
+  @@index([trang_thai])
+  @@index([ma_ky_thuat_vien])
+  @@index([thoi_gian_tao])
+  @@map("yeu_cau_bao_hong")
+}
+
+// 5. BẢNG NHẬT KÝ KIỂM TOÁN (AUDIT LOG)
+model lich_su_xu_ly {
+  ma_lich_su          Int                 @id @default(autoincrement())
+  ma_yeu_cau_bao_hong Int
+  trang_thai          String              @db.VarChar(30)
+  nguoi_thuc_hien     String              @db.VarChar(100)
+  ghi_chu             String?             @db.Text
+  thoi_gian_ghi       DateTime            @default(now())
+
+  // Quan hệ
+  yeu_cau             yeu_cau_bao_hong    @relation(fields: [ma_yeu_cau_bao_hong], references: [ma_yeu_cau_bao_hong], onDelete: Cascade)
+
+  @@index([ma_yeu_cau_bao_hong])
+  @@map("lich_su_xu_ly")
+}
+
+// 6. BẢNG PHIÊN HỘI THOẠI ZALO
+model phien_hoi_thoai_zalo {
+  ma_phien          Int       @id @default(autoincrement())
+  ma_nguoi_bao_zalo String    @unique @db.VarChar(50)
+  buoc_hien_tai     Int       @default(1)
+  du_lieu_tam       Json      @default("{}")
+  thoi_gian_cap_nhat DateTime @updatedAt
+
+  @@map("phien_hoi_thoai_zalo")
+}
