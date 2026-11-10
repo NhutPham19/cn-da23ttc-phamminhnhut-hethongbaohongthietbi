@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (emailEl) setTimeout(() => emailEl.focus(), 200);
   }
 
-  function chuyenSangBuoc2(email) {
+  function chuyenSangBuoc2(email, thongTinPhu = {}) {
     emailHienTaiOtp = email;
     tokenDatLaiOtp = '';
     const buoc1 = document.getElementById('khoiQuenMkBuoc1');
@@ -107,12 +107,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailHienThi = document.getElementById('emailHienThiNhanOtp');
     const hopLoi2 = document.getElementById('hopLoiQuenMk2');
     const maOtpInput = document.getElementById('maOtpNhap');
+    const thongBaoBox = buoc2 ? buoc2.querySelector('.alert-info, .alert-warning') : null;
 
     if (buoc1) buoc1.classList.add('d-none');
     if (buoc2) buoc2.classList.remove('d-none');
     if (buoc3) buoc3.classList.add('d-none');
     if (emailHienThi) emailHienThi.textContent = email;
     if (hopLoi2) hopLoi2.classList.add('d-none');
+
+    if (thongBaoBox) {
+      if (thongTinPhu?.maOtpThuNghiem) {
+        thongBaoBox.className = 'alert alert-warning py-2 px-3 small mb-3';
+        thongBaoBox.innerHTML = `Mã xác thực đã được tạo cho <strong>${email}</strong>.<br><div class="mt-1">🔑 Mã OTP kiểm thử: <span class="badge bg-dark fs-6 px-2 py-1">${thongTinPhu.maOtpThuNghiem}</span> <span class="text-muted">(Do Render Free chặn cổng SMTP)</span></div>`;
+      } else if (thongTinPhu?.cheDoFallback) {
+        thongBaoBox.className = 'alert alert-warning py-2 px-3 small mb-3';
+        thongBaoBox.innerHTML = `Mã xác thực đã được tạo cho <strong>${email}</strong>.<br><small class="text-dark">⚠️ Lưu ý: Máy chủ đám mây chặn cổng SMTP. Vui lòng kiểm tra mã OTP tại mục <strong>Logs</strong> trên Render Dashboard (hoặc cấu hình Brevo API Key).</small>`;
+      } else {
+        thongBaoBox.className = 'alert alert-info py-2 px-3 small mb-3';
+        thongBaoBox.innerHTML = `Mã xác thực gồm 6 chữ số đã được gửi đến email <strong>${email}</strong>. Vui lòng kiểm tra hộp thư đến (hoặc hòm thư rác/Spam).`;
+      }
+    }
 
     // Reset các trường bước 2
     if (maOtpInput) {
@@ -210,9 +224,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (Toast) {
-          Toast.fire({ icon: 'success', title: 'Mã OTP đã được gửi đến email của bạn!' });
+          Toast.fire({
+            icon: ketQua.cheDoFallback ? 'info' : 'success',
+            title: ketQua.thongBao || 'Mã OTP đã được gửi đến email của bạn!'
+          });
         }
-        chuyenSangBuoc2(email);
+        chuyenSangBuoc2(email, ketQua);
       } catch (loi) {
         if (hopLoi) {
           hopLoi.textContent = 'Lỗi kết nối máy chủ khi gửi mã xác thực.';
@@ -255,9 +272,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (Toast) {
-          Toast.fire({ icon: 'info', title: 'Đã gửi lại mã OTP mới vào hộp thư!' });
+          Toast.fire({
+            icon: ketQua.cheDoFallback ? 'info' : 'success',
+            title: ketQua.thongBao || 'Đã gửi lại mã OTP mới vào hộp thư!'
+          });
         }
-        datDemNguocGuiLai(60);
+        chuyenSangBuoc2(emailHienTaiOtp, ketQua);
       } catch {
         nutGuiLaiOtp.disabled = false;
       }

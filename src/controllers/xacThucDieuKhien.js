@@ -340,17 +340,30 @@ async function quenMatKhau(req, res) {
     }
 
     const maOtp = taoVaLuuOtp(emailSach, 6);
-    await guiEmailOtp(emailSach, nguoiDung.ho_ten, maOtp);
+    const ketQuaGuiMail = await guiEmailOtp(emailSach, nguoiDung.ho_ten, maOtp);
 
-    return res.status(200).json({
+    let thongBao = 'Mã xác thực OTP gồm 6 chữ số đã được gửi đến hộp thư của bạn (hiệu lực 5 phút)';
+    if (ketQuaGuiMail?.cheDoFallback) {
+      thongBao = ketQuaGuiMail.thongBao || 'Mã xác thực OTP đã được tạo! (Lưu ý: Do Render chặn cổng SMTP, mã OTP đã được ghi vào Render Logs).';
+    }
+
+    const ketQuaPhanHoi = {
       thanhCong: true,
-      thongBao: 'Mã xác thực OTP gồm 6 chữ số đã được gửi đến hộp thư của bạn (hiệu lực 5 phút)'
-    });
+      thongBao,
+      cheDoFallback: Boolean(ketQuaGuiMail?.cheDoFallback)
+    };
+
+    // Nếu cấu hình ALLOW_OTP_DEV_DISPLAY=true hoặc chạy chế độ fallback trên Render (khi chưa cấu hình Brevo)
+    if (process.env.ALLOW_OTP_DEV_DISPLAY === 'true' || (ketQuaGuiMail?.cheDoFallback && process.env.ALLOW_OTP_DEV_DISPLAY !== 'false')) {
+      ketQuaPhanHoi.maOtpThuNghiem = maOtp;
+    }
+
+    return res.status(200).json(ketQuaPhanHoi);
   } catch (loi) {
     console.error('❌ Lỗi xử lý quên mật khẩu:', loi);
     return res.status(500).json({
       thanhCong: false,
-      loi: 'Lỗi máy chủ nội bộ khi xử lý gửi mã OTP'
+      loi: loi.message || 'Lỗi máy chủ nội bộ khi xử lý gửi mã OTP'
     });
   }
 }
