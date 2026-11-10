@@ -370,19 +370,53 @@
     <section id="khuVucTabNhanSu" class="d-none">
       
       <!-- Thanh Tiêu đề & Công cụ Nhân sự -->
-      <div class="the-trang mb-3 p-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-        <div>
-          <h5 class="fw-bold text-dark mb-1">Quản lý Nhân sự & Kỹ thuật viên</h5>
-          <div class="text-muted small">
-            💡 <strong>Mẹo:</strong> Nhắc Kỹ thuật viên nhắn tin lệnh <code>id</code> vào Zalo Bot để lấy <strong>Mã Chat Zalo</strong> gắn vào hồ sơ giúp tự động nhận thông báo giao việc.
+      <div class="the-trang mb-3 p-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">Quản lý Nhân sự & Kỹ thuật viên</h5>
+            <div class="text-muted small">
+              💡 <strong>Mẹo:</strong> Nhắc Kỹ thuật viên nhắn tin lệnh <code>id</code> vào Zalo Bot để lấy <strong>Mã Chat Zalo</strong> gắn vào hồ sơ giúp tự động nhận thông báo giao việc.
+            </div>
+          </div>
+          <button id="nutThemNhanSu" type="button" class="btn btn-chinh d-flex align-items-center gap-2">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Thêm Nhân sự mới
+          </button>
+        </div>
+
+        <!-- Bộ lọc & Tìm kiếm Đa trường (Multi-field Search) -->
+        <div class="row g-2 align-items-center pt-2 border-top">
+          <div class="col-12 col-md-5">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white border-end-0">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </span>
+              <input type="text" id="oTimKiemNhanSu" class="form-control border-start-0 ps-0" placeholder="🔍 Tìm theo Họ tên, Tài khoản, Email, SĐT hoặc Zalo ID...">
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <select id="locVaiTroNhanSu" class="form-select form-select-sm">
+              <option value="NOI_BO">Tất cả nhân sự nội bộ (Admin & KTV)</option>
+              <option value="KTV">Chỉ Kỹ thuật viên (KTV)</option>
+              <option value="ADMIN">Chỉ Quản trị viên (Admin)</option>
+              <option value="NGUOI_BAO_HONG">Người báo hỏng đã xác thực (Giảng viên & Sinh viên)</option>
+              <option value="TAT_CA">Tất cả</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <select id="locTrangThaiNhanSu" class="form-select form-select-sm">
+              <option value="TAT_CA">Tất cả trạng thái</option>
+              <option value="HOAT_DONG">Đang hoạt động</option>
+              <option value="DA_KHOA">Đã khóa (Chặn)</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-2 d-flex align-items-center justify-content-between justify-content-md-end gap-2">
+            <span id="demKetQuaNhanSu" class="small text-muted font-mono" style="font-size: 11px;">0 tài khoản</span>
+            <button id="nutXoaLocNhanSu" type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;">Xóa lọc</button>
           </div>
         </div>
-        <button id="nutThemNhanSu" type="button" class="btn btn-chinh d-flex align-items-center gap-2">
-          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-          </svg>
-          Thêm Nhân sự mới
-        </button>
       </div>
 
       <!-- Bảng Danh sách Nhân sự (Chống XSS 100%) -->
@@ -438,6 +472,11 @@
             <!-- Cột trái: Chi tiết Sự cố & Ảnh & Thanh thao tác điều phối -->
             <div class="col-12 col-md-7 border-end-md">
               <h6 class="fw-bold text-secondary text-uppercase small mb-3">Thông tin sự cố</h6>
+
+              <div class="mb-3">
+                <div class="small text-muted">Người báo sự cố (Định danh Zalo/Email):</div>
+                <div id="chiTietNguoiBao" class="fw-medium text-dark small mt-1">-</div>
+              </div>
 
               <div class="mb-3">
                 <div class="small text-muted">Thiết bị báo hỏng:</div>
@@ -578,6 +617,7 @@
 
             <div class="mb-3">
               <label for="phanCongMaKtv" class="form-label small fw-semibold text-secondary">Chọn Kỹ thuật viên</label>
+              <input type="text" id="oTimKiemKtvPhanCong" class="form-control form-control-sm mb-2" placeholder="🔍 Gõ tên, SĐT, tài khoản hoặc email để tìm nhanh KTV...">
               <select id="phanCongMaKtv" class="form-select" required>
                 <option value="">-- Chọn kỹ thuật viên --</option>
               </select>
@@ -754,6 +794,7 @@
       <td>
         <div class="dong-ma-yc fw-bold font-mono text-dark"></div>
         <div class="dong-thoi-gian-tao text-muted small" style="font-size: 11px;"></div>
+        <div class="dong-nguoi-bao mt-1"></div>
       </td>
       <td>
         <div class="dong-ten-thiet-bi fw-semibold"></div>

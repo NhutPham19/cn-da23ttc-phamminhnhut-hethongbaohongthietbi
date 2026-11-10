@@ -145,13 +145,34 @@ async function layDanhSachYeuCau(req, res) {
       })
     ]);
 
+    let danhSachKetQua = danhSach;
+    const danhSachZaloId = danhSach.map((y) => y.ma_nguoi_bao_zalo).filter(Boolean);
+    if (danhSachZaloId.length > 0) {
+      try {
+        const danhSachNguoiBao = await prisma.nguoi_dung.findMany({
+          where: { chat_id_zalo: { in: danhSachZaloId } },
+          select: { chat_id_zalo: true, ho_ten: true, email: true, vai_tro: true, trang_thai_hoat_dong: true }
+        });
+        const mapNguoiBao = new Map();
+        danhSachNguoiBao.forEach((nb) => {
+          if (nb.chat_id_zalo) mapNguoiBao.set(nb.chat_id_zalo, nb);
+        });
+        danhSachKetQua = danhSach.map((y) => ({
+          ...y,
+          nguoi_bao: mapNguoiBao.get(y.ma_nguoi_bao_zalo) || null
+        }));
+      } catch (e) {
+        console.warn('⚠️ Không thể gắn thông tin người báo:', e.message);
+      }
+    }
+
     return res.status(200).json({
       thanhCong: true,
       tongSo,
       trang: trangHienTai,
       soTrang: Math.ceil(tongSo / soLuongTrang) || 1,
       soLuong: soLuongTrang,
-      duLieu: danhSach
+      duLieu: danhSachKetQua
     });
   } catch (loi) {
     console.error('❌ Lỗi lấy danh sách yêu cầu:', loi);
@@ -181,7 +202,19 @@ async function layChiTietYeuCau(req, res) {
       return res.status(404).json({ thanhCong: false, loi: 'Không tìm thấy yêu cầu báo hỏng' });
     }
 
-    return res.status(200).json({ thanhCong: true, duLieu: yeuCau });
+    let nguoiBao = null;
+    if (yeuCau.ma_nguoi_bao_zalo) {
+      try {
+        nguoiBao = await prisma.nguoi_dung.findFirst({
+          where: { chat_id_zalo: yeuCau.ma_nguoi_bao_zalo },
+          select: { chat_id_zalo: true, ho_ten: true, email: true, vai_tro: true, trang_thai_hoat_dong: true }
+        });
+      } catch (e) {
+        console.warn('⚠️ Lỗi tìm thông tin người báo chi tiết:', e.message);
+      }
+    }
+
+    return res.status(200).json({ thanhCong: true, duLieu: { ...yeuCau, nguoi_bao: nguoiBao } });
   } catch (loi) {
     console.error('❌ Lỗi lấy chi tiết yêu cầu:', loi);
     return res.status(500).json({ thanhCong: false, loi: 'Lỗi máy chủ khi lấy chi tiết yêu cầu' });

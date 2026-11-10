@@ -10,11 +10,55 @@ const {
   chuanHoaLenhZalo,
   nhanDienDanhMucThietBi,
   chuanHoaTenPhong,
-  tuDongGanMucDoUuTien
+  tuDongGanMucDoUuTien,
+  phanLoaiVaiTroQuaEmail
 } = require('../utils/tienIch');
+const {
+  sinhMaOtp,
+  kiemTraGioiHanGuiOtp,
+  taoVaLuuOtp,
+  xacThucMaOtp
+} = require('../services/otpDichVu');
+const { guiEmailOtp } = require('../services/emailDichVu');
 
 function guiTinNhanZalo(chatId, text) {
   return zaloDichVu.guiTinNhanZalo(chatId, text);
+}
+
+/**
+ * Gửi tuần tự 2 tin nhắn Onboarding chào mừng & hướng dẫn khi người dùng mở phiên chat Zalo
+ * @param {string} chatId
+ * @param {boolean} daXacThuc
+ */
+async function guiOnboardingTinNhan(chatId, daXacThuc) {
+  await guiTinNhanZalo(
+    chatId,
+    `👋 Xin chào! Tôi là Trợ lý Zalo Bot tiếp nhận báo hỏng thiết bị phòng học của Trường Đại học Trà Vinh (TVU).\nHệ thống giúp Giảng viên và Sinh viên báo sự cố thiết bị nhanh chóng ngay tại giảng đường để Đội Kỹ thuật kịp thời xử lý.`
+  );
+
+  if (!daXacThuc) {
+    await guiTinNhanZalo(
+      chatId,
+      `⚡ CÁCH DÙNG BOT SIÊU ĐƠN GIẢN (Chỉ 30 giây):\n` +
+      `• Bước 1: Chọn loại thiết bị hỏng (gõ số 1 -> 6)\n` +
+      `• Bước 2: Nhập tên phòng học (VD: D71.103)\n` +
+      `• Bước 3: Mô tả ngắn tình trạng lỗi\n` +
+      `• Bước 4: Gửi 1 tấm ảnh thiết bị\n\n` +
+      `🔐 XÁC THỰC LẦN ĐẦU (Chỉ làm 1 lần duy nhất):\n` +
+      `Để bắt đầu, bạn hãy nhập địa chỉ Email trường cấp (VD: mssv@st.tvu.edu.vn hoặc ten@tvu.edu.vn) ngay bên dưới để nhận mã OTP xác nhận nhé!`
+    );
+  } else {
+    await guiTinNhanZalo(
+      chatId,
+      `⚡ CÁCH BÁO HỎNG NHANH (4 bước - 30 giây):\n` +
+      `1️⃣ Gõ "baohong" để bắt đầu\n` +
+      `2️⃣ Chọn thiết bị -> Nhập phòng -> Mô tả lỗi -> Gửi ảnh\n\n` +
+      `📌 Các lệnh tiện ích khác:\n` +
+      `• tracuu [Mã YC]: Xem tiến độ sửa chữa\n` +
+      `• huyyeucau [Mã YC] [Lý do]: Hủy báo nhầm\n` +
+      `• id: Xem mã định danh Zalo của bạn`
+    );
+  }
 }
 
 const THOI_GIAN_HET_HAN_PHIEN_MS = 10 * 60 * 1000; // 10 phút
@@ -172,7 +216,7 @@ async function xoaPhien(maNguoiBaoZalo) {
  *   Trả null nếu phiên đã bị luồng khác lấy.
  * - Nếu trùng mã yêu cầu (P2002) thì sinh mã mới và thử lại (giao dịch đã hoàn tác nên phiên còn nguyên).
  */
-async function taoYeuCauTuPhien(chatId, duLieuTam, hinhAnh) {
+async function taoYeuCauTuPhien(chatId, duLieuTam, hinhAnh, nguoiDungHienTai = null) {
   for (let lan = 1; lan <= SO_LAN_THU_LAI_MA; lan++) {
     const maYeuCau = taoMaYeuCau();
     try {
@@ -181,6 +225,10 @@ async function taoYeuCauTuPhien(chatId, duLieuTam, hinhAnh) {
           where: { ma_nguoi_bao_zalo: chatId, buoc_hien_tai: 4 }
         });
         if (daXoa.count === 0) return null;
+
+        const tenNguoiBao = nguoiDungHienTai
+          ? `[${nguoiDungHienTai.vai_tro === 'GIANG_VIEN' ? 'GV' : (nguoiDungHienTai.vai_tro === 'SINH_VIEN' ? 'SV' : nguoiDungHienTai.vai_tro)}: ${nguoiDungHienTai.email || nguoiDungHienTai.tai_khoan}]`
+          : `Zalo Bot (${chatId})`;
 
         return tx.yeu_cau_bao_hong.create({
           data: {
@@ -197,8 +245,8 @@ async function taoYeuCauTuPhien(chatId, duLieuTam, hinhAnh) {
             lich_su_xu_ly: {
               create: {
                 trang_thai: 'CHO_XU_LY',
-                nguoi_thuc_hien: 'Hệ thống (Zalo Bot)',
-                ghi_chu: 'Tiếp nhận yêu cầu báo hỏng tự động qua Zalo Bot'
+                nguoi_thuc_hien: `Người báo: ${tenNguoiBao}`,
+                ghi_chu: `Tiếp nhận yêu cầu báo hỏng tự động qua Zalo Bot từ ${tenNguoiBao}`
               }
             }
           }
@@ -241,6 +289,25 @@ async function tiepNhanWebhookZalo(req, res) {
     const chuoiKhongDau = boDau(vanBan);
     const { lenh, doiSo } = chuanHoaLenhZalo(vanBan);
 
+    // Kiểm tra định danh người dùng Zalo trong bảng nguoi_dung
+    let nguoiDungHienTai = null;
+    try {
+      nguoiDungHienTai = await prisma.nguoi_dung.findFirst({
+        where: { chat_id_zalo: chatId }
+      });
+    } catch (e) {
+      console.warn('⚠️ Lỗi kiểm tra người dùng Zalo:', e.message);
+    }
+
+    // Nếu tài khoản bị khóa -> Chặn ngay lập tức
+    if (nguoiDungHienTai && !nguoiDungHienTai.trang_thai_hoat_dong) {
+      await guiTinNhanZalo(
+        chatId,
+        `⛔ Tài khoản báo hỏng của bạn đã bị tạm khóa do vi phạm quy định báo hỏng của nhà trường. Vui lòng liên hệ bộ phận Quản trị thiết bị để được hỗ trợ.`
+      );
+      return;
+    }
+
     // =========================================================================
     // 1. CÁC LỆNH TOÀN CỤC (ƯU TIÊN KIỂM TRA TRƯỚC STATE MACHINE)
     // =========================================================================
@@ -255,25 +322,9 @@ async function tiepNhanWebhookZalo(req, res) {
       return;
     }
 
-    // 1.2. Lệnh trogiup: Bảng hướng dẫn sử dụng nhanh bộ lệnh chuẩn
+    // 1.2. Lệnh trogiup: Bảng hướng dẫn sử dụng nhanh bộ lệnh chuẩn / Onboarding
     if (lenh === 'trogiup') {
-      await guiTinNhanZalo(
-        chatId,
-        `🤖 HƯỚNG DẪN BỘ LỆNH ZALO BOT (TVU)\n\n` +
-        `1. Báo sự cố mới:\n` +
-        `• Cú pháp: baohong\n` +
-        `• Thực hiện theo 4 bước hướng dẫn của Bot.\n\n` +
-        `2. Tra cứu tiến độ:\n` +
-        `• Cú pháp: tracuu [MÃ_YÊU_CẦU]\n` +
-        `• Ví dụ: tracuu #YC202611021234\n\n` +
-        `3. Hủy yêu cầu / Hủy phiên:\n` +
-        `• Hủy phiên đang nhập: huyyeucau\n` +
-        `• Hủy yêu cầu đã gửi: huyyeucau [MÃ_YÊU_CẦU] [Lý do]\n` +
-        `• Ví dụ: huyyeucau #YC202611021234 Nhầm phòng\n` +
-        `(Lưu ý: Chỉ hủy được yêu cầu đang ở trạng thái Chờ xử lý)\n\n` +
-        `4. Lấy mã Chat Zalo:\n` +
-        `• Cú pháp: id`
-      );
+      await guiOnboardingTinNhan(chatId, Boolean(nguoiDungHienTai));
       return;
     }
 
@@ -441,6 +492,69 @@ async function tiepNhanWebhookZalo(req, res) {
     let phien = await layPhienHienTai(chatId);
 
     if (!phien) {
+      // Nếu chưa xác thực danh tính qua email trường TVU
+      if (!nguoiDungHienTai) {
+        // Kiểm tra xem người dùng có gõ thẳng email không
+        const ktEmailTruoc = phanLoaiVaiTroQuaEmail(vanBan);
+        if (ktEmailTruoc.hopLe) {
+          const ktSpamOtp = kiemTraGioiHanGuiOtp(ktEmailTruoc.email);
+          if (ktSpamOtp.biChan) {
+            await guiTinNhanZalo(
+              chatId,
+              `⏳ Bạn vừa yêu cầu gửi OTP. Vui lòng thử lại sau ${ktSpamOtp.soGiayConLai} giây.`
+            );
+            return;
+          }
+          const maOtp = taoVaLuuOtp(ktEmailTruoc.email, 6);
+          const tenNguoiNhan = ktEmailTruoc.vaiTro === 'GIANG_VIEN'
+            ? `Thầy/Cô (${ktEmailTruoc.tienTo})`
+            : `Sinh viên (${ktEmailTruoc.tienTo})`;
+          const kqGuiEmail = await guiEmailOtp(ktEmailTruoc.email, tenNguoiNhan, maOtp);
+
+          await prisma.phien_hoi_thoai_zalo.upsert({
+            where: { ma_nguoi_bao_zalo: chatId },
+            update: {
+              buoc_hien_tai: -2,
+              du_lieu_tam: {
+                emailChoXacThuc: ktEmailTruoc.email,
+                vaiTroXacThuc: ktEmailTruoc.vaiTro,
+                tienToEmail: ktEmailTruoc.tienTo
+              },
+              thoi_gian_cap_nhat: new Date()
+            },
+            create: {
+              ma_nguoi_bao_zalo: chatId,
+              buoc_hien_tai: -2,
+              du_lieu_tam: {
+                emailChoXacThuc: ktEmailTruoc.email,
+                vaiTroXacThuc: ktEmailTruoc.vaiTro,
+                tienToEmail: ktEmailTruoc.tienTo
+              }
+            }
+          });
+
+          let thongBao =
+            `📧 Hệ thống đã gửi mã OTP 6 chữ số đến email:\n👉 ${ktEmailTruoc.email}\n\n` +
+            `Vui lòng kiểm tra Hộp thư đến (hoặc Thư rác/Spam) và nhập mã 6 số vào đây để xác nhận (Mã có hiệu lực trong 5 phút).\n\n` +
+            `(💡 Gõ "doi email" nếu nhập nhầm địa chỉ email)`;
+          if (kqGuiEmail.fallback) {
+            thongBao += `\n\n🔑 Mã OTP thử nghiệm (Fallback Mode): ${maOtp}`;
+          }
+          await guiTinNhanZalo(chatId, thongBao);
+          return;
+        }
+
+        // Người dùng nhắn tin khởi đầu / quét QR lần đầu: Gửi tuần tự 2 tin nhắn Onboarding
+        await guiOnboardingTinNhan(chatId, false);
+        await prisma.phien_hoi_thoai_zalo.upsert({
+          where: { ma_nguoi_bao_zalo: chatId },
+          update: { buoc_hien_tai: -1, du_lieu_tam: {}, thoi_gian_cap_nhat: new Date() },
+          create: { ma_nguoi_bao_zalo: chatId, buoc_hien_tai: -1, du_lieu_tam: {} }
+        });
+        return;
+      }
+
+      // Đã xác thực danh tính
       if (lenh === 'baohong') {
         const ketQuaSpam = await kiemTraChongSpam(chatId);
         if (ketQuaSpam.biSpam) {
@@ -466,19 +580,174 @@ async function tiepNhanWebhookZalo(req, res) {
           `(💡 Gõ huyyeucau nếu muốn thoát)`
         );
       } else {
-        await guiTinNhanZalo(
-          chatId,
-          `Chào bạn! Đây là Bot Tiếp nhận Báo hỏng Thiết bị.\n\n` +
-          `• Gõ "baohong" để báo sự cố thiết bị.\n` +
-          `• Gõ "tracuu [MÃ]" để kiểm tra tiến độ xử lý.\n` +
-          `• Gõ "huyyeucau" để hủy phiên hoặc hủy yêu cầu đã gửi.\n` +
-          `• Gõ "trogiup" để xem hướng dẫn chi tiết.`
-        );
+        await guiOnboardingTinNhan(chatId, true);
       }
       return;
     }
 
     const duLieuTam = phien.du_lieu_tam || {};
+
+    // -------------------------------------------------------------------------
+    // BƯỚC -1: CHỜ NHẬP EMAIL TRƯỜNG ĐỂ XÁC THỰC DANH TÍNH
+    // -------------------------------------------------------------------------
+    if (phien.buoc_hien_tai === -1) {
+      if (!vanBan) {
+        await guiTinNhanZalo(
+          chatId,
+          'Vui lòng nhập địa chỉ Email trường ĐH Trà Vinh cấp (VD: 110123252@st.tvu.edu.vn hoặc ten@tvu.edu.vn):'
+        );
+        return;
+      }
+
+      const kqEmail = phanLoaiVaiTroQuaEmail(vanBan);
+      if (!kqEmail.hopLe) {
+        await guiTinNhanZalo(
+          chatId,
+          `❌ ${kqEmail.lyDoLoi || 'Email không hợp lệ.'}\n\n` +
+          `Vui lòng nhập chính xác địa chỉ Email trường ĐH Trà Vinh cấp:\n` +
+          `• Sinh viên: mssv@st.tvu.edu.vn (VD: 110123252@st.tvu.edu.vn)\n` +
+          `• Giảng viên: ten@tvu.edu.vn (VD: quocnk@tvu.edu.vn)\n` +
+          `(💡 Gõ "huyyeucau" nếu muốn thoát)`
+        );
+        return;
+      }
+
+      const ktSpamOtp = kiemTraGioiHanGuiOtp(kqEmail.email);
+      if (ktSpamOtp.biChan) {
+        await guiTinNhanZalo(
+          chatId,
+          `⏳ Bạn vừa yêu cầu gửi OTP. Vui lòng thử lại sau ${ktSpamOtp.soGiayConLai} giây.`
+        );
+        return;
+      }
+
+      const maOtp = taoVaLuuOtp(kqEmail.email, 6);
+      const tenNguoiNhan = kqEmail.vaiTro === 'GIANG_VIEN'
+        ? `Thầy/Cô (${kqEmail.tienTo})`
+        : `Sinh viên (${kqEmail.tienTo})`;
+      const ketQuaGuiEmail = await guiEmailOtp(kqEmail.email, tenNguoiNhan, maOtp);
+
+      duLieuTam.emailChoXacThuc = kqEmail.email;
+      duLieuTam.vaiTroXacThuc = kqEmail.vaiTro;
+      duLieuTam.tienToEmail = kqEmail.tienTo;
+      await capNhatPhien(chatId, -2, duLieuTam);
+
+      let thongBao =
+        `📧 Hệ thống đã gửi mã OTP 6 chữ số đến email:\n👉 ${kqEmail.email}\n\n` +
+        `Vui lòng kiểm tra Hộp thư đến (hoặc Thư rác/Spam) và nhập mã 6 số vào đây để xác nhận (Mã có hiệu lực trong 5 phút).\n\n` +
+        `(💡 Gõ "doi email" nếu nhập nhầm địa chỉ email)`;
+      if (ketQuaGuiEmail.fallback) {
+        thongBao += `\n\n🔑 Mã OTP thử nghiệm (Fallback Mode): ${maOtp}`;
+      }
+      await guiTinNhanZalo(chatId, thongBao);
+      return;
+    }
+
+    // -------------------------------------------------------------------------
+    // BƯỚC -2: CHỜ NHẬP MÃ OTP 6 CHỮ SỐ
+    // -------------------------------------------------------------------------
+    if (phien.buoc_hien_tai === -2) {
+      if (chuoiKhongDau === 'doi email' || chuoiKhongDau === 'doi' || chuoiKhongDau === 'sua email') {
+        await capNhatPhien(chatId, -1, {});
+        await guiTinNhanZalo(chatId, '📝 Vui lòng nhập lại địa chỉ Email trường cấp của bạn:');
+        return;
+      }
+
+      const maOtpNhap = (vanBan || '').replace(/\s+/g, '');
+      if (!/^\d{6}$/.test(maOtpNhap)) {
+        await guiTinNhanZalo(
+          chatId,
+          '❌ Mã OTP phải là dãy 6 chữ số (VD: 123456).\nVui lòng kiểm tra lại email hoặc gõ "doi email" để đổi địa chỉ khác:'
+        );
+        return;
+      }
+
+      const emailDangCho = duLieuTam.emailChoXacThuc;
+      const ketQuaXacThuc = xacThucMaOtp(emailDangCho, maOtpNhap);
+      if (!ketQuaXacThuc.hopLe) {
+        if (ketQuaXacThuc.hetLuot) {
+          await capNhatPhien(chatId, -1, {});
+          await guiTinNhanZalo(
+            chatId,
+            '⛔ Bạn đã nhập sai OTP quá 5 lần. Mã OTP đã bị hủy để đảm bảo an toàn. Vui lòng nhập lại email để nhận mã mới:'
+          );
+          return;
+        }
+        await guiTinNhanZalo(
+          chatId,
+          `❌ ${ketQuaXacThuc.lyDo || 'Mã OTP không chính xác hoặc đã hết hạn'}.\n(Còn ${ketQuaXacThuc.soLanConLai || 0} lần thử. Gõ "doi email" nếu muốn đổi email khác):`
+        );
+        return;
+      }
+
+      // Lưu liên kết định danh vào bảng nguoi_dung (giữ nguyên 6 bảng)
+      const emailCu = await prisma.nguoi_dung.findFirst({
+        where: { email: emailDangCho }
+      });
+
+      // Giải phóng chat_id_zalo nếu tài khoản khác đang giữ để không xung đột
+      await prisma.nguoi_dung.updateMany({
+        where: { chat_id_zalo: chatId, NOT: { email: emailDangCho } },
+        data: { chat_id_zalo: null }
+      });
+
+      let nguoiDungGan;
+      if (emailCu) {
+        const vaiTroMoi = ['ADMIN', 'KTV', 'KY_THUAT_VIEN'].includes(emailCu.vai_tro)
+          ? emailCu.vai_tro
+          : duLieuTam.vaiTroXacThuc;
+
+        nguoiDungGan = await prisma.nguoi_dung.update({
+          where: { ma_nguoi_dung: emailCu.ma_nguoi_dung },
+          data: {
+            chat_id_zalo: chatId,
+            vai_tro: vaiTroMoi,
+            trang_thai_hoat_dong: true
+          }
+        });
+      } else {
+        const taiKhoanMoi = `zalo_${chatId}_${Date.now().toString().slice(-4)}`;
+        const hoTenMoi = duLieuTam.vaiTroXacThuc === 'GIANG_VIEN'
+          ? `Giảng viên (${duLieuTam.tienToEmail})`
+          : `Sinh viên (${duLieuTam.tienToEmail})`;
+
+        nguoiDungGan = await prisma.nguoi_dung.create({
+          data: {
+            tai_khoan: taiKhoanMoi,
+            mat_khau_hash: 'ZALO_USER_NO_WEB_LOGIN',
+            ho_ten: hoTenMoi,
+            email: emailDangCho,
+            vai_tro: duLieuTam.vaiTroXacThuc,
+            chat_id_zalo: chatId,
+            trang_thai_hoat_dong: true
+          }
+        });
+      }
+
+      const danhXung = nguoiDungGan.vai_tro === 'GIANG_VIEN' ? 'Quý Thầy/Cô' : 'bạn Sinh viên';
+      await guiTinNhanZalo(
+        chatId,
+        `🎉 XÁC THỰC THÀNH CÔNG!\n\n` +
+        `Chào mừng ${danhXung} (${emailDangCho}) đến với Hệ thống tiếp nhận Báo hỏng Thiết bị TVU.\n` +
+        `Từ bây giờ, bạn có thể báo hỏng nhanh chóng chỉ trong 30 giây mà không cần xác thực lại.`
+      );
+
+      // Tự động chuyển buoc_hien_tai = 1 và gửi ngay Menu chọn thiết bị Bước 1/4
+      await capNhatPhien(chatId, 1, {});
+      await guiTinNhanZalo(
+        chatId,
+        `BƯỚC 1/4 - CHỌN THIẾT BỊ BÁO HỎNG:\n` +
+        `Hãy chọn (từ 1 đến 6) tương ứng với loại thiết bị\n` +
+        `1. Máy chiếu\n` +
+        `2. Máy tính / Màn hình\n` +
+        `3. Máy lạnh\n` +
+        `4. Âm thanh (Micro, Loa)\n` +
+        `5. Hệ thống Điện / Đèn / Quạt\n` +
+        `6. Thiết bị Mạng (Wifi, Switch) / Khác\n` +
+        `(💡 Gõ huyyeucau nếu muốn thoát)`
+      );
+      return;
+    }
 
     if (phien.buoc_hien_tai === 1) {
       if (!vanBan) {
@@ -526,10 +795,22 @@ async function tiepNhanWebhookZalo(req, res) {
         return;
       }
       duLieuTam.moTa = lamSachDuLieu(vanBan).slice(0, 1000);
-      duLieuTam.mucDoUuTien = tuDongGanMucDoUuTien(duLieuTam.moTa, duLieuTam.phong);
+      let mucUuTien = tuDongGanMucDoUuTien(duLieuTam.moTa, duLieuTam.phong);
+      // Tự động nâng độ ưu tiên lên CAO nếu Giảng viên báo sự cố
+      if (nguoiDungHienTai?.vai_tro === 'GIANG_VIEN' && mucUuTien === 'BINH_THUONG') {
+        mucUuTien = 'CAO';
+      }
+      duLieuTam.mucDoUuTien = mucUuTien;
       await capNhatPhien(chatId, 4, duLieuTam);
 
-      await guiTinNhanZalo(chatId, `👉 Bước 4/4: Bạn hãy gửi 1 hình ảnh chụp hiện trạng sự cố (hoặc gõ "boqua" nếu không có ảnh):`);
+      const laGiangVienHoacNoiBo = nguoiDungHienTai && ['GIANG_VIEN', 'ADMIN', 'KTV', 'KY_THUAT_VIEN'].includes(nguoiDungHienTai.vai_tro);
+      const thongBaoHuongDan = laGiangVienHoacNoiBo
+        ? `👉 Bước 4/4: Bạn hãy gửi 1 hình ảnh chụp hiện trạng sự cố (hoặc gõ "boqua" nếu không có ảnh):`
+        : (nguoiDungHienTai?.vai_tro === 'SINH_VIEN'
+          ? `👉 Bước 4/4: Bạn hãy chụp và gửi 1 hình ảnh hiện trạng thiết bị hỏng tại phòng học:`
+          : `👉 Bước 4/4: Bạn hãy gửi 1 hình ảnh chụp hiện trạng sự cố (hoặc gõ "boqua" nếu không có ảnh):`);
+
+      await guiTinNhanZalo(chatId, thongBaoHuongDan);
       return;
     }
 
@@ -544,6 +825,8 @@ async function tiepNhanWebhookZalo(req, res) {
         let hinhAnh = null;
         let taiAnhLoi = false;
 
+        const laGiangVienHoacNoiBo = nguoiDungHienTai && ['GIANG_VIEN', 'ADMIN', 'KTV', 'KY_THUAT_VIEN'].includes(nguoiDungHienTai.vai_tro);
+
         if (urlAnhTam) {
           try {
             hinhAnh = await taiAnhLenCloudinary(urlAnhTam);
@@ -552,12 +835,21 @@ async function tiepNhanWebhookZalo(req, res) {
             hinhAnh = null;
             taiAnhLoi = true;
           }
-        } else if (chuoiKhongDau !== 'boqua' && chuoiKhongDau !== 'bo qua') {
+        } else if (chuoiKhongDau === 'boqua' || chuoiKhongDau === 'bo qua') {
+          // Bắt buộc Sinh viên phải gửi ảnh, không cho phép boqua
+          if (!laGiangVienHoacNoiBo && nguoiDungHienTai?.vai_tro === 'SINH_VIEN') {
+            await guiTinNhanZalo(
+              chatId,
+              `📸 Để đảm bảo tính xác thực đối với Sinh viên, bạn bắt buộc phải gửi 1 tấm ảnh chụp thực tế thiết bị đang hỏng tại phòng học (không áp dụng lệnh "boqua"). Vui lòng chụp và gửi ảnh ngay bên dưới:`
+            );
+            return;
+          }
+        } else {
           await guiTinNhanZalo(chatId, 'Vui lòng gửi 1 hình ảnh hoặc gõ "boqua" để hoàn tất báo hỏng:');
           return;
         }
 
-        const yeuCauMoi = await taoYeuCauTuPhien(chatId, duLieuTam, hinhAnh);
+        const yeuCauMoi = await taoYeuCauTuPhien(chatId, duLieuTam, hinhAnh, nguoiDungHienTai);
 
         // null = tin nhắn trùng, luồng khác đã tạo yêu cầu từ phiên này → không làm gì thêm
         if (!yeuCauMoi) return;

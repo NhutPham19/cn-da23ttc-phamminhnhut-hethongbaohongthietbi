@@ -390,6 +390,47 @@ function tuDongGanMucDoUuTien(moTaLoi = '', viTriPhong = '') {
   return 'BINH_THUONG';
 }
 
+/**
+ * Phân loại vai trò người dùng (SINH_VIEN / GIANG_VIEN) qua địa chỉ email
+ * Quy tắc:
+ * 1. Email hợp lệ:
+ *    - Đuôi @st.tvu.edu.vn hoặc @tvu.edu.vn
+ *    - Hoặc @gmail.com (khi process.env.CHO_PHEP_EMAIL_DEMO !== 'false')
+ * 2. Phân loại vai trò:
+ *    - SINH_VIEN: Nếu đuôi @st.tvu.edu.vn HOẶC tiền tố trước @ bắt đầu bằng dãy số >= 8 chữ số (MSSV)
+ *    - GIANG_VIEN: Nếu đuôi @tvu.edu.vn (hoặc email có chứa từ 'gv' trong tiền tố)
+ * @param {string} email
+ * @returns {{ hopLe: boolean, vaiTro?: 'SINH_VIEN'|'GIANG_VIEN', email?: string, tienTo?: string, lyDoLoi?: string }}
+ */
+function phanLoaiVaiTroQuaEmail(email) {
+  const emailSach = String(email || '').trim().toLowerCase();
+  if (!emailSach || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailSach)) {
+    return { hopLe: false, lyDoLoi: 'Địa chỉ email không đúng định dạng.' };
+  }
+
+  const [tienTo, tenMien] = emailSach.split('@');
+  const choPhepDemo = process.env.CHO_PHEP_EMAIL_DEMO !== 'false';
+
+  const laTvuChuan = tenMien === 'tvu.edu.vn' || tenMien === 'st.tvu.edu.vn';
+  const laGmailDemo = choPhepDemo && (tenMien === 'gmail.com' || tenMien === 'googlemail.com');
+
+  if (!laTvuChuan && !laGmailDemo) {
+    return {
+      hopLe: false,
+      lyDoLoi: 'Vui lòng sử dụng địa chỉ email trường ĐH Trà Vinh cấp (@st.tvu.edu.vn hoặc @tvu.edu.vn).'
+    };
+  }
+
+  // Nhận diện Sinh viên: Có đuôi @st.tvu.edu.vn HOẶC tiền tố trước @ bắt đầu bằng dãy số >= 8 chữ số (MSSV)
+  const laMssv = /^\d{8,}/.test(tienTo);
+  if (tenMien === 'st.tvu.edu.vn' || laMssv) {
+    return { hopLe: true, vaiTro: 'SINH_VIEN', email: emailSach, tienTo };
+  }
+
+  // Còn lại là Giảng viên / Cán bộ
+  return { hopLe: true, vaiTro: 'GIANG_VIEN', email: emailSach, tienTo };
+}
+
 module.exports = {
   lamSachDuLieu,
   boDau,
@@ -401,5 +442,6 @@ module.exports = {
   TU_DIEN_DANH_MUC,
   nhanDienDanhMucThietBi,
   chuanHoaTenPhong,
-  tuDongGanMucDoUuTien
+  tuDongGanMucDoUuTien,
+  phanLoaiVaiTroQuaEmail
 };

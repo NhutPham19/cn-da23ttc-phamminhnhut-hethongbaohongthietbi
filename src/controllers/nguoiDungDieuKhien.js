@@ -1,9 +1,10 @@
 // src/controllers/nguoiDungDieuKhien.js - Quản lý nhân sự KTV và Admin (Phân hệ Quản trị)
 const bcrypt = require('bcrypt');
 const prisma = require('../config/coSoDuLieu');
+const { boDau } = require('../utils/tienIch');
 
 const SO_VONG_BAM = 10;
-const VAI_TRO_HOP_LE = ['ADMIN', 'KTV'];
+const VAI_TRO_HOP_LE = ['ADMIN', 'KTV', 'KY_THUAT_VIEN', 'GIANG_VIEN', 'SINH_VIEN', 'NOI_BO', 'TAT_CA', 'NGUOI_BAO_HONG'];
 
 // Trường cần select để ẩn mật khẩu hash an toàn 100%
 const SELECT_NGUOI_DUNG_AN_TOAN = {
@@ -19,27 +20,34 @@ const SELECT_NGUOI_DUNG_AN_TOAN = {
 };
 
 /**
- * 1. Lấy danh sách nhân sự (Admin Only)
- * GET /api/nguoi-dung?vai_tro=KTV&trang_thai_hoat_dong=true
+ * 1. Lấy danh sách nhân sự & người dùng (Admin Only) - Hỗ trợ lọc đa trường & tìm kiếm tức thời
+ * GET /api/nguoi-dung?tu_khoa=nhut&vai_tro=KTV&trang_thai=HOAT_DONG
  */
 async function layDanhSachNguoiDung(req, res) {
   try {
-    const { vai_tro, trang_thai_hoat_dong } = req.query;
+    const { vai_tro, trang_thai_hoat_dong, tu_khoa, tim_kiem, search, trang_thai } = req.query || {};
     const where = {};
 
-    if (vai_tro) {
-      if (!VAI_TRO_HOP_LE.includes(vai_tro.toUpperCase())) {
+    const vaiTroLoc = String(vai_tro || '').toUpperCase().trim();
+    if (vaiTroLoc && vaiTroLoc !== 'TAT_CA') {
+      if (vaiTroLoc === 'NOI_BO') {
+        where.vai_tro = { in: ['ADMIN', 'KTV', 'KY_THUAT_VIEN'] };
+      } else if (vaiTroLoc === 'KTV' || vaiTroLoc === 'KY_THUAT_VIEN') {
+        where.vai_tro = { in: ['KTV', 'KY_THUAT_VIEN'] };
+      } else if (['ADMIN', 'GIANG_VIEN', 'SINH_VIEN'].includes(vaiTroLoc)) {
+        where.vai_tro = vaiTroLoc;
+      } else if (vaiTroLoc === 'NGUOI_BAO_HONG') {
+        where.vai_tro = { in: ['GIANG_VIEN', 'SINH_VIEN'] };
+      } else {
         return res.status(400).json({ thanhCong: false, loi: 'Vai trò lọc không hợp lệ' });
       }
-      where.vai_tro = vai_tro.toUpperCase();
     }
 
-    if (trang_thai_hoat_dong !== undefined) {
-      if (trang_thai_hoat_dong === 'true' || trang_thai_hoat_dong === true) {
-        where.trang_thai_hoat_dong = true;
-      } else if (trang_thai_hoat_dong === 'false' || trang_thai_hoat_dong === false) {
-        where.trang_thai_hoat_dong = false;
-      }
+    const trangThaiLoc = String(trang_thai || '').toUpperCase().trim();
+    if (trangThaiLoc === 'HOAT_DONG' || trang_thai_hoat_dong === 'true' || trang_thai_hoat_dong === true) {
+      where.trang_thai_hoat_dong = true;
+    } else if (trangThaiLoc === 'DA_KHOA' || trang_thai_hoat_dong === 'false' || trang_thai_hoat_dong === false) {
+      where.trang_thai_hoat_dong = false;
     }
 
     const danhSach = await prisma.nguoi_dung.findMany({
@@ -48,11 +56,36 @@ async function layDanhSachNguoiDung(req, res) {
       select: SELECT_NGUOI_DUNG_AN_TOAN
     });
 
+    // Tìm kiếm đa trường (Multi-field Search): Họ tên, Tài khoản, Email, SĐT, Zalo ID, Vai trò
+    const tuKhoaRaw = String(tu_khoa || tim_kiem || search || '').trim();
+    let ketQuaCuoi = danhSach;
+    if (tuKhoaRaw) {
+      const tuKhoaKd = boDau(tuKhoaRaw).toLowerCase();
+      ketQuaCuoi = danhSach.filter((nd) => {
+        const hoTenKd = boDau(nd.ho_ten || '').toLowerCase();
+        const taiKhoanKd = boDau(nd.tai_khoan || '').toLowerCase();
+        const emailKd = boDau(nd.email || '').toLowerCase();
+        const sdtKd = boDau(nd.so_dien_thoai || '').toLowerCase();
+        const zaloKd = boDau(nd.chat_id_zalo || '').toLowerCase();
+        const vaiTroKd = boDau(nd.vai_tro || '').toLowerCase();
+
+        return (
+          hoTenKd.includes(tuKhoaKd) ||
+          taiKhoanKd.includes(tuKhoaKd) ||
+          emailKd.includes(tuKhoaKd) ||
+          sdtKd.includes(tuKhoaKd) ||
+          zaloKd.includes(tuKhoaKd) ||
+          vaiTroKd.includes(tuKhoaKd)
+        );
+      });
+    }
+
     return res.status(200).json({
       thanhCong: true,
       thanh_cong: true,
-      duLieu: danhSach,
-      du_lieu: danhSach
+      tongSo: ketQuaCuoi.length,
+      duLieu: ketQuaCuoi,
+      du_lieu: ketQuaCuoi
     });
   } catch (loi) {
     console.error('❌ Lỗi lấy danh sách nhân sự:', loi);

@@ -49,6 +49,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const bieuMauDoiMatKhau = document.getElementById('bieuMauDoiMatKhau');
   const nutXuatCsv = document.getElementById('nutXuatCsv');
 
+  // Công cụ tìm kiếm & lọc đa trường cho Quản lý Nhân sự & Phân công
+  const oTimKiemNhanSu = document.getElementById('oTimKiemNhanSu');
+  const locVaiTroNhanSu = document.getElementById('locVaiTroNhanSu');
+  const locTrangThaiNhanSu = document.getElementById('locTrangThaiNhanSu');
+  const demKetQuaNhanSu = document.getElementById('demKetQuaNhanSu');
+  const nutXoaLocNhanSu = document.getElementById('nutXoaLocNhanSu');
+  const oTimKiemKtvPhanCong = document.getElementById('oTimKiemKtvPhanCong');
+
+  function boDauTiengViet(chuoi) {
+    if (!chuoi) return '';
+    return chuoi
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D');
+  }
+
   // =========================================================================
   // THƯ VIỆN THÔNG BÁO SWEETALERT2 (TOAST & MODAL XÁC NHẬN CHUYÊN NGHIỆP)
   // =========================================================================
@@ -303,17 +320,39 @@ document.addEventListener('DOMContentLoaded', () => {
           } catch (_) {}
         }
 
-        phanCongMaKtv.innerHTML = '<option value="">-- Chọn kỹ thuật viên --</option>';
-        danhSachKtvCache.forEach(ktv => {
-          const opt = document.createElement('option');
-          opt.value = ktv.ma_nguoi_dung;
-          opt.textContent = `${ktv.ho_ten} (${ktv.email || 'KTV'})`;
-          phanCongMaKtv.appendChild(opt);
-        });
+        renderDanhSachKtvPhanCong();
       }
     } catch (loi) {
       console.warn('Lỗi lấy danh mục hệ thống:', loi);
     }
+  }
+
+  function renderDanhSachKtvPhanCong(tuKhoaLoc = '', maKtvDaChon = null) {
+    const phanCongMaKtv = document.getElementById('phanCongMaKtv');
+    if (!phanCongMaKtv) return;
+    const giaTriHienTai = maKtvDaChon !== null && maKtvDaChon !== '' ? String(maKtvDaChon) : phanCongMaKtv.value;
+    const tuKhoaKd = boDauTiengViet(String(tuKhoaLoc || '').trim()).toLowerCase();
+
+    phanCongMaKtv.innerHTML = '<option value="">-- Chọn kỹ thuật viên --</option>';
+    const ktvLoc = danhSachKtvCache.filter((ktv) => {
+      if (!tuKhoaKd) return true;
+      const hoTen = boDauTiengViet(ktv.ho_ten || '').toLowerCase();
+      const email = boDauTiengViet(ktv.email || '').toLowerCase();
+      const sdt = boDauTiengViet(ktv.so_dien_thoai || '').toLowerCase();
+      const taiKhoan = boDauTiengViet(ktv.tai_khoan || '').toLowerCase();
+      return hoTen.includes(tuKhoaKd) || email.includes(tuKhoaKd) || sdt.includes(tuKhoaKd) || taiKhoan.includes(tuKhoaKd);
+    });
+
+    ktvLoc.forEach((ktv) => {
+      const opt = document.createElement('option');
+      opt.value = ktv.ma_nguoi_dung;
+      const sdtHienThi = ktv.so_dien_thoai ? ` - SĐT: ${ktv.so_dien_thoai}` : '';
+      opt.textContent = `${ktv.ho_ten} (${ktv.email || ktv.tai_khoan || 'KTV'}${sdtHienThi})`;
+      if (String(ktv.ma_nguoi_dung) === giaTriHienTai) {
+        opt.selected = true;
+      }
+      phanCongMaKtv.appendChild(opt);
+    });
   }
 
   // =========================================================================
@@ -388,6 +427,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const dongThoiGian = clone.querySelector('.dong-thoi-gian-tao');
       dongMaYc.textContent = yc.ma_yeu_cau || `#${yc.ma_yeu_cau_bao_hong}`;
       dongThoiGian.textContent = dinhDangNgayGio(yc.thoi_gian_tao);
+
+      const dongNguoiBao = clone.querySelector('.dong-nguoi-bao');
+      if (dongNguoiBao) {
+        if (yc.nguoi_bao) {
+          const nb = yc.nguoi_bao;
+          const laGV = nb.vai_tro === 'GIANG_VIEN';
+          dongNguoiBao.innerHTML = laGV
+            ? `<span class="badge bg-primary text-white font-mono" style="font-size: 10px;" title="${nb.ho_ten}">[GV] ${nb.email || nb.ho_ten}</span>`
+            : `<span class="badge bg-secondary-subtle text-secondary border font-mono" style="font-size: 10px;" title="${nb.ho_ten}">[SV] ${nb.email || nb.ho_ten}</span>`;
+        } else if (yc.ma_nguoi_bao_zalo) {
+          dongNguoiBao.innerHTML = `<span class="badge bg-light text-muted border font-mono" style="font-size: 10px;">Zalo: ${yc.ma_nguoi_bao_zalo}</span>`;
+        } else {
+          dongNguoiBao.innerHTML = '';
+        }
+      }
 
       // 2. Thiết bị & Loại
       const dongTenThietBi = clone.querySelector('.dong-ten-thiet-bi');
@@ -589,6 +643,21 @@ document.addEventListener('DOMContentLoaded', () => {
       // Cột trái: Thông tin sự cố
       document.getElementById('chiTietMaYc').textContent = yeuCauDangXem.ma_yeu_cau || `#${yeuCauDangXem.ma_yeu_cau_bao_hong}`;
       document.getElementById('chiTietThoiGianTao').textContent = `Thời gian tạo: ${dinhDangNgayGio(yeuCauDangXem.thoi_gian_tao)}`;
+      
+      const chiTietNguoiBaoEl = document.getElementById('chiTietNguoiBao');
+      if (chiTietNguoiBaoEl) {
+        if (yeuCauDangXem.nguoi_bao) {
+          const nb = yeuCauDangXem.nguoi_bao;
+          const laGV = nb.vai_tro === 'GIANG_VIEN';
+          chiTietNguoiBaoEl.innerHTML = laGV
+            ? `<span class="badge bg-primary text-white font-mono me-1">[GV]</span> <strong>${nb.ho_ten}</strong> (${nb.email || 'Chưa có email'})`
+            : `<span class="badge bg-secondary-subtle text-secondary border font-mono me-1">[SV]</span> <strong>${nb.ho_ten}</strong> (${nb.email || 'Chưa có email'})`;
+        } else if (yeuCauDangXem.ma_nguoi_bao_zalo) {
+          chiTietNguoiBaoEl.textContent = `Zalo Bot (ID: ${yeuCauDangXem.ma_nguoi_bao_zalo})`;
+        } else {
+          chiTietNguoiBaoEl.textContent = 'Hệ thống / Chưa rõ';
+        }
+      }
       
       const badgeTrangThai = document.getElementById('chiTietTrangThaiBadge');
       const ttInfo = layNhanTrangThai(yeuCauDangXem.trang_thai);
@@ -806,9 +875,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // =========================================================================
   function moModalPhanCong(yc) {
     document.getElementById('phanCongIdYeuCau').value = yc.ma_yeu_cau_bao_hong;
-    document.getElementById('phanCongMaKtv').value = yc.ma_ky_thuat_vien || '';
+    const oTimKtv = document.getElementById('oTimKiemKtvPhanCong');
+    if (oTimKtv) oTimKtv.value = '';
+    renderDanhSachKtvPhanCong('', yc.ma_ky_thuat_vien || '');
 
     if (bsModalPhanCong) bsModalPhanCong.show();
+  }
+
+  if (oTimKiemKtvPhanCong) {
+    oTimKiemKtvPhanCong.addEventListener('input', (e) => {
+      renderDanhSachKtvPhanCong(e.target.value);
+    });
   }
 
   const bieuMauPhanCong = document.getElementById('bieuMauPhanCong');
@@ -1086,7 +1163,17 @@ document.addEventListener('DOMContentLoaded', () => {
   async function taiDanhSachNhanSu() {
     if (!thanBangNhanSu) return;
     try {
-      const phanHoi = await fetch('/api/nguoi-dung', {
+      const tuKhoa = oTimKiemNhanSu ? oTimKiemNhanSu.value.trim() : '';
+      const vaiTro = locVaiTroNhanSu ? locVaiTroNhanSu.value : 'NOI_BO';
+      const trangThai = locTrangThaiNhanSu ? locTrangThaiNhanSu.value : 'TAT_CA';
+
+      const params = new URLSearchParams();
+      if (tuKhoa) params.append('tu_khoa', tuKhoa);
+      if (vaiTro) params.append('vai_tro', vaiTro);
+      if (trangThai && trangThai !== 'TAT_CA') params.append('trang_thai', trangThai);
+
+      const url = `/api/nguoi-dung?${params.toString()}`;
+      const phanHoi = await fetch(url, {
         headers: { 'Accept': 'application/json' }
       });
       if (!phanHoi.ok) return;
@@ -1094,13 +1181,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const ketQua = await phanHoi.json();
       const danhSach = ketQua.duLieu || [];
 
+      if (demKetQuaNhanSu) {
+        demKetQuaNhanSu.textContent = `Hiển thị ${danhSach.length} tài khoản`;
+      }
+
       thanBangNhanSu.innerHTML = '';
       if (danhSach.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
         td.colSpan = 8;
         td.className = 'text-center text-muted py-4 fst-italic';
-        td.textContent = 'Chưa có dữ liệu nhân sự';
+        td.textContent = tuKhoa ? 'Không tìm thấy tài khoản nào khớp với từ khóa' : 'Chưa có dữ liệu nhân sự';
         tr.appendChild(td);
         thanBangNhanSu.appendChild(tr);
         return;
@@ -1112,7 +1203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Mã NV
         const tdMa = document.createElement('td');
         tdMa.className = 'font-mono fw-bold text-dark';
-        tdMa.textContent = `#NV${u.ma_nguoi_dung}`;
+        tdMa.textContent = `#${u.ma_nguoi_dung}`;
         tr.appendChild(tdMa);
 
         // 2. Tài khoản
@@ -1130,10 +1221,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // 4. Vai trò
         const tdVaiTro = document.createElement('td');
         const badgeVaiTro = document.createElement('span');
-        badgeVaiTro.className = u.vai_tro === 'ADMIN'
-          ? 'badge bg-primary-subtle text-primary border border-primary-subtle'
-          : 'badge bg-light text-secondary border';
-        badgeVaiTro.textContent = u.vai_tro === 'ADMIN' ? 'ADMIN' : 'KTV';
+        if (u.vai_tro === 'ADMIN') {
+          badgeVaiTro.className = 'badge bg-primary text-white border border-primary';
+          badgeVaiTro.textContent = 'ADMIN';
+        } else if (u.vai_tro === 'GIANG_VIEN') {
+          badgeVaiTro.className = 'badge bg-primary-subtle text-primary border border-primary-subtle font-mono';
+          badgeVaiTro.textContent = '[GV] Giảng viên';
+        } else if (u.vai_tro === 'SINH_VIEN') {
+          badgeVaiTro.className = 'badge bg-secondary-subtle text-secondary border font-mono';
+          badgeVaiTro.textContent = '[SV] Sinh viên';
+        } else {
+          badgeVaiTro.className = 'badge bg-info-subtle text-info-emphasis border border-info-subtle';
+          badgeVaiTro.textContent = 'KTV';
+        }
         tdVaiTro.appendChild(badgeVaiTro);
         tr.appendChild(tdVaiTro);
 
@@ -1180,15 +1280,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const divNut = document.createElement('div');
         divNut.className = 'd-inline-flex gap-1';
 
-        // Nút Sửa
-        const nutSua = document.createElement('button');
-        nutSua.type = 'button';
-        nutSua.className = 'btn btn-sm btn-phu';
-        nutSua.textContent = 'Sửa';
-        nutSua.addEventListener('click', () => moModalSuaNhanSu(u));
-        divNut.appendChild(nutSua);
+        // Chỉ hiển thị nút Sửa cho Admin / KTV
+        if (['ADMIN', 'KTV', 'KY_THUAT_VIEN'].includes(u.vai_tro)) {
+          const nutSua = document.createElement('button');
+          nutSua.type = 'button';
+          nutSua.className = 'btn btn-sm btn-phu';
+          nutSua.textContent = 'Sửa';
+          nutSua.addEventListener('click', () => moModalSuaNhanSu(u));
+          divNut.appendChild(nutSua);
+        }
 
-        // Nút Khóa / Mở khóa
+        // Nút Khóa / Mở khóa cho tất cả người dùng
         const nutKhoa = document.createElement('button');
         nutKhoa.type = 'button';
         nutKhoa.className = u.trang_thai_hoat_dong ? 'btn btn-sm btn-outline-danger' : 'btn btn-sm btn-outline-success';
@@ -1294,6 +1396,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (nutThemNhanSu) {
     nutThemNhanSu.addEventListener('click', moModalThemNhanSu);
+  }
+
+  if (oTimKiemNhanSu) {
+    let henGioTim = null;
+    oTimKiemNhanSu.addEventListener('input', () => {
+      clearTimeout(henGioTim);
+      henGioTim = setTimeout(taiDanhSachNhanSu, 250);
+    });
+  }
+
+  if (locVaiTroNhanSu) {
+    locVaiTroNhanSu.addEventListener('change', taiDanhSachNhanSu);
+  }
+
+  if (locTrangThaiNhanSu) {
+    locTrangThaiNhanSu.addEventListener('change', taiDanhSachNhanSu);
+  }
+
+  if (nutXoaLocNhanSu) {
+    nutXoaLocNhanSu.addEventListener('click', () => {
+      if (oTimKiemNhanSu) oTimKiemNhanSu.value = '';
+      if (locVaiTroNhanSu) locVaiTroNhanSu.value = 'NOI_BO';
+      if (locTrangThaiNhanSu) locTrangThaiNhanSu.value = 'TAT_CA';
+      taiDanhSachNhanSu();
+    });
   }
 
   if (bieuMauNguoiDung) {

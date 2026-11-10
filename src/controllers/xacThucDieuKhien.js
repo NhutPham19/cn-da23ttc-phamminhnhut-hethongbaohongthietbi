@@ -135,6 +135,17 @@ async function dangNhap(req, res) {
       });
     }
 
+    // Tài khoản định danh Sinh viên / Giảng viên trên Zalo không được đăng nhập Web Dashboard
+    if (['SINH_VIEN', 'GIANG_VIEN'].includes(nguoiDung.vai_tro)) {
+      return res.status(403).json({
+        thanhCong: false,
+        thanh_cong: false,
+        loi: 'Tài khoản này chỉ dùng để định danh báo hỏng trên Zalo Bot, không có quyền truy cập Web Dashboard.',
+        thongBao: 'Tài khoản này chỉ dùng để định danh báo hỏng trên Zalo Bot, không có quyền truy cập Web Dashboard.',
+        thong_bao: 'Tài khoản này chỉ dùng để định danh báo hỏng trên Zalo Bot, không có quyền truy cập Web Dashboard.'
+      });
+    }
+
     danhSachDangNhapLoi.delete(khoaKhoa);
 
     const payload = {
