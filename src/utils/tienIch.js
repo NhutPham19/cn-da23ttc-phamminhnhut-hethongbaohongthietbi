@@ -94,8 +94,8 @@ function chuanHoaLenhZalo(vanBan) {
   const chuoiGoc = String(vanBan).trim();
   const khongDau = boDau(chuoiGoc);
 
-  // 1. Lệnh baohong (báo hỏng, bao hong, start)
-  if (khongDau === 'baohong' || khongDau === 'bao hong' || khongDau === 'start' || khongDau === '/start' || khongDau === '/baohong') {
+  // 1. Lệnh baohong (báo hỏng, bao hong, start, bat dau)
+  if (khongDau === 'baohong' || khongDau === 'bao hong' || khongDau === 'start' || khongDau === '/start' || khongDau === '/baohong' || khongDau === 'bat dau' || khongDau === 'batdau' || khongDau === '/batdau') {
     return { lenh: 'baohong', doiSo: '', chuoiGoc };
   }
 
