@@ -265,29 +265,40 @@ async function tiepNhanWebhookZalo(req, res) {
   let chatId = null; // khai báo ngoài try để khối catch còn dùng được
 
   try {
-    const duLieu = req.body.result || req.body;
+    const duLieu = req.body?.result || req.body || {};
+    const suKien = duLieu?.event_name || duLieu?.event || req.body?.event_name || req.body?.event || '';
 
     // Production: chỉ ghi tên sự kiện (tránh lưu nội dung tin nhắn, mã người dùng vào nhật ký máy chủ)
     if (process.env.NODE_ENV === 'production') {
-      console.log('📩 Webhook Zalo:', duLieu.event_name || 'khong-ro-su-kien');
+      console.log('📩 Webhook Zalo:', suKien || 'khong-ro-su-kien');
     } else {
       console.log('📩 Nhận bản tin Zalo Webhook:', JSON.stringify(duLieu, null, 2));
     }
 
-    const tinNhan = duLieu.message;
-    if (!tinNhan || !tinNhan.chat) return;
+    // Trích xuất chatId đa nguồn (Fallback Extraction)
+    chatId = String(
+      duLieu?.message?.chat?.id ||
+      duLieu?.follower?.id ||
+      duLieu?.sender?.id ||
+      duLieu?.user?.id ||
+      duLieu?.chat?.id ||
+      duLieu?.user_id_by_app ||
+      req.body?.follower?.id ||
+      req.body?.sender?.id ||
+      req.body?.user?.id ||
+      req.body?.chat?.id ||
+      req.body?.user_id_by_app ||
+      req.body?.message?.chat?.id ||
+      ''
+    ).trim();
 
-    chatId = String(tinNhan.chat.id);
-    const vanBan = tinNhan.text ? tinNhan.text.trim() : '';
-    const tenSuKien = duLieu.event_name;
+    if (!chatId) return;
 
-    let urlAnhTam = null;
-    if (tenSuKien === 'message.image.received' || tinNhan.photo) {
-      urlAnhTam = tinNhan.photo || (tinNhan.attachments && tinNhan.attachments[0]?.payload?.url);
-    }
-
-    const chuoiKhongDau = boDau(vanBan);
-    const { lenh, doiSo } = chuanHoaLenhZalo(vanBan);
+    // Nhận diện sự kiện người dùng ấn "Quan tâm" (Follow)
+    const tenSuKienNho = String(suKien).toLowerCase();
+    const laSuKienQuanTam =
+      ['follow', 'user_follow', 'bot_follow', 'oa_follow', 'user_received_welcome'].includes(tenSuKienNho) ||
+      Boolean(duLieu?.follower?.id || req.body?.follower?.id);
 
     // Kiểm tra định danh người dùng Zalo trong bảng nguoi_dung
     let nguoiDungHienTai = null;
@@ -298,6 +309,60 @@ async function tiepNhanWebhookZalo(req, res) {
     } catch (e) {
       console.warn('⚠️ Lỗi kiểm tra người dùng Zalo:', e.message);
     }
+
+    // XỬ LÝ SỰ KIỆN QUAN TÂM (FOLLOW) TỰ ĐỘNG NGAY KHI NGƯỜI DÙNG ẤN NÚT
+    if (laSuKienQuanTam) {
+      if (!nguoiDungHienTai) {
+        // Trường hợp 1: Người dùng MỚI (chưa xác thực Email trường) -> Gửi ngay 2 tin nhắn Onboarding
+        await guiOnboardingTinNhan(chatId, false);
+        await prisma.phien_hoi_thoai_zalo.upsert({
+          where: { ma_nguoi_bao_zalo: chatId },
+          update: {
+            buoc_hien_tai: -1,
+            du_lieu_tam: { trang_thai_xac_thuc: 'CHO_NHAP_EMAIL', da_gui_chao_mung: true },
+            thoi_gian_cap_nhat: new Date()
+          },
+          create: {
+            ma_nguoi_bao_zalo: chatId,
+            buoc_hien_tai: -1,
+            du_lieu_tam: { trang_thai_xac_thuc: 'CHO_NHAP_EMAIL', da_gui_chao_mung: true }
+          }
+        });
+        return;
+      }
+
+      // Trường hợp 2: Người dùng CŨ (đã có hồ sơ trong bảng nguoi_dung)
+      if (!nguoiDungHienTai.trang_thai_hoat_dong) {
+        await guiTinNhanZalo(
+          chatId,
+          `⛔ Tài khoản báo hỏng của bạn đã bị tạm khóa do vi phạm quy định báo hỏng của nhà trường. Vui lòng liên hệ bộ phận Quản trị thiết bị để được hỗ trợ.`
+        );
+        return;
+      }
+
+      await guiTinNhanZalo(
+        chatId,
+        '👋 Chào mừng bạn quay trở lại với Bot Tiếp nhận Báo hỏng Thiết bị TVU!\n\n' +
+        '• Gõ "baohong" để báo sự cố phòng học mới.\n' +
+        '• Gõ "tracuu [Mã]" để kiểm tra tiến độ xử lý.\n' +
+        '• Gõ "trogiup" để xem lại hướng dẫn sử dụng.'
+      );
+      return;
+    }
+
+    const tinNhan = duLieu.message || req.body?.message;
+    const vanBan = (tinNhan?.text || duLieu.text || req.body?.text || '').trim();
+    const tenSuKien = suKien;
+
+    let urlAnhTam = null;
+    if (tenSuKien === 'message.image.received' || tinNhan?.photo || duLieu.photo) {
+      urlAnhTam = tinNhan?.photo || duLieu.photo || (tinNhan?.attachments && tinNhan.attachments[0]?.payload?.url);
+    }
+
+    if (!vanBan && !urlAnhTam) return;
+
+    const chuoiKhongDau = boDau(vanBan);
+    const { lenh, doiSo } = chuanHoaLenhZalo(vanBan);
 
     // Nếu tài khoản bị khóa -> Chặn ngay lập tức
     if (nguoiDungHienTai && !nguoiDungHienTai.trang_thai_hoat_dong) {
@@ -548,8 +613,16 @@ async function tiepNhanWebhookZalo(req, res) {
         await guiOnboardingTinNhan(chatId, false);
         await prisma.phien_hoi_thoai_zalo.upsert({
           where: { ma_nguoi_bao_zalo: chatId },
-          update: { buoc_hien_tai: -1, du_lieu_tam: {}, thoi_gian_cap_nhat: new Date() },
-          create: { ma_nguoi_bao_zalo: chatId, buoc_hien_tai: -1, du_lieu_tam: {} }
+          update: {
+            buoc_hien_tai: -1,
+            du_lieu_tam: { trang_thai_xac_thuc: 'CHO_NHAP_EMAIL', da_gui_chao_mung: true },
+            thoi_gian_cap_nhat: new Date()
+          },
+          create: {
+            ma_nguoi_bao_zalo: chatId,
+            buoc_hien_tai: -1,
+            du_lieu_tam: { trang_thai_xac_thuc: 'CHO_NHAP_EMAIL', da_gui_chao_mung: true }
+          }
         });
         return;
       }
@@ -594,21 +667,29 @@ async function tiepNhanWebhookZalo(req, res) {
       if (!vanBan) {
         await guiTinNhanZalo(
           chatId,
-          'Vui lòng nhập địa chỉ Email trường ĐH Trà Vinh cấp (VD: 110123252@st.tvu.edu.vn hoặc ten@tvu.edu.vn):'
+          '⚠️ Để bắt đầu sử dụng, bạn vui lòng nhập địa chỉ Email trường cấp (VD: mssv@st.tvu.edu.vn hoặc ten@tvu.edu.vn) để nhận mã OTP xác thực lần đầu nhé!'
         );
         return;
       }
 
       const kqEmail = phanLoaiVaiTroQuaEmail(vanBan);
       if (!kqEmail.hopLe) {
-        await guiTinNhanZalo(
-          chatId,
-          `❌ ${kqEmail.lyDoLoi || 'Email không hợp lệ.'}\n\n` +
-          `Vui lòng nhập chính xác địa chỉ Email trường ĐH Trà Vinh cấp:\n` +
-          `• Sinh viên: mssv@st.tvu.edu.vn (VD: 110123252@st.tvu.edu.vn)\n` +
-          `• Giảng viên: ten@tvu.edu.vn (VD: quocnk@tvu.edu.vn)\n` +
-          `(💡 Gõ "huyyeucau" nếu muốn thoát)`
-        );
+        // Chống gửi lặp 2 tin nhắn chào mừng: Nếu đã gửi chào mừng trước đó hoặc người dùng gõ câu khởi đầu như "Xin chào", "baohong"
+        if (phien.du_lieu_tam?.da_gui_chao_mung || ['baohong', 'xin chao', 'chao', 'hi', 'hello', 'batdau', 'start'].includes(chuoiKhongDau)) {
+          await guiTinNhanZalo(
+            chatId,
+            '⚠️ Để bắt đầu sử dụng, bạn vui lòng nhập địa chỉ Email trường cấp (VD: mssv@st.tvu.edu.vn hoặc ten@tvu.edu.vn) để nhận mã OTP xác thực lần đầu nhé!'
+          );
+        } else {
+          await guiTinNhanZalo(
+            chatId,
+            `❌ ${kqEmail.lyDoLoi || 'Email không hợp lệ.'}\n\n` +
+            `Vui lòng nhập chính xác địa chỉ Email trường ĐH Trà Vinh cấp:\n` +
+            `• Sinh viên: mssv@st.tvu.edu.vn (VD: 110123252@st.tvu.edu.vn)\n` +
+            `• Giảng viên: ten@tvu.edu.vn (VD: quocnk@tvu.edu.vn)\n` +
+            `(💡 Gõ "huyyeucau" nếu muốn thoát)`
+          );
+        }
         return;
       }
 

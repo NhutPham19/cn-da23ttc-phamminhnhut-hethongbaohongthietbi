@@ -545,3 +545,127 @@ test('zaloDieuKhien: Bước 4 - GIANG_VIEN được phép dùng lệnh boqua đ
     prisma.$transaction = banGocTransaction;
   }
 });
+
+// =============================================================================
+// PHẦN 6: TEST SỰ KIỆN "QUAN TÂM" (FOLLOW) & CHỐNG LẶP TIN NHẮN CHÀO MỪNG
+// =============================================================================
+test('zaloDieuKhien: Tự động gửi 2 tin nhắn Onboarding ngay khi người dùng ấn Quan tâm (follow event)', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+  const banGocUpsert = prisma.phien_hoi_thoai_zalo.upsert;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+  prisma.nguoi_dung.findFirst = async () => null; // Người dùng mới
+
+  let duLieuUpsertPhien = null;
+  prisma.phien_hoi_thoai_zalo.upsert = async ({ where, create }) => {
+    duLieuUpsertPhien = create;
+    return { ma_nguoi_bao_zalo: where.ma_nguoi_bao_zalo, ...create };
+  };
+
+  try {
+    const { req, res, getStatus } = taoReqRes({
+      body: {
+        event_name: 'follow',
+        follower: { id: 'zalo_new_user_01' }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    assert.equal(getStatus(), 200);
+    assert.equal(tinNhanDaGui.length, 2);
+    assert.ok(tinNhanDaGui[0].text.includes('Xin chào! Tôi là Trợ lý Zalo Bot'));
+    assert.ok(tinNhanDaGui[1].text.includes('CÁCH DÙNG BOT SIÊU ĐƠN GIẢN'));
+    assert.ok(tinNhanDaGui[1].text.includes('XÁC THỰC LẦN ĐẦU'));
+    assert.ok(duLieuUpsertPhien);
+    assert.equal(duLieuUpsertPhien.buoc_hien_tai, -1);
+    assert.equal(duLieuUpsertPhien.du_lieu_tam.trang_thai_xac_thuc, 'CHO_NHAP_EMAIL');
+    assert.equal(duLieuUpsertPhien.du_lieu_tam.da_gui_chao_mung, true);
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+    prisma.phien_hoi_thoai_zalo.upsert = banGocUpsert;
+  }
+});
+
+test('zaloDieuKhien: Người dùng CŨ ấn Quan tâm lại nhận được tin nhắn chào mừng quay trở lại', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+
+  prisma.nguoi_dung.findFirst = async () => ({
+    ma_nguoi_dung: 88,
+    chat_id_zalo: 'zalo_old_user_02',
+    tai_khoan: 'old_user',
+    vai_tro: 'SINH_VIEN',
+    trang_thai_hoat_dong: true
+  });
+
+  try {
+    const { req, res, getStatus } = taoReqRes({
+      body: {
+        event_name: 'user_follow',
+        user: { id: 'zalo_old_user_02' }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    assert.equal(getStatus(), 200);
+    assert.equal(tinNhanDaGui.length, 1);
+    assert.ok(tinNhanDaGui[0].text.includes('Chào mừng bạn quay trở lại với Bot Tiếp nhận Báo hỏng'));
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+  }
+});
+
+test('zaloDieuKhien: Chống gửi lặp 2 tin nhắn khi người dùng đã nhận chào mừng mà nhắn câu khởi đầu', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+  const banGocFindUnique = prisma.phien_hoi_thoai_zalo.findUnique;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+
+  prisma.nguoi_dung.findFirst = async () => null; // Chưa xác thực
+  prisma.phien_hoi_thoai_zalo.findUnique = async () => ({
+    ma_nguoi_bao_zalo: 'chat-follow-lap',
+    buoc_hien_tai: -1,
+    du_lieu_tam: { trang_thai_xac_thuc: 'CHO_NHAP_EMAIL', da_gui_chao_mung: true },
+    thoi_gian_cap_nhat: new Date()
+  });
+
+  try {
+    const { req, res } = taoReqRes({
+      body: {
+        event_name: 'message.text.received',
+        message: {
+          chat: { id: 'chat-follow-lap' },
+          text: 'Xin chào'
+        }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    // Chỉ gửi 1 tin nhắn nhắc nhở ngắn gọn, không gửi lại 2 tin nhắn dài
+    assert.equal(tinNhanDaGui.length, 1);
+    assert.ok(tinNhanDaGui[0].text.includes('Để bắt đầu sử dụng, bạn vui lòng nhập địa chỉ Email trường cấp'));
+    assert.ok(!tinNhanDaGui[0].text.includes('CÁCH DÙNG BOT SIÊU ĐƠN GIẢN'));
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+    prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
+  }
+});
