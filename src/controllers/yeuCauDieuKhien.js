@@ -69,6 +69,7 @@ async function layDanhSachYeuCau(req, res) {
       trang = 1,
       so_luong = 20,
       trang_thai,
+      muc_do_uu_tien,
       phong,
       tu_ngay,
       den_ngay,
@@ -82,11 +83,20 @@ async function layDanhSachYeuCau(req, res) {
 
     const dieuKienLoc = {};
 
-    if (trang_thai) {
-      if (!TRANG_THAI_HOP_LE.includes(trang_thai)) {
+    if (trang_thai && String(trang_thai).trim() !== '') {
+      const trangThaiChuan = String(trang_thai).trim().toUpperCase();
+      if (!TRANG_THAI_HOP_LE.includes(trangThaiChuan)) {
         return res.status(400).json({ thanhCong: false, loi: 'Trạng thái lọc không hợp lệ' });
       }
-      dieuKienLoc.trang_thai = trang_thai;
+      dieuKienLoc.trang_thai = trangThaiChuan;
+    }
+
+    if (muc_do_uu_tien && String(muc_do_uu_tien).trim() !== '') {
+      const mucUuTienChuan = String(muc_do_uu_tien).trim().toUpperCase();
+      if (!MUC_DO_UU_TIEN_HOP_LE.includes(mucUuTienChuan)) {
+        return res.status(400).json({ thanhCong: false, loi: 'Mức độ ưu tiên lọc không hợp lệ' });
+      }
+      dieuKienLoc.muc_do_uu_tien = mucUuTienChuan;
     }
 
     if (phong) {

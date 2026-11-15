@@ -8,20 +8,40 @@ function datDoiTuongGia(duongDanTuongDoi, doiTuongGia) {
 }
 
 let yeuCauHienTaiMock = null;
+let dieuKienLocCountGia = null;
+let dieuKienLocFindManyGia = null;
 const prismaGia = {
   yeu_cau_bao_hong: {
     findFirst: async () => yeuCauHienTaiMock,
     updateMany: async () => ({ count: 1 }),
-    findUnique: async () => ({ ...yeuCauHienTaiMock, trang_thai: 'DANG_XU_LY' })
+    findUnique: async () => ({ ...yeuCauHienTaiMock, trang_thai: 'DANG_XU_LY' }),
+    count: async ({ where } = {}) => {
+      dieuKienLocCountGia = where;
+      return 1;
+    },
+    findMany: async ({ where } = {}) => {
+      dieuKienLocFindManyGia = where;
+      return [
+        {
+          ma_yeu_cau_bao_hong: 1,
+          ma_yeu_cau: '#YC202611150001',
+          ten_thiet_bi: 'Máy chiếu',
+          muc_do_uu_tien: where?.muc_do_uu_tien || 'BINH_THUONG',
+          trang_thai: 'CHO_XU_LY',
+          thoi_gian_tao: new Date()
+        }
+      ];
+    }
   },
   lich_su_xu_ly: { create: async () => ({}) },
+  nguoi_dung: { findMany: async () => [] },
   $transaction: async (fn) => fn(prismaGia)
 };
 
 datDoiTuongGia('../src/config/coSoDuLieu', prismaGia);
 datDoiTuongGia('../src/services/zaloDichVu', { guiTinNhanZalo: async () => {} });
 
-const { taoDieuKienTimKiemYeuCau, capNhatTrangThaiYeuCau } = require('../src/controllers/yeuCauDieuKhien');
+const { taoDieuKienTimKiemYeuCau, capNhatTrangThaiYeuCau, layDanhSachYeuCau } = require('../src/controllers/yeuCauDieuKhien');
 
 function taoResGia() {
   return {
@@ -119,4 +139,33 @@ test('yeuCauDieuKhien: Bắt buộc có ghi chú kết quả khi HOAN_THANH ho�
     res2
   );
   assert.equal(res2.statusCode, 200);
+});
+
+test('yeuCauDieuKhien: layDanhSachYeuCau hỗ trợ lọc theo muc_do_uu_tien chính xác', async () => {
+  // 1. Lọc theo mức ưu tiên hợp lệ (KHAN_CAP)
+  const res1 = taoResGia();
+  await layDanhSachYeuCau({ query: { muc_do_uu_tien: 'KHAN_CAP' } }, res1);
+  assert.equal(res1.statusCode, 200);
+  assert.equal(res1.body.thanhCong, true);
+  assert.equal(dieuKienLocFindManyGia.muc_do_uu_tien, 'KHAN_CAP');
+  assert.equal(dieuKienLocCountGia.muc_do_uu_tien, 'KHAN_CAP');
+
+  // 2. Lọc không phân biệt chữ hoa/thường ('cao' -> 'CAO')
+  const res2 = taoResGia();
+  await layDanhSachYeuCau({ query: { muc_do_uu_tien: 'cao' } }, res2);
+  assert.equal(res2.statusCode, 200);
+  assert.equal(dieuKienLocFindManyGia.muc_do_uu_tien, 'CAO');
+
+  // 3. Từ chối mức ưu tiên không hợp lệ -> 400 Bad Request
+  const res3 = taoResGia();
+  await layDanhSachYeuCau({ query: { muc_do_uu_tien: 'SIEU_CAP_VIP' } }, res3);
+  assert.equal(res3.statusCode, 400);
+  assert.equal(res3.body.thanhCong, false);
+  assert.match(res3.body.loi, /Mức độ ưu tiên lọc không hợp lệ/);
+
+  // 4. Không truyền hoặc truyền rỗng -> không áp điều kiện muc_do_uu_tien
+  const res4 = taoResGia();
+  await layDanhSachYeuCau({ query: { muc_do_uu_tien: '' } }, res4);
+  assert.equal(res4.statusCode, 200);
+  assert.equal(dieuKienLocFindManyGia.muc_do_uu_tien, undefined);
 });
