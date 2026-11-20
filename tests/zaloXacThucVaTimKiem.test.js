@@ -11,6 +11,7 @@ const { layDanhSachNguoiDung } = require('../src/controllers/nguoiDungDieuKhien'
 const { dangNhap } = require('../src/controllers/xacThucDieuKhien');
 const zaloDieuKhien = require('../src/controllers/zaloDieuKhien');
 const zaloDichVu = require('../src/services/zaloDichVu');
+const cloudinaryDichVu = require('../src/services/cloudinaryDichVu');
 const emailDichVu = require('../src/services/emailDichVu');
 const otpDichVu = require('../src/services/otpDichVu');
 const prisma = require('../src/config/coSoDuLieu');
@@ -543,6 +544,297 @@ test('zaloDieuKhien: Bước 4 - GIANG_VIEN được phép dùng lệnh boqua đ
     prisma.nguoi_dung.findFirst = banGocFindFirst;
     prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
     prisma.$transaction = banGocTransaction;
+  }
+});
+
+test('zaloDieuKhien.trichXuatUrlAnh: Trích xuất chính xác URL ảnh từ mọi định dạng Webhook Zalo Bot và Zalo OA', () => {
+  const { trichXuatUrlAnh } = zaloDieuKhien;
+
+  // 1. Zalo Bot Platform dạng photo_url trực tiếp
+  const payloadBotUrl = { message: { photo_url: 'https://f6.photo.talk.zdn.vn/bot_direct.jpg' } };
+  assert.equal(trichXuatUrlAnh(payloadBotUrl, payloadBotUrl.message, payloadBotUrl), 'https://f6.photo.talk.zdn.vn/bot_direct.jpg');
+
+  // 2. Zalo Bot Platform dạng object photo { url, file_id }
+  const payloadBotObj = { message: { photo: { file_id: 'img123', url: 'https://f6.photo.talk.zdn.vn/bot_obj.jpg' } } };
+  assert.equal(trichXuatUrlAnh(payloadBotObj, payloadBotObj.message, payloadBotObj), 'https://f6.photo.talk.zdn.vn/bot_obj.jpg');
+
+  // 3. Zalo Bot Platform dạng mảng photo (PhotoSize), lấy ảnh nét nhất ở cuối mảng
+  const payloadBotArray = {
+    message: {
+      photo: [
+        { file_id: 'thumb', url: 'https://f6.photo.talk.zdn.vn/thumb.jpg' },
+        { file_id: 'hd', url: 'https://f6.photo.talk.zdn.vn/hd.jpg' }
+      ]
+    }
+  };
+  assert.equal(trichXuatUrlAnh(payloadBotArray, payloadBotArray.message, payloadBotArray), 'https://f6.photo.talk.zdn.vn/hd.jpg');
+
+  // 4. Zalo Bot Platform dạng chuỗi photo
+  const payloadBotStr = { message: { photo: 'https://f6.photo.talk.zdn.vn/bot_str.jpg' } };
+  assert.equal(trichXuatUrlAnh(payloadBotStr, payloadBotStr.message, payloadBotStr), 'https://f6.photo.talk.zdn.vn/bot_str.jpg');
+
+  // 5. Zalo OA dạng user_send_image với mảng attachments
+  const payloadOa = {
+    event_name: 'user_send_image',
+    sender: { id: 'user_oa_01' },
+    message: {
+      attachments: [
+        {
+          type: 'image',
+          payload: { url: 'https://f6.photo.talk.zdn.vn/oa_attachment.jpg', thumbnail: 'https://thumb.jpg' }
+        }
+      ]
+    }
+  };
+  assert.equal(trichXuatUrlAnh(payloadOa, payloadOa.message, payloadOa), 'https://f6.photo.talk.zdn.vn/oa_attachment.jpg');
+
+  // 6. Zalo OA dạng attachment (số ít)
+  const payloadOaSingle = {
+    message: {
+      attachment: {
+        payload: { url: 'https://f6.photo.talk.zdn.vn/oa_single.jpg' }
+      }
+    }
+  };
+  assert.equal(trichXuatUrlAnh(payloadOaSingle, payloadOaSingle.message, payloadOaSingle), 'https://f6.photo.talk.zdn.vn/oa_single.jpg');
+
+  // 7. Tự động nâng cấp http:// sang https://
+  const payloadInsecure = { message: { photo_url: 'http://f6.photo.talk.zdn.vn/insecure.jpg' } };
+  assert.equal(trichXuatUrlAnh(payloadInsecure, payloadInsecure.message, payloadInsecure), 'https://f6.photo.talk.zdn.vn/insecure.jpg');
+
+  // 8. Tin nhắn chỉ có text -> Trả về null
+  const payloadTextOnly = { message: { text: 'Không có ảnh' } };
+  assert.equal(trichXuatUrlAnh(payloadTextOnly, payloadTextOnly.message, payloadTextOnly), null);
+});
+
+test('zaloDieuKhien: Bước 4 - Tiếp nhận ảnh thành công từ webhook Zalo Bot (photo_url), upload Cloudinary và tạo phiếu', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+  const banGocFindUnique = prisma.phien_hoi_thoai_zalo.findUnique;
+  const banGocTransaction = prisma.$transaction;
+  const banGocTaiAnh = cloudinaryDichVu.taiAnhLenCloudinary;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+
+  let duongDanAnhGuiLenCloudinary = null;
+  cloudinaryDichVu.taiAnhLenCloudinary = async (url) => {
+    duongDanAnhGuiLenCloudinary = url;
+    return 'https://res.cloudinary.com/tvu/image/upload/v1234/anh_cloudinary.jpg';
+  };
+
+  prisma.phien_hoi_thoai_zalo.findUnique = async () => ({
+    ma_nguoi_bao_zalo: 'chat-sv-anh-01',
+    buoc_hien_tai: 4,
+    du_lieu_tam: { tenThietBi: 'Máy tính / Màn hình', phong: 'D71.103', moTa: 'Không lên nguồn' },
+    thoi_gian_cap_nhat: new Date()
+  });
+
+  prisma.nguoi_dung.findFirst = async () => ({
+    ma_nguoi_dung: 401,
+    vai_tro: 'SINH_VIEN',
+    trang_thai_hoat_dong: true,
+    email: '110123252@st.tvu.edu.vn'
+  });
+
+  let yeuCauLuuDb = null;
+  prisma.$transaction = async (cb) => {
+    return cb({
+      phien_hoi_thoai_zalo: { deleteMany: async () => ({ count: 1 }) },
+      yeu_cau_bao_hong: {
+        create: async ({ data }) => {
+          yeuCauLuuDb = data;
+          return {
+            ...data,
+            ma_yeu_cau: '#YC202611200001',
+            ten_thiet_bi: data.ten_thiet_bi,
+            vi_tri_phong: data.vi_tri_phong
+          };
+        }
+      }
+    });
+  };
+
+  try {
+    const { req, res } = taoReqRes({
+      body: {
+        event_name: 'message.image.received',
+        message: {
+          chat: { id: 'chat-sv-anh-01' },
+          photo_url: 'https://f6.photo.talk.zdn.vn/anh_man_hinh_hd.jpg'
+        }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    assert.equal(duongDanAnhGuiLenCloudinary, 'https://f6.photo.talk.zdn.vn/anh_man_hinh_hd.jpg');
+    assert.ok(yeuCauLuuDb);
+    assert.equal(yeuCauLuuDb.duong_dan_anh, 'https://res.cloudinary.com/tvu/image/upload/v1234/anh_cloudinary.jpg');
+    assert.ok(tinNhanDaGui.some(t => t.text.includes('ĐÃ TIẾP NHẬN YÊU CẦU THÀNH CÔNG')));
+    assert.ok(!tinNhanDaGui.some(t => t.text.includes('chưa tải được ảnh')));
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+    prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
+    prisma.$transaction = banGocTransaction;
+    cloudinaryDichVu.taiAnhLenCloudinary = banGocTaiAnh;
+  }
+});
+
+test('zaloDieuKhien: Bước 4 - Tiếp nhận ảnh thành công từ webhook Zalo OA (user_send_image với attachments)', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+  const banGocFindUnique = prisma.phien_hoi_thoai_zalo.findUnique;
+  const banGocTransaction = prisma.$transaction;
+  const banGocTaiAnh = cloudinaryDichVu.taiAnhLenCloudinary;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+
+  let duongDanAnhGuiLen = null;
+  cloudinaryDichVu.taiAnhLenCloudinary = async (url) => {
+    duongDanAnhGuiLen = url;
+    return 'https://res.cloudinary.com/tvu/image/upload/v5678/anh_oa_cloud.jpg';
+  };
+
+  prisma.phien_hoi_thoai_zalo.findUnique = async () => ({
+    ma_nguoi_bao_zalo: 'chat-gv-oa-02',
+    buoc_hien_tai: 4,
+    du_lieu_tam: { tenThietBi: 'Máy chiếu', phong: 'B31.204', moTa: 'Không nhận cáp HDMI' },
+    thoi_gian_cap_nhat: new Date()
+  });
+
+  prisma.nguoi_dung.findFirst = async () => ({
+    ma_nguoi_dung: 402,
+    vai_tro: 'GIANG_VIEN',
+    trang_thai_hoat_dong: true,
+    email: 'canbogv@tvu.edu.vn'
+  });
+
+  let yeuCauLuuDb = null;
+  prisma.$transaction = async (cb) => {
+    return cb({
+      phien_hoi_thoai_zalo: { deleteMany: async () => ({ count: 1 }) },
+      yeu_cau_bao_hong: {
+        create: async ({ data }) => {
+          yeuCauLuuDb = data;
+          return {
+            ...data,
+            ma_yeu_cau: '#YC202611200002',
+            ten_thiet_bi: data.ten_thiet_bi,
+            vi_tri_phong: data.vi_tri_phong
+          };
+        }
+      }
+    });
+  };
+
+  try {
+    const { req, res } = taoReqRes({
+      body: {
+        event_name: 'user_send_image',
+        sender: { id: 'chat-gv-oa-02' },
+        message: {
+          attachments: [
+            {
+              type: 'image',
+              payload: { url: 'https://f6.photo.talk.zdn.vn/may_chieu_hdmi.jpg' }
+            }
+          ]
+        }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    assert.equal(duongDanAnhGuiLen, 'https://f6.photo.talk.zdn.vn/may_chieu_hdmi.jpg');
+    assert.ok(yeuCauLuuDb);
+    assert.equal(yeuCauLuuDb.duong_dan_anh, 'https://res.cloudinary.com/tvu/image/upload/v5678/anh_oa_cloud.jpg');
+    assert.ok(tinNhanDaGui.some(t => t.text.includes('ĐÃ TIẾP NHẬN YÊU CẦU THÀNH CÔNG')));
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+    prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
+    prisma.$transaction = banGocTransaction;
+    cloudinaryDichVu.taiAnhLenCloudinary = banGocTaiAnh;
+  }
+});
+
+test('zaloDieuKhien: Bước 4 - Xử lý an toàn khi Cloudinary gặp sự cố (fallback ghi nhận phiếu và gửi lưu ý)', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+  const banGocFindUnique = prisma.phien_hoi_thoai_zalo.findUnique;
+  const banGocTransaction = prisma.$transaction;
+  const banGocTaiAnh = cloudinaryDichVu.taiAnhLenCloudinary;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+
+  cloudinaryDichVu.taiAnhLenCloudinary = async () => {
+    throw new Error('Cloudinary server 500 error or timeout');
+  };
+
+  prisma.phien_hoi_thoai_zalo.findUnique = async () => ({
+    ma_nguoi_bao_zalo: 'chat-sv-loi-anh-03',
+    buoc_hien_tai: 4,
+    du_lieu_tam: { tenThietBi: 'Máy lạnh', phong: 'A42.204', moTa: 'Chảy nước dàn lạnh' },
+    thoi_gian_cap_nhat: new Date()
+  });
+
+  prisma.nguoi_dung.findFirst = async () => ({
+    ma_nguoi_dung: 403,
+    vai_tro: 'SINH_VIEN',
+    trang_thai_hoat_dong: true,
+    email: '110123252@st.tvu.edu.vn'
+  });
+
+  let yeuCauLuuDb = null;
+  prisma.$transaction = async (cb) => {
+    return cb({
+      phien_hoi_thoai_zalo: { deleteMany: async () => ({ count: 1 }) },
+      yeu_cau_bao_hong: {
+        create: async ({ data }) => {
+          yeuCauLuuDb = data;
+          return {
+            ...data,
+            ma_yeu_cau: '#YC202611200003',
+            ten_thiet_bi: data.ten_thiet_bi,
+            vi_tri_phong: data.vi_tri_phong
+          };
+        }
+      }
+    });
+  };
+
+  try {
+    const { req, res } = taoReqRes({
+      body: {
+        message: {
+          chat: { id: 'chat-sv-loi-anh-03' },
+          photo: 'https://f6.photo.talk.zdn.vn/may_lanh.jpg'
+        }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    assert.ok(yeuCauLuuDb);
+    assert.equal(yeuCauLuuDb.duong_dan_anh, null); // Fallback null an toàn
+    assert.ok(tinNhanDaGui.some(t => t.text.includes('ĐÃ TIẾP NHẬN YÊU CẦU THÀNH CÔNG')));
+    assert.ok(tinNhanDaGui.some(t => t.text.includes('chưa tải được ảnh của bạn')));
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+    prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
+    prisma.$transaction = banGocTransaction;
+    cloudinaryDichVu.taiAnhLenCloudinary = banGocTaiAnh;
   }
 });
 

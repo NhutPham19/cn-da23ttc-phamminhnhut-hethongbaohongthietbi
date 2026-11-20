@@ -13,7 +13,12 @@ const THOI_GIAN_CHO_UPLOAD_MS = 15 * 1000;      // 15 giây
  * @returns {Promise<string>} Link HTTPS an toàn (secure_url) từ Cloudinary
  */
 async function taiAnhLenCloudinary(urlAnhZalo) {
-  if (!urlAnhZalo || typeof urlAnhZalo !== 'string' || !urlAnhZalo.startsWith('https://')) {
+  if (!urlAnhZalo || typeof urlAnhZalo !== 'string') {
+    throw new Error('Đường dẫn ảnh không hợp lệ');
+  }
+
+  const urlChuan = urlAnhZalo.trim().replace(/^http:\/\//i, 'https://');
+  if (!urlChuan.startsWith('https://')) {
     throw new Error('Đường dẫn ảnh không hợp lệ (phải bắt đầu bằng https://)');
   }
 
@@ -26,16 +31,24 @@ async function taiAnhLenCloudinary(urlAnhZalo) {
   }
 
   // 1. Tải ảnh từ URL HTTPS an toàn của Zalo với timeout 10s (chống treo/SSRF)
-  const phanHoiAnh = await fetch(urlAnhZalo, {
+  const phanHoiAnh = await fetch(urlChuan, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    },
     signal: AbortSignal.timeout(THOI_GIAN_CHO_TAI_ANH_MS)
   });
   if (!phanHoiAnh.ok) {
     throw new Error(`Không thể tải ảnh từ Zalo: HTTP ${phanHoiAnh.status}`);
   }
 
-  const loaiNoiDung = phanHoiAnh.headers.get('content-type') || '';
+  let loaiNoiDung = phanHoiAnh.headers.get('content-type') || '';
   if (!loaiNoiDung.startsWith('image/')) {
-    throw new Error(`Định dạng tệp không phải là hình ảnh hợp lệ (${loaiNoiDung})`);
+    // Fallback nếu máy chủ CDN gửi octet-stream hoặc đuôi URL là ảnh hợp lệ
+    if (/\.(jpe?g|png|webp|gif|bmp)(\?.*)?$/i.test(urlChuan) || loaiNoiDung.includes('octet-stream')) {
+      loaiNoiDung = 'image/jpeg';
+    } else {
+      throw new Error(`Định dạng tệp không phải là hình ảnh hợp lệ (${loaiNoiDung})`);
+    }
   }
 
   const mangBuffer = await phanHoiAnh.arrayBuffer();

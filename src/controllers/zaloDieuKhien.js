@@ -1,7 +1,7 @@
 // src/controllers/zaloDieuKhien.js - Bộ điều khiển tiếp nhận Webhook Zalo Bot & State Machine 4 bước
 const prisma = require('../config/coSoDuLieu');
 const zaloDichVu = require('../services/zaloDichVu');
-const { taiAnhLenCloudinary } = require('../services/cloudinaryDichVu');
+const cloudinaryDichVu = require('../services/cloudinaryDichVu');
 const {
   lamSachDuLieu,
   boDau,
@@ -274,6 +274,102 @@ async function taoYeuCauTuPhien(chatId, duLieuTam, hinhAnh, nguoiDungHienTai = n
   }
 }
 
+/**
+ * Trích xuất URL ảnh an toàn từ bản tin Webhook Zalo.
+ * Hỗ trợ toàn diện: Zalo Bot Platform (Bot OpenAPI) và Zalo Official Account (OA).
+ * Đảm bảo URL trả về luôn là chuỗi HTTPS hợp lệ hoặc null.
+ */
+function trichXuatUrlAnh(duLieu, tinNhan, body) {
+  function layLinkHopLe(giaTri) {
+    if (!giaTri) return null;
+    if (typeof giaTri === 'string') {
+      const trimmed = giaTri.trim();
+      if (/^https?:\/\//i.test(trimmed)) {
+        return trimmed.replace(/^http:\/\//i, 'https://');
+      }
+      return null;
+    }
+    if (typeof giaTri === 'object') {
+      if (Array.isArray(giaTri)) {
+        for (let i = giaTri.length - 1; i >= 0; i--) {
+          const link = layLinkHopLe(giaTri[i]);
+          if (link) return link;
+        }
+        return null;
+      }
+      const cacThuocTinh = ['url', 'file_url', 'download_url', 'photo_url', 'image_url', 'thumbnail', 'link', 'src'];
+      for (const prop of cacThuocTinh) {
+        if (typeof giaTri[prop] === 'string' && /^https?:\/\//i.test(giaTri[prop].trim())) {
+          return giaTri[prop].trim().replace(/^http:\/\//i, 'https://');
+        }
+      }
+      if (giaTri.payload) {
+        const linkTrongPayload = layLinkHopLe(giaTri.payload);
+        if (linkTrongPayload) return linkTrongPayload;
+      }
+    }
+    return null;
+  }
+
+  // 1. Quét tinNhan trước (mức ưu tiên cao nhất)
+  const cacThuocTinhTinNhan = [
+    tinNhan?.photo_url,
+    tinNhan?.photoUrl,
+    tinNhan?.image_url,
+    tinNhan?.imageUrl,
+    tinNhan?.file_url,
+    tinNhan?.photo,
+    tinNhan?.image,
+    tinNhan?.file
+  ];
+  for (const item of cacThuocTinhTinNhan) {
+    const link = layLinkHopLe(item);
+    if (link) return link;
+  }
+
+  // 2. Quét danh sách attachments (chuẩn Zalo OA: attachments[0].payload.url)
+  const danhSachDinhKem = tinNhan?.attachments || duLieu?.attachments || body?.message?.attachments || body?.attachments;
+  if (Array.isArray(danhSachDinhKem) && danhSachDinhKem.length > 0) {
+    for (const dk of danhSachDinhKem) {
+      const link = layLinkHopLe(dk?.payload?.url) ||
+                   layLinkHopLe(dk?.url) ||
+                   layLinkHopLe(dk?.payload?.thumbnail) ||
+                   layLinkHopLe(dk?.thumbnail) ||
+                   layLinkHopLe(dk);
+      if (link) return link;
+    }
+  }
+  if (tinNhan?.attachment) {
+    const link = layLinkHopLe(tinNhan.attachment?.payload?.url) ||
+                 layLinkHopLe(tinNhan.attachment?.url) ||
+                 layLinkHopLe(tinNhan.attachment);
+    if (link) return link;
+  }
+
+  // 3. Quét ở cấp duLieu và body
+  const cacThuocTinhGoc = [
+    duLieu?.photo_url,
+    duLieu?.photoUrl,
+    duLieu?.image_url,
+    duLieu?.imageUrl,
+    duLieu?.file_url,
+    duLieu?.photo,
+    duLieu?.image,
+    body?.photo_url,
+    body?.photoUrl,
+    body?.image_url,
+    body?.imageUrl,
+    body?.photo,
+    body?.image
+  ];
+  for (const item of cacThuocTinhGoc) {
+    const link = layLinkHopLe(item);
+    if (link) return link;
+  }
+
+  return null;
+}
+
 async function tiepNhanWebhookZalo(req, res) {
   res.sendStatus(200);
 
@@ -366,12 +462,21 @@ async function tiepNhanWebhookZalo(req, res) {
     }
 
     const tinNhan = duLieu.message || req.body?.message;
-    const vanBan = (tinNhan?.text || duLieu.text || req.body?.text || '').trim();
+    const vanBan = (
+      tinNhan?.text ||
+      tinNhan?.caption ||
+      duLieu?.text ||
+      duLieu?.caption ||
+      req.body?.text ||
+      req.body?.caption ||
+      ''
+    ).trim();
     const tenSuKien = suKien;
 
-    let urlAnhTam = null;
-    if (tenSuKien === 'message.image.received' || tinNhan?.photo || duLieu.photo) {
-      urlAnhTam = tinNhan?.photo || duLieu.photo || (tinNhan?.attachments && tinNhan.attachments[0]?.payload?.url);
+    const urlAnhTam = trichXuatUrlAnh(duLieu, tinNhan, req.body);
+
+    if (urlAnhTam && process.env.NODE_ENV !== 'production') {
+      console.log('📷 Đã trích xuất link ảnh từ Zalo Webhook:', urlAnhTam);
     }
 
     if (!vanBan && !urlAnhTam) return;
@@ -929,7 +1034,7 @@ async function tiepNhanWebhookZalo(req, res) {
 
         if (urlAnhTam) {
           try {
-            hinhAnh = await taiAnhLenCloudinary(urlAnhTam);
+            hinhAnh = await cloudinaryDichVu.taiAnhLenCloudinary(urlAnhTam);
           } catch (loiUpload) {
             console.warn('⚠️ Lỗi upload Cloudinary, lưu null fallback:', loiUpload.message);
             hinhAnh = null;
@@ -993,5 +1098,6 @@ module.exports = {
   xoaPhien,
   taoYeuCauTuPhien,
   dangXuLyBuoc4,
-  chuanHoaVaKhopPhong
+  chuanHoaVaKhopPhong,
+  trichXuatUrlAnh
 };
