@@ -197,20 +197,20 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .bang-du-lieu thead th {
   background: #F8FAFC;
   color: var(--mau-chu-phu);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--mau-vien);
   white-space: nowrap;
 }
 
 .bang-du-lieu tbody td {
-  padding: 14px 16px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--mau-vien);
   vertical-align: middle;
-  font-size: 14px;
+  font-size: 13.5px;
   background: #FFFFFF;
   transition: background-color 0.1s ease;
 }
@@ -358,4 +358,341 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   top: 20px;
   right: 20px;
   z-index: 1090;
+}
+
+/* ========================================================= */
+/* SOFT ROLE BADGES (PURE LIGHT MODE - ĐỒNG BỘ BẢNG & MODAL) */
+/* ========================================================= */
+.badge-role-gv {
+  background-color: #EEF2FF;
+  border: 1px solid #C7D2FE;
+  border-left: 3px solid #6366F1;
+  color: #3730A3;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.badge-role-sv {
+  background-color: #F0F9FF;
+  border: 1px solid #BAE6FD;
+  border-left: 3px solid #0284C7;
+  color: #0369A1;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.badge-role-zalo {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  color: #64748B;
+  font-weight: 500;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* ========================================================= */
+/* THẺ THỐNG KÊ KPI NHANH TINH GỌN (CHIỀU CAO 72-80PX)      */
+/* ========================================================= */
+.the-kpi-nhanh {
+  padding: 12px 16px !important;
+  min-height: 74px;
+  height: 76px;
+}
+
+.the-kpi-nhanh .kpi-tieu-de {
+  font-size: 13px;
+  color: var(--mau-chu-phu);
+  font-weight: 600;
+}
+
+.the-kpi-nhanh .kpi-so {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ========================================================= */
+/* THANH BỘ LỌC 1 HÀNG DUY NHẤT TRÊN DESKTOP                */
+/* ========================================================= */
+.thanh-bo-loc-container {
+  padding: 12px 16px;
+}
+
+@media (min-width: 992px) {
+  .thanh-bo-loc-hang {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+  }
+  .thanh-bo-loc-hang .col-tim-kiem {
+    flex: 1 1 auto !important;
+    min-width: 220px !important;
+  }
+  .thanh-bo-loc-hang .col-select {
+    flex: 0 0 165px !important;
+  }
+  .thanh-bo-loc-hang .col-switch {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+  .thanh-bo-loc-hang .col-actions {
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+  }
+}
+
+.btn-loc-nowrap {
+  white-space: nowrap !important;
+}
+
+/* ========================================================= */
+/* ẢNH THU NHỎ & PLACEHOLDER TRÊN BẢNG DANH SÁCH             */
+/* ========================================================= */
+.anh-thumbnail-bang {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--mau-vien);
+  cursor: zoom-in;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+  display: block;
+}
+
+.anh-thumbnail-bang:hover {
+  transform: scale(1.06);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.anh-placeholder-bang {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 6px;
+  background-color: #F8FAFC;
+  border: 1px dashed var(--mau-vien-dam);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mau-chu-mo);
+  flex-shrink: 0;
+}
+
+/* ========================================================= */
+/* LIGHTBOX MODAL XEM ẢNH LỚN (#modalXemAnhLon)              */
+/* ========================================================= */
+#modalXemAnhLon .modal-dialog {
+  max-width: 96vw;
+}
+
+#modalXemAnhLon .modal-content {
+  background-color: rgba(15, 23, 42, 0.92);
+  border: none;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  color: #F8FAFC;
+}
+
+#modalXemAnhLon .lightbox-anh {
+  max-width: 90vw;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  display: block;
+  margin: 0 auto;
+}
+
+#modalXemAnhLon .lightbox-chu-thich {
+  font-size: 13.5px;
+  color: #E2E8F0;
+}
+
+#modalXemAnhLon .btn-lightbox-dong {
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+#modalXemAnhLon .btn-lightbox-dong:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+}
+
+#modalXemAnhLon .btn-lightbox-tabmoi {
+  background: var(--mau-chinh);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+#modalXemAnhLon .btn-lightbox-tabmoi:hover {
+  background: var(--mau-chinh-hover);
+  color: #FFFFFF;
+}
+
+/* ========================================================= */
+/* MODAL CHI TIẾT YÊU CẦU TINH GỌN (KHÔNG CUỘN THỪA)        */
+/* ========================================================= */
+#modalChiTietYeuCau .modal-dialog {
+  max-width: 880px;
+}
+
+#modalChiTietYeuCau .modal-body {
+  padding: 16px 20px;
+}
+
+#modalChiTietYeuCau .khung-thong-tin-nhanh {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+#modalChiTietYeuCau .khung-mo-ta {
+  padding: 8px 12px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+#modalChiTietYeuCau .khung-ket-qua-hoanthanh {
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  color: #166534;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+#modalChiTietYeuCau .khung-ket-qua-huy {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+#modalChiTietYeuCau .anh-hien-truong-modal {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  cursor: zoom-in;
+  transition: opacity 0.15s ease;
+}
+
+#modalChiTietYeuCau .anh-hien-truong-modal:hover {
+  opacity: 0.95;
+}
+
+#modalChiTietYeuCau .thanh-khong-anh {
+  padding: 8px 12px;
+  background: #F8FAFC;
+  border: 1px dashed #CBD5E1;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Compact Timeline */
+.dong-thoi-gian-compact {
+  position: relative;
+  padding-left: 18px;
+  border-left: 1.5px solid #E2E8F0;
+  margin-left: 4px;
+}
+
+.muc-thoi-gian-compact {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.muc-thoi-gian-compact:last-child {
+  margin-bottom: 0;
+}
+
+.muc-thoi-gian-compact::before {
+  content: '';
+  position: absolute;
+  left: -23px;
+  top: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mau-chinh);
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 0 0 0 1.5px #CBD5E1;
+}
+
+.muc-thoi-gian-compact .tg-dong-1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mau-chu-chinh);
+}
+
+.muc-thoi-gian-compact .tg-thoi-gian {
+  font-size: 12px;
+  font-weight: 400;
+  color: #64748B;
+  white-space: nowrap;
+}
+
+.muc-thoi-gian-compact .tg-dong-2 {
+  font-size: 12.5px;
+  color: #475569;
+  margin-top: 2px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
 }

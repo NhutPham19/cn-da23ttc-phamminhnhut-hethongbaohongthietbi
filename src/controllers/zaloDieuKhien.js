@@ -226,8 +226,23 @@ async function taoYeuCauTuPhien(chatId, duLieuTam, hinhAnh, nguoiDungHienTai = n
         });
         if (daXoa.count === 0) return null;
 
+        let nhanVaiTro = 'SV';
+        if (nguoiDungHienTai) {
+          const emailNguoiDung = (nguoiDungHienTai.email || '').toLowerCase();
+          const laEmailSinhVien = emailNguoiDung.endsWith('@st.tvu.edu.vn') || /^\d{8,}@/.test(emailNguoiDung);
+          if (nguoiDungHienTai.vai_tro === 'SINH_VIEN' || laEmailSinhVien) {
+            nhanVaiTro = 'SV';
+          } else if (nguoiDungHienTai.vai_tro === 'GIANG_VIEN' || (emailNguoiDung.endsWith('@tvu.edu.vn') && !laEmailSinhVien)) {
+            nhanVaiTro = 'GV';
+          } else if (nguoiDungHienTai.vai_tro === 'KTV') {
+            nhanVaiTro = 'KTV';
+          } else {
+            nhanVaiTro = nguoiDungHienTai.vai_tro || 'SV';
+          }
+        }
+
         const tenNguoiBao = nguoiDungHienTai
-          ? `[${nguoiDungHienTai.vai_tro === 'GIANG_VIEN' ? 'GV' : (nguoiDungHienTai.vai_tro === 'SINH_VIEN' ? 'SV' : nguoiDungHienTai.vai_tro)}: ${nguoiDungHienTai.email || nguoiDungHienTai.tai_khoan}]`
+          ? `[${nhanVaiTro}: ${nguoiDungHienTai.email || nguoiDungHienTai.tai_khoan}]`
           : `Zalo Bot (${chatId})`;
 
         return tx.yeu_cau_bao_hong.create({
@@ -774,9 +789,13 @@ async function tiepNhanWebhookZalo(req, res) {
 
       let nguoiDungGan;
       if (emailCu) {
-        const vaiTroMoi = ['ADMIN', 'KTV', 'KY_THUAT_VIEN'].includes(emailCu.vai_tro)
-          ? emailCu.vai_tro
-          : duLieuTam.vaiTroXacThuc;
+        const emailDangChoChuan = (emailDangCho || '').toLowerCase();
+        const laEmailSinhVien = emailDangChoChuan.endsWith('@st.tvu.edu.vn') || /^\d{8,}@/.test(emailDangChoChuan);
+        const vaiTroMoi = laEmailSinhVien
+          ? 'SINH_VIEN'
+          : (['ADMIN', 'KTV', 'KY_THUAT_VIEN'].includes(emailCu.vai_tro)
+              ? emailCu.vai_tro
+              : duLieuTam.vaiTroXacThuc);
 
         nguoiDungGan = await prisma.nguoi_dung.update({
           where: { ma_nguoi_dung: emailCu.ma_nguoi_dung },
