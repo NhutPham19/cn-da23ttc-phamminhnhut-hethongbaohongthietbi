@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 process.env.JWT_SECRET = 'khoa-bi-mat-chi-dung-cho-kiem-thu-0123456789abcdef';
 process.env.CHO_PHEP_EMAIL_DEMO = 'true';
 
-const { phanLoaiVaiTroQuaEmail } = require('../src/utils/tienIch');
+const { phanLoaiVaiTroQuaEmail, kiemTraLaSinhVien, kiemTraDuocPhepBoQuaAnh } = require('../src/utils/tienIch');
 const { layDanhSachNguoiDung } = require('../src/controllers/nguoiDungDieuKhien');
 const { dangNhap } = require('../src/controllers/xacThucDieuKhien');
 const zaloDieuKhien = require('../src/controllers/zaloDieuKhien');
@@ -72,6 +72,38 @@ test('phanLoaiVaiTroQuaEmail: Từ chối các email ngoài tên miền được
   const kqLoi = phanLoaiVaiTroQuaEmail('sinhvien@yahoo.com');
   assert.equal(kqLoi.hopLe, false);
   assert.ok(kqLoi.lyDoLoi.includes('ĐH Trà Vinh'));
+});
+
+test('kiemTraLaSinhVien: Kiểm tra chính xác vai trò Sinh viên', () => {
+  // 1. Chưa định danh (null/undefined) -> Mặc định áp dụng quy tắc Sinh viên
+  assert.equal(kiemTraLaSinhVien(null), true);
+  assert.equal(kiemTraLaSinhVien(undefined), true);
+
+  // 2. Có vai_tro === 'SINH_VIEN'
+  assert.equal(kiemTraLaSinhVien({ vai_tro: 'SINH_VIEN', email: 'user@gmail.com' }), true);
+
+  // 3. Email có đuôi @st.tvu.edu.vn (kể cả trong DB gắn vai_tro là KTV)
+  assert.equal(kiemTraLaSinhVien({ vai_tro: 'KTV', email: '110123252@st.tvu.edu.vn' }), true);
+
+  // 4. Email có tiền tố bắt đầu bằng MSSV (>= 8 chữ số)
+  assert.equal(kiemTraLaSinhVien({ vai_tro: 'KTV', email: '110123252@tvu.edu.vn' }), true);
+
+  // 5. Giảng viên / Cán bộ hợp lệ
+  assert.equal(kiemTraLaSinhVien({ vai_tro: 'GIANG_VIEN', email: 'quocnk@tvu.edu.vn' }), false);
+  assert.equal(kiemTraLaSinhVien({ vai_tro: 'ADMIN', email: 'admin@tvu.edu.vn' }), false);
+  assert.equal(kiemTraLaSinhVien({ vai_tro: 'KTV', email: 'nguyenan@tvu.edu.vn' }), false);
+});
+
+test('kiemTraDuocPhepBoQuaAnh: Chỉ Giảng viên và Nhân sự nội bộ được bỏ qua', () => {
+  // 1. Chưa định danh hoặc Sinh viên -> TUYỆT ĐỐI KHÔNG ĐƯỢC BỎ QUA
+  assert.equal(kiemTraDuocPhepBoQuaAnh(null), false);
+  assert.equal(kiemTraDuocPhepBoQuaAnh({ vai_tro: 'SINH_VIEN', email: '110123104@st.tvu.edu.vn' }), false);
+  assert.equal(kiemTraDuocPhepBoQuaAnh({ vai_tro: 'KTV', email: '110123252@st.tvu.edu.vn' }), false);
+
+  // 2. Giảng viên và KTV/Admin nội bộ -> ĐƯỢC PHÉP
+  assert.equal(kiemTraDuocPhepBoQuaAnh({ vai_tro: 'GIANG_VIEN', email: 'quocnk@tvu.edu.vn' }), true);
+  assert.equal(kiemTraDuocPhepBoQuaAnh({ vai_tro: 'KTV', email: 'nguyenan@tvu.edu.vn' }), true);
+  assert.equal(kiemTraDuocPhepBoQuaAnh({ vai_tro: 'ADMIN', email: 'admin@tvu.edu.vn' }), true);
 });
 
 // =============================================================================
@@ -483,6 +515,196 @@ test('zaloDieuKhien: Bước 4 - SINH_VIEN bị từ chối lệnh boqua và b�
     zaloDichVu.guiTinNhanZalo = banGocGuiTin;
     prisma.nguoi_dung.findFirst = banGocFindFirst;
     prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
+  }
+});
+
+test('zaloDieuKhien: Bước 4 - Tài khoản email SV dù gắn vai_tro KTV (ktvnhut) vẫn bị CHẶN lệnh boqua', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+  const banGocFindUnique = prisma.phien_hoi_thoai_zalo.findUnique;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+
+  prisma.phien_hoi_thoai_zalo.findUnique = async () => ({
+    ma_nguoi_bao_zalo: '3c50740f73439a1dc352',
+    buoc_hien_tai: 4,
+    du_lieu_tam: { tenThietBi: 'Âm thanh', phong: 'E21.206', moTa: 'Micro mất tiếng' },
+    thoi_gian_cap_nhat: new Date()
+  });
+
+  // Giả lập tài khoản ktvnhut: vai_tro = KTV nhưng email = 110123252@st.tvu.edu.vn (Sinh viên)
+  prisma.nguoi_dung.findFirst = async () => ({
+    ma_nguoi_dung: 10,
+    tai_khoan: 'ktvnhut',
+    vai_tro: 'KTV',
+    trang_thai_hoat_dong: true,
+    email: '110123252@st.tvu.edu.vn'
+  });
+
+  try {
+    const { req, res } = taoReqRes({
+      body: {
+        event_name: 'message.text.received',
+        message: {
+          chat: { id: '3c50740f73439a1dc352' },
+          text: 'bỏ qua'
+        }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    assert.equal(tinNhanDaGui.length, 1);
+    assert.ok(tinNhanDaGui[0].text.includes('bắt buộc phải gửi 1 tấm ảnh chụp thực tế'));
+    assert.ok(tinNhanDaGui[0].text.includes('không áp dụng lệnh "boqua"'));
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+    prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
+  }
+});
+
+test('zaloDieuKhien: Bước 4 - Người dùng chưa định danh (nguoiDung = null) bị CHẶN lệnh boqua', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+  const banGocFindUnique = prisma.phien_hoi_thoai_zalo.findUnique;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+
+  prisma.phien_hoi_thoai_zalo.findUnique = async () => ({
+    ma_nguoi_bao_zalo: 'chat-an-danh-buoc4',
+    buoc_hien_tai: 4,
+    du_lieu_tam: { tenThietBi: 'Máy lạnh', phong: 'B31.204', moTa: 'Không mát' },
+    thoi_gian_cap_nhat: new Date()
+  });
+
+  // Chưa liên kết tài khoản nào
+  prisma.nguoi_dung.findFirst = async () => null;
+
+  try {
+    const { req, res } = taoReqRes({
+      body: {
+        event_name: 'message.text.received',
+        message: {
+          chat: { id: 'chat-an-danh-buoc4' },
+          text: 'boqua'
+        }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    assert.equal(tinNhanDaGui.length, 1);
+    assert.ok(tinNhanDaGui[0].text.includes('bắt buộc phải gửi 1 tấm ảnh chụp thực tế'));
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+    prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
+  }
+});
+
+test('zaloDieuKhien: Bước 4 - Sinh viên nhập chữ không hợp lệ nhận thông báo bắt buộc ảnh, không gợi ý boqua', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+  const banGocFindUnique = prisma.phien_hoi_thoai_zalo.findUnique;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+
+  prisma.phien_hoi_thoai_zalo.findUnique = async () => ({
+    ma_nguoi_bao_zalo: 'chat-sv-invalid-buoc4',
+    buoc_hien_tai: 4,
+    du_lieu_tam: { tenThietBi: 'Đèn chiếu', phong: 'D71.103', moTa: 'Cháy bóng' },
+    thoi_gian_cap_nhat: new Date()
+  });
+
+  prisma.nguoi_dung.findFirst = async () => ({
+    ma_nguoi_dung: 301,
+    vai_tro: 'SINH_VIEN',
+    trang_thai_hoat_dong: true,
+    email: '110123252@st.tvu.edu.vn'
+  });
+
+  try {
+    const { req, res } = taoReqRes({
+      body: {
+        event_name: 'message.text.received',
+        message: {
+          chat: { id: 'chat-sv-invalid-buoc4' },
+          text: 'khong co may anh o day'
+        }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    assert.equal(tinNhanDaGui.length, 1);
+    assert.ok(tinNhanDaGui[0].text.includes('bắt buộc chụp ảnh, không áp dụng "boqua"'));
+    assert.ok(!tinNhanDaGui[0].text.includes('hoặc gõ "boqua"'));
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+    prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
+  }
+});
+
+test('zaloDieuKhien: Bước 3 - Hướng dẫn bước 4 KHÔNG gợi ý "boqua" cho Sinh viên', async () => {
+  const tinNhanDaGui = [];
+  const banGocGuiTin = zaloDichVu.guiTinNhanZalo;
+  const banGocFindFirst = prisma.nguoi_dung.findFirst;
+  const banGocFindUnique = prisma.phien_hoi_thoai_zalo.findUnique;
+  const banGocUpdate = prisma.phien_hoi_thoai_zalo.update;
+
+  zaloDichVu.guiTinNhanZalo = async (chatId, text) => {
+    tinNhanDaGui.push({ chatId, text });
+  };
+
+  prisma.phien_hoi_thoai_zalo.findUnique = async () => ({
+    ma_nguoi_bao_zalo: 'chat-sv-buoc3',
+    buoc_hien_tai: 3,
+    du_lieu_tam: { tenThietBi: 'Máy tính', phong: 'D71.103' },
+    thoi_gian_cap_nhat: new Date()
+  });
+
+  prisma.phien_hoi_thoai_zalo.update = async () => ({});
+
+  prisma.nguoi_dung.findFirst = async () => ({
+    ma_nguoi_dung: 301,
+    vai_tro: 'SINH_VIEN',
+    trang_thai_hoat_dong: true,
+    email: '110123252@st.tvu.edu.vn'
+  });
+
+  try {
+    const { req, res } = taoReqRes({
+      body: {
+        event_name: 'message.text.received',
+        message: {
+          chat: { id: 'chat-sv-buoc3' },
+          text: 'Màn hình xanh'
+        }
+      }
+    });
+
+    await zaloDieuKhien.tiepNhanWebhookZalo(req, res);
+
+    assert.equal(tinNhanDaGui.length, 1);
+    assert.ok(tinNhanDaGui[0].text.includes('Bước 4/4'));
+    assert.ok(!tinNhanDaGui[0].text.includes('hoặc gõ "boqua"'));
+    assert.ok(tinNhanDaGui[0].text.includes('bắt buộc đối với Sinh viên'));
+  } finally {
+    zaloDichVu.guiTinNhanZalo = banGocGuiTin;
+    prisma.nguoi_dung.findFirst = banGocFindFirst;
+    prisma.phien_hoi_thoai_zalo.findUnique = banGocFindUnique;
+    prisma.phien_hoi_thoai_zalo.update = banGocUpdate;
   }
 });
 

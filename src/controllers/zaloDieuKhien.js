@@ -12,7 +12,9 @@ const {
   nhanDienDanhMucThietBi,
   chuanHoaTenPhong,
   tuDongGanMucDoUuTien,
-  phanLoaiVaiTroQuaEmail
+  phanLoaiVaiTroQuaEmail,
+  kiemTraLaSinhVien,
+  kiemTraDuocPhepBoQuaAnh
 } = require('../utils/tienIch');
 const {
   sinhMaOtp,
@@ -988,18 +990,17 @@ async function tiepNhanWebhookZalo(req, res) {
         }
       }
       // Tự động nâng độ ưu tiên lên CAO nếu Giảng viên báo sự cố
-      if (nguoiDungHienTai?.vai_tro === 'GIANG_VIEN' && (mucUuTien === 'BINH_THUONG' || mucUuTien === 'THAP')) {
+      const laGiangVien = nguoiDungHienTai?.vai_tro === 'GIANG_VIEN' || (!kiemTraLaSinhVien(nguoiDungHienTai) && (nguoiDungHienTai?.email || '').toLowerCase().endsWith('@tvu.edu.vn'));
+      if (laGiangVien && (mucUuTien === 'BINH_THUONG' || mucUuTien === 'THAP')) {
         mucUuTien = 'CAO';
       }
       duLieuTam.mucDoUuTien = mucUuTien;
       await capNhatPhien(chatId, 4, duLieuTam);
 
-      const laGiangVienHoacNoiBo = nguoiDungHienTai && ['GIANG_VIEN', 'ADMIN', 'KTV', 'KY_THUAT_VIEN'].includes(nguoiDungHienTai.vai_tro);
-      const thongBaoHuongDan = laGiangVienHoacNoiBo
+      const duocPhepBoQua = kiemTraDuocPhepBoQuaAnh(nguoiDungHienTai);
+      const thongBaoHuongDan = duocPhepBoQua
         ? `👉 Bước 4/4: Bạn hãy gửi 1 hình ảnh chụp hiện trạng sự cố (hoặc gõ "boqua" nếu không có ảnh):`
-        : (nguoiDungHienTai?.vai_tro === 'SINH_VIEN'
-          ? `👉 Bước 4/4: Bạn hãy chụp và gửi 1 hình ảnh hiện trạng thiết bị hỏng tại phòng học:`
-          : `👉 Bước 4/4: Bạn hãy gửi 1 hình ảnh chụp hiện trạng sự cố (hoặc gõ "boqua" nếu không có ảnh):`);
+        : `👉 Bước 4/4: Bạn hãy chụp và gửi 1 hình ảnh hiện trạng thiết bị hỏng tại phòng học (bắt buộc đối với Sinh viên, không áp dụng bỏ qua):`;
 
       await guiTinNhanZalo(chatId, thongBaoHuongDan);
       return;
@@ -1016,7 +1017,8 @@ async function tiepNhanWebhookZalo(req, res) {
         let hinhAnh = null;
         let taiAnhLoi = false;
 
-        const laGiangVienHoacNoiBo = nguoiDungHienTai && ['GIANG_VIEN', 'ADMIN', 'KTV', 'KY_THUAT_VIEN'].includes(nguoiDungHienTai.vai_tro);
+        const duocPhepBoQua = kiemTraDuocPhepBoQuaAnh(nguoiDungHienTai);
+        const laLenhBoQua = chuoiKhongDau === 'boqua' || chuoiKhongDau === 'bo qua' || chuoiKhongDau.startsWith('boqua') || chuoiKhongDau.startsWith('bo qua');
 
         if (urlAnhTam) {
           try {
@@ -1026,9 +1028,9 @@ async function tiepNhanWebhookZalo(req, res) {
             hinhAnh = null;
             taiAnhLoi = true;
           }
-        } else if (chuoiKhongDau === 'boqua' || chuoiKhongDau === 'bo qua') {
-          // Bắt buộc Sinh viên phải gửi ảnh, không cho phép boqua
-          if (!laGiangVienHoacNoiBo && nguoiDungHienTai?.vai_tro === 'SINH_VIEN') {
+        } else if (laLenhBoQua) {
+          // Bắt buộc Sinh viên và người dùng chưa định danh phải gửi ảnh, không cho phép boqua
+          if (!duocPhepBoQua) {
             await guiTinNhanZalo(
               chatId,
               `📸 Để đảm bảo tính xác thực đối với Sinh viên, bạn bắt buộc phải gửi 1 tấm ảnh chụp thực tế thiết bị đang hỏng tại phòng học (không áp dụng lệnh "boqua"). Vui lòng chụp và gửi ảnh ngay bên dưới:`
@@ -1036,7 +1038,12 @@ async function tiepNhanWebhookZalo(req, res) {
             return;
           }
         } else {
-          await guiTinNhanZalo(chatId, 'Vui lòng gửi 1 hình ảnh hoặc gõ "boqua" để hoàn tất báo hỏng:');
+          await guiTinNhanZalo(
+            chatId,
+            duocPhepBoQua
+              ? 'Vui lòng gửi 1 hình ảnh hoặc gõ "boqua" để hoàn tất báo hỏng:'
+              : '📸 Vui lòng chụp và gửi 1 hình ảnh hiện trạng thiết bị để hoàn tất báo hỏng (bắt buộc chụp ảnh, không áp dụng "boqua"):'
+          );
           return;
         }
 

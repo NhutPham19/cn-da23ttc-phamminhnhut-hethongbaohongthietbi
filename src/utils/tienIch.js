@@ -431,6 +431,41 @@ function phanLoaiVaiTroQuaEmail(email) {
   return { hopLe: true, vaiTro: 'GIANG_VIEN', email: emailSach, tienTo };
 }
 
+/**
+ * Kiểm tra xem người dùng có phải là Sinh viên hay không.
+ * Nếu không có tài khoản (người dùng chưa định danh trên Zalo) -> MẶC ĐỊNH là Sinh viên.
+ * Nếu có tài khoản:
+ *  - vai_tro === 'SINH_VIEN'
+ *  - HOẶC email có đuôi @st.tvu.edu.vn
+ *  - HOẶC email có tiền tố bắt đầu bằng MSSV (>= 8 chữ số)
+ * @param {object|null} nguoiDung
+ * @returns {boolean}
+ */
+function kiemTraLaSinhVien(nguoiDung) {
+  if (!nguoiDung) return true; // Chưa định danh trên Zalo -> Mặc định áp dụng quy tắc Sinh viên
+  if (nguoiDung.vai_tro === 'SINH_VIEN') return true;
+  const email = String(nguoiDung.email || '').trim().toLowerCase();
+  if (!email) return false;
+  const [tienTo, tenMien] = email.split('@');
+  if (tenMien === 'st.tvu.edu.vn') return true;
+  if (/^\d{8,}/.test(tienTo)) return true;
+  return false;
+}
+
+/**
+ * Kiểm tra xem người dùng có được phép bỏ qua bước gửi ảnh (lệnh "boqua") ở Bước 4 hay không.
+ * CHỈ cho phép Giảng viên hoặc KTV/Admin nội bộ có email trường ĐH Trà Vinh hợp lệ (không phải email sinh viên).
+ * Người dùng chưa định danh hoặc là Sinh viên -> TUYỆT ĐỐI KHÔNG ĐƯỢC BỎ QUA.
+ * @param {object|null} nguoiDung
+ * @returns {boolean}
+ */
+function kiemTraDuocPhepBoQuaAnh(nguoiDung) {
+  if (!nguoiDung) return false;
+  if (kiemTraLaSinhVien(nguoiDung)) return false;
+  const vaiTroHopLe = ['GIANG_VIEN', 'ADMIN', 'KTV', 'KY_THUAT_VIEN'];
+  return vaiTroHopLe.includes(nguoiDung.vai_tro);
+}
+
 module.exports = {
   lamSachDuLieu,
   boDau,
@@ -443,5 +478,7 @@ module.exports = {
   nhanDienDanhMucThietBi,
   chuanHoaTenPhong,
   tuDongGanMucDoUuTien,
-  phanLoaiVaiTroQuaEmail
+  phanLoaiVaiTroQuaEmail,
+  kiemTraLaSinhVien,
+  kiemTraDuocPhepBoQuaAnh
 };
