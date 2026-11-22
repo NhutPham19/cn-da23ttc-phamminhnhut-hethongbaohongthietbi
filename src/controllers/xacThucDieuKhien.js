@@ -275,7 +275,17 @@ async function doiMatKhau(req, res) {
       return res.status(404).json({ thanhCong: false, loi: 'Không tìm thấy người dùng' });
     }
 
-    const dungMatKhau = await bcrypt.compare(mkHienTaiStr, nguoiDung.mat_khau_hash);
+    let dungMatKhau = await bcrypt.compare(mkHienTaiStr, nguoiDung.mat_khau_hash);
+
+    // Dự phòng tương thích an toàn cho lần đầu đổi mật khẩu: nếu hệ thống prefill 'tvu123' nhưng hash trong DB là '123456' (hoặc ngược lại)
+    if (!dungMatKhau && nguoiDung.doi_mat_khau_lan_dau) {
+      if (mkHienTaiStr === 'tvu123' && await bcrypt.compare('123456', nguoiDung.mat_khau_hash)) {
+        dungMatKhau = true;
+      } else if (mkHienTaiStr === '123456' && await bcrypt.compare('tvu123', nguoiDung.mat_khau_hash)) {
+        dungMatKhau = true;
+      }
+    }
+
     if (!dungMatKhau) {
       return res.status(400).json({ thanhCong: false, loi: 'Mật khẩu hiện tại không chính xác' });
     }

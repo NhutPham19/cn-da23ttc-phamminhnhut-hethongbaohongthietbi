@@ -1847,8 +1847,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (canhBaoEl) canhBaoEl.classList.remove('d-none');
       if (nutDongModal) nutDongModal.classList.add('d-none');
       if (nutHuyModal) nutHuyModal.classList.add('d-none');
-      document.getElementById('doiMkHienTai').value = 'tvu123';
-      document.getElementById('doiMkHienTai').readOnly = true;
+      const oMkHienTai = document.getElementById('doiMkHienTai');
+      if (oMkHienTai) {
+        oMkHienTai.value = 'tvu123';
+        oMkHienTai.readOnly = false; // Không khóa cứng, cho phép xóa hoặc nhập lại nếu cần
+      }
 
       if (bsModalDoiMatKhau) {
         try { bsModalDoiMatKhau.dispose(); } catch (e) {}
@@ -1861,8 +1864,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (canhBaoEl) canhBaoEl.classList.add('d-none');
       if (nutDongModal) nutDongModal.classList.remove('d-none');
       if (nutHuyModal) nutHuyModal.classList.remove('d-none');
-      document.getElementById('doiMkHienTai').value = '';
-      document.getElementById('doiMkHienTai').readOnly = false;
+      const oMkHienTai = document.getElementById('doiMkHienTai');
+      if (oMkHienTai) {
+        oMkHienTai.value = '';
+        oMkHienTai.readOnly = false;
+      }
 
       if (bsModalDoiMatKhau) {
         try { bsModalDoiMatKhau.dispose(); } catch (e) {}
