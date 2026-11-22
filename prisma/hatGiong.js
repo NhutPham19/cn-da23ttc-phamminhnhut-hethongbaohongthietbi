@@ -85,27 +85,17 @@ async function khoiTaoDuLieuMau() {
   }
   console.log(`✅ Đã nạp ${danhMucMau.length} danh mục thiết bị chuẩn.`);
 
-  // 4. Khởi tạo Danh mục Phòng học / Khu vực
-  const phongMau = [
-    'Phòng D71.101',
-    'Phòng D71.102',
-    'Phòng D71.103',
-    'Phòng D71.201',
-    'Phòng D71.202',
-    'Phòng B204',
-    'Phòng Lab 1 (Khoa CNTT)',
-    'Phòng Lab 2 (Khoa CNTT)',
-    'Hội trường E'
-  ];
+  // 4. Khởi tạo Danh mục Phòng học / Khu vực (180 phòng chuẩn TVU)
+  const danhSachPhongTvu = require('../src/duLieu/danhSachPhongTvu.json');
 
-  for (const tenPhong of phongMau) {
+  for (const phong of danhSachPhongTvu) {
     await prisma.phong.upsert({
-      where: { ten_phong: tenPhong },
+      where: { ten_phong: phong.ten_phong },
       update: {},
-      create: { ten_phong: tenPhong }
+      create: { ten_phong: phong.ten_phong }
     });
   }
-  console.log(`✅ Đã nạp ${phongMau.length} phòng học chuẩn.`);
+  console.log(`✅ Đã nạp ${danhSachPhongTvu.length} phòng học chuẩn TVU.`);
 
   console.log('🎉 Hoàn thành gieo hạt giống dữ liệu (Seed Data thành công)!');
 }

@@ -696,3 +696,97 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+/* ========================================================= */
+/* TAB 4: QUẢN LÝ PHÒNG HỌC & SOFT BADGES PHÂN LOẠI PHÒNG    */
+/* ========================================================= */
+.badge-phong-ly-thuyet {
+  background-color: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-left: 3px solid #2563EB;
+  color: #1E40AF;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.badge-phong-hoi-truong {
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-left: 3px solid #DC2626;
+  color: #991B1B;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.badge-phong-may-tinh {
+  background-color: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  border-left: 3px solid #059669;
+  color: #065F46;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.badge-phong-thi-nghiem {
+  background-color: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-left: 3px solid #D97706;
+  color: #92400E;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.btn-xoa {
+  background-color: #FFFFFF;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+  font-weight: 500;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  min-height: 32px;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-xoa:hover {
+  background-color: #FEF2F2;
+  border-color: #F87171;
+  color: #B91C1C;
+}
+
+.btn-xoa:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #F8FAFC;
+  border-color: #E2E8F0;
+  color: #94A3B8;
+}

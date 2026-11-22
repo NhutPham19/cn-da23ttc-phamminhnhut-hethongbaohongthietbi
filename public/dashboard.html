@@ -102,6 +102,14 @@
         </svg>
         Quản lý Nhân sự
       </button>
+
+      <!-- Tab Quản lý Phòng học: Chỉ hiển thị cho Admin -->
+      <button id="tabPhong" class="nut-tab d-none" type="button">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+        Quản lý Phòng học
+      </button>
     </div>
 
     <!-- ======================================================================= -->
@@ -368,7 +376,7 @@
           <div>
             <h5 class="fw-bold text-dark mb-1">Quản lý Nhân sự & Kỹ thuật viên</h5>
             <div class="text-muted small">
-              💡 <strong>Mẹo:</strong> Nhắc Kỹ thuật viên nhắn tin lệnh <code>id</code> vào Zalo Bot để lấy <strong>Mã Chat Zalo</strong> gắn vào hồ sơ giúp tự động nhận thông báo giao việc.
+              <i class="bi bi-lightbulb text-warning me-1"></i><strong>Mẹo:</strong> Nhắc Kỹ thuật viên nhắn tin lệnh <code>id</code> vào Zalo Bot để lấy <strong>Mã Chat Zalo</strong> gắn vào hồ sơ giúp tự động nhận thông báo giao việc.
             </div>
           </div>
           <button id="nutThemNhanSu" type="button" class="btn btn-chinh d-flex align-items-center gap-2">
@@ -432,6 +440,158 @@
               <!-- Render động bằng DOM createElement / textContent -->
             </tbody>
           </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 4: QUẢN LÝ PHÒNG HỌC (ADMIN ONLY)                                  -->
+    <!-- ======================================================================= -->
+    <section id="khuVucTabPhong" class="d-none">
+      
+      <!-- 5 Thẻ Đếm Thống Kê Nhanh Phòng Học (Chuẩn Pure Light Mode) -->
+      <div class="row g-3 mb-3">
+        <div class="col-6 col-lg">
+          <div class="the-trang the-kpi-nhanh d-flex align-items-center justify-content-between">
+            <div>
+              <div class="kpi-tieu-de">Tổng số phòng</div>
+              <div id="kpiTongPhong" class="kpi-so font-mono text-dark mt-1">0</div>
+            </div>
+            <div class="p-2 rounded flex-shrink-0" style="background: #F1F5F9; color: #475569;">
+              <i class="bi bi-building fs-5"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg">
+          <div class="the-trang the-kpi-nhanh d-flex align-items-center justify-content-between" style="border-left: 4px solid #2563EB;">
+            <div>
+              <div class="kpi-tieu-de">Phòng lý thuyết</div>
+              <div id="kpiLyThuyet" class="kpi-so font-mono text-primary mt-1">0</div>
+            </div>
+            <div class="p-2 rounded flex-shrink-0" style="background: #EFF6FF; color: #2563EB;">
+              <i class="bi bi-book fs-5"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg">
+          <div class="the-trang the-kpi-nhanh d-flex align-items-center justify-content-between" style="border-left: 4px solid #DC2626;">
+            <div>
+              <div class="kpi-tieu-de">Hội trường</div>
+              <div id="kpiHoiTruong" class="kpi-so font-mono text-danger mt-1">0</div>
+            </div>
+            <div class="p-2 rounded flex-shrink-0" style="background: #FEF2F2; color: #DC2626;">
+              <i class="bi bi-megaphone fs-5"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg">
+          <div class="the-trang the-kpi-nhanh d-flex align-items-center justify-content-between" style="border-left: 4px solid #059669;">
+            <div>
+              <div class="kpi-tieu-de">Máy tính TH</div>
+              <div id="kpiMayTinh" class="kpi-so font-mono text-success mt-1">0</div>
+            </div>
+            <div class="p-2 rounded flex-shrink-0" style="background: #ECFDF5; color: #059669;">
+              <i class="bi bi-pc-display fs-5"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg">
+          <div class="the-trang the-kpi-nhanh d-flex align-items-center justify-content-between" style="border-left: 4px solid #D97706;">
+            <div>
+              <div class="kpi-tieu-de">TH - Thí nghiệm</div>
+              <div id="kpiThiNghiem" class="kpi-so font-mono text-warning mt-1">0</div>
+            </div>
+            <div class="p-2 rounded flex-shrink-0" style="background: #FFFBEB; color: #D97706;">
+              <i class="bi bi-tools fs-5"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thanh Tiêu đề & Công cụ Quản lý Phòng -->
+      <div class="the-trang mb-3 p-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">Danh mục Phòng học Đại học Trà Vinh (TVU)</h5>
+            <div class="text-muted small">
+              <i class="bi bi-info-circle text-primary me-1"></i>Hệ thống tự động đồng bộ vị trí với Zalo Bot và các yêu cầu báo hỏng theo thời gian thực.
+            </div>
+          </div>
+          <button id="nutThemPhong" type="button" class="btn btn-chinh d-flex align-items-center gap-2 text-nowrap">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Thêm phòng mới
+          </button>
+        </div>
+
+        <!-- Thanh công cụ lọc & tìm kiếm 1 hàng trên desktop (38px đồng bộ) -->
+        <div class="row g-2 align-items-center pt-2 border-top">
+          <div class="col-12 col-md-4">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white border-end-0">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </span>
+              <input type="text" id="timKiemPhong" class="form-control border-start-0 ps-0" placeholder="Tìm theo mã phòng (VD: D71.103, A42.102)...">
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <select id="locLoaiPhong" class="form-select form-select-sm">
+              <option value="">Tất cả loại phòng</option>
+              <option value="Phòng lý thuyết">Phòng lý thuyết</option>
+              <option value="Hội trường">Hội trường</option>
+              <option value="Phòng máy tính thực hành">Phòng máy tính thực hành</option>
+              <option value="Phòng thực hành - thí nghiệm">Phòng thực hành - thí nghiệm</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <select id="locToaNha" class="form-select form-select-sm">
+              <option value="">Tất cả tòa nhà</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-3 d-flex align-items-center justify-content-between justify-content-md-end gap-2">
+            <span id="demKetQuaPhong" class="small text-muted font-mono" style="font-size: 11px;">0 phòng</span>
+            <button id="nutXoaLocPhong" type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;">Xóa lọc</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bảng Danh sách Phòng học (Chống XSS 100%) -->
+      <div class="the-trang p-0 overflow-hidden mb-3">
+        <div class="table-responsive">
+          <table class="bang-du-lieu" id="bangPhong">
+            <thead>
+              <tr>
+                <th style="width: 120px;">Mã phòng</th>
+                <th style="width: 220px;">Tên &amp; Phân loại</th>
+                <th>Vị trí / Tòa nhà &amp; Tầng</th>
+                <th style="width: 160px;">Số lượt báo hỏng</th>
+                <th style="width: 160px;" class="text-end">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="thanBangPhong">
+              <!-- Render động bằng DOM template + textContent -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Phân trang danh sách phòng -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center p-3 border-top bg-light gap-2">
+          <div id="thongTinPhanTrangPhong" class="small text-muted font-mono">Hiển thị 0 - 0 trên tổng số 0 phòng</div>
+          <div class="d-flex align-items-center gap-1">
+            <button id="nutTrangTruocPhong" type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" disabled>
+              <i class="bi bi-chevron-left"></i> Trước
+            </button>
+            <span id="soTrangHienTaiPhong" class="badge bg-white text-dark border py-1 px-2 font-mono">Trang 1 / 1</span>
+            <button id="nutTrangSauPhong" type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" disabled>
+              Sau <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -537,8 +697,8 @@
                 <div id="khungCoAnh" class="d-none">
                   <img id="chiTietHinhAnh" src="" alt="Ảnh hiện trường" class="anh-hien-truong-modal">
                   <div class="mt-1 d-flex justify-content-between align-items-center">
-                    <span class="small text-muted" style="font-size: 11.5px;">🔍 Bấm vào ảnh để phóng to</span>
-                    <a id="linkAnhGoc" href="#" target="_blank" rel="noopener noreferrer" class="small text-primary text-decoration-none" style="font-size: 11.5px;">Mở ảnh gốc ↗</a>
+                    <span class="small text-muted d-inline-flex align-items-center gap-1" style="font-size: 11.5px;"><i class="bi bi-zoom-in text-secondary"></i> Bấm vào ảnh để phóng to</span>
+                    <a id="linkAnhGoc" href="#" target="_blank" rel="noopener noreferrer" class="small text-primary text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 11.5px;">Mở ảnh gốc <i class="bi bi-box-arrow-up-right"></i></a>
                   </div>
                 </div>
                 <div id="khungKhongAnh" class="thanh-khong-anh">
@@ -589,7 +749,7 @@
             </button>
             <!-- Nhãn Yêu cầu đã đóng (khi HOAN_THANH hoặc HUY) -->
             <div id="nhanYeuCauDaDong" class="d-none">
-              <span class="badge bg-secondary-subtle text-secondary border px-2 py-1" style="font-size: 12px;">🔒 Yêu cầu đã đóng</span>
+              <span class="badge bg-secondary-subtle text-secondary border px-2 py-1 d-inline-flex align-items-center gap-1" style="font-size: 12px;"><i class="bi bi-lock text-secondary"></i> Yêu cầu đã đóng</span>
             </div>
           </div>
 
@@ -758,7 +918,7 @@
           <div class="modal-body p-4">
             <!-- Cảnh báo nếu bắt buộc đổi mật khẩu lần đầu -->
             <div id="canhBaoDoiMkLanDau" class="alert alert-warning d-none py-2 px-3 small mb-3">
-              <strong>⚠️ Đổi mật khẩu lần đầu:</strong> Bạn đang đăng nhập bằng mật khẩu mặc định (<code>tvu123</code>). Vì lý do an toàn bảo mật, vui lòng thiết lập mật khẩu mới trước khi thao tác tiếp.
+              <strong><i class="bi bi-exclamation-triangle text-warning me-1"></i>Đổi mật khẩu lần đầu:</strong> Bạn đang đăng nhập bằng mật khẩu mặc định (<code>tvu123</code>). Vì lý do an toàn bảo mật, vui lòng thiết lập mật khẩu mới trước khi thao tác tiếp.
             </div>
 
             <div class="mb-3">
@@ -788,6 +948,77 @@
           <div class="modal-footer bg-light border-top py-2">
             <button type="button" class="btn btn-phu" id="nutHuyDoiMk" data-bs-dismiss="modal">Hủy bỏ</button>
             <button type="submit" id="nutLuuDoiMk" class="btn btn-chinh">Lưu mật khẩu mới</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 7: QUẢN LÝ PHÒNG HỌC (THÊM / SỬA THÔNG MINH - ADMIN ONLY) -->
+  <div class="modal fade" id="modalPhong" tabindex="-1" aria-labelledby="tieuDeModalPhong" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light border-bottom py-3">
+          <h5 class="modal-title h6 fw-bold text-dark mb-0" id="tieuDeModalPhong">Thêm phòng học mới</h5>
+          <button type="button" class="btn-close" id="nutDongModalPhong" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <form id="bieuMauPhong" novalidate>
+          <input type="hidden" id="phongHienTaiId">
+          <div class="modal-body p-4">
+            
+            <div class="mb-3">
+              <label for="nhapMaPhongChuan" class="form-label small fw-semibold text-secondary">
+                Mã phòng chuẩn TVU <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="nhapMaPhongChuan" class="form-control font-mono" placeholder="VD: D71.103, A42.102, C11.103/1" required autocomplete="off">
+              <div class="form-text small" style="font-size: 11px;">
+                Định dạng TVU: [Tòa][Khu].[Tầng][Số phòng] (VD: D71.103, A42.205).
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="nhapLoaiPhong" class="form-label small fw-semibold text-secondary">
+                Phân loại phòng <span class="text-danger">*</span>
+              </label>
+              <select id="nhapLoaiPhong" class="form-select" required>
+                <option value="Phòng lý thuyết">Phòng lý thuyết</option>
+                <option value="Hội trường">Hội trường</option>
+                <option value="Phòng máy tính thực hành">Phòng máy tính thực hành</option>
+                <option value="Phòng thực hành - thí nghiệm">Phòng thực hành - thí nghiệm</option>
+              </select>
+            </div>
+
+            <!-- Khung xem trước thông minh (Tự nhận diện theo quy tắc TVU) -->
+            <div class="p-3 rounded border mb-3" style="background: #F8FAFC; border-color: #E2E8F0 !important;">
+              <div class="d-flex align-items-center gap-1 text-primary small fw-bold mb-2">
+                <i class="bi bi-info-circle"></i>
+                <span>Gợi ý nhận diện tự động</span>
+              </div>
+              <div class="row g-2 small">
+                <div class="col-12">
+                  <span class="text-muted">Tên chuẩn dự kiến:</span>
+                  <span id="xemTruocTenPhong" class="fw-semibold text-dark ms-1">--</span>
+                </div>
+                <div class="col-6">
+                  <span class="text-muted">Tòa nhà:</span>
+                  <span id="xemTruocToaNha" class="fw-semibold text-dark ms-1">--</span>
+                </div>
+                <div class="col-6">
+                  <span class="text-muted">Khu vực:</span>
+                  <span id="xemTruocKhuVuc" class="fw-semibold text-dark ms-1">--</span>
+                </div>
+                <div class="col-12">
+                  <span class="text-muted">Tầng / Vị trí:</span>
+                  <span id="xemTruocToaTang" class="fw-semibold text-dark ms-1">--</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="hopLoiPhong" class="alert alert-danger d-none py-2 px-3 small mb-0"></div>
+          </div>
+          <div class="modal-footer bg-light border-top py-2">
+            <button type="button" class="btn btn-phu" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="submit" id="nutLuuPhong" class="btn btn-chinh">Lưu thông tin</button>
           </div>
         </form>
       </div>
@@ -900,6 +1131,44 @@
         <div class="thanh-thong-ke-fill"></div>
       </div>
     </div>
+  </template>
+
+  <!-- Mẫu 1 dòng dữ liệu phòng học trên bảng (Tab 4 Quản lý Phòng - Chống XSS 100%) -->
+  <template id="mauHangPhong">
+    <tr>
+      <!-- Cột 1: Mã phòng -->
+      <td>
+        <span class="cot-ma-phong fw-bold font-mono text-dark" style="font-size: 13.5px;"></span>
+      </td>
+      <!-- Cột 2: Tên & Phân loại -->
+      <td>
+        <div class="cot-ten-phong fw-semibold text-dark" style="font-size: 13.5px;"></div>
+        <div class="mt-1">
+          <span class="cot-loai-phong badge"></span>
+        </div>
+      </td>
+      <!-- Cột 3: Vị trí / Tòa nhà & Tầng -->
+      <td>
+        <div class="cot-vi-tri text-secondary small"></div>
+      </td>
+      <!-- Cột 4: Số lượt báo hỏng -->
+      <td>
+        <span class="cot-so-luot badge bg-light text-dark border font-mono">0</span>
+      </td>
+      <!-- Cột 5: Thao tác -->
+      <td class="text-end cot-thao-tac">
+        <div class="d-inline-flex gap-2">
+          <button class="nut-sua-phong btn-phu btn-sm" type="button" style="min-height: 32px; padding: 4px 10px; font-size: 12px;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            Sửa
+          </button>
+          <button class="nut-xoa-phong btn-xoa btn-sm" type="button" style="min-height: 32px; padding: 4px 10px; font-size: 12px;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Xóa
+          </button>
+        </div>
+      </td>
+    </tr>
   </template>
 
   <!-- Bootstrap 5.3 Bundle JS (bao gồm Popper) -->

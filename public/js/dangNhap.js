@@ -118,10 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (thongBaoBox) {
       if (thongTinPhu?.maOtpThuNghiem) {
         thongBaoBox.className = 'alert alert-warning py-2 px-3 small mb-3';
-        thongBaoBox.innerHTML = `Mã xác thực đã được tạo cho <strong>${email}</strong>.<br><div class="mt-1">🔑 Mã OTP kiểm thử: <span class="badge bg-dark fs-6 px-2 py-1">${thongTinPhu.maOtpThuNghiem}</span> <span class="text-muted">(Do Render Free chặn cổng SMTP)</span></div>`;
+        thongBaoBox.innerHTML = `Mã xác thực đã được tạo cho <strong>${email}</strong>.<br><div class="mt-1"><i class="bi bi-key me-1"></i>Mã OTP kiểm thử: <span class="badge bg-dark fs-6 px-2 py-1">${thongTinPhu.maOtpThuNghiem}</span> <span class="text-muted">(Do Render Free chặn cổng SMTP)</span></div>`;
       } else if (thongTinPhu?.cheDoFallback) {
         thongBaoBox.className = 'alert alert-warning py-2 px-3 small mb-3';
-        thongBaoBox.innerHTML = `Mã xác thực đã được tạo cho <strong>${email}</strong>.<br><small class="text-dark">⚠️ Lưu ý: Máy chủ đám mây chặn cổng SMTP. Vui lòng kiểm tra mã OTP tại mục <strong>Logs</strong> trên Render Dashboard (hoặc cấu hình Brevo API Key).</small>`;
+        thongBaoBox.innerHTML = `Mã xác thực đã được tạo cho <strong>${email}</strong>.<br><small class="text-dark"><i class="bi bi-exclamation-triangle me-1"></i>Lưu ý: Máy chủ đám mây chặn cổng SMTP. Vui lòng kiểm tra mã OTP tại mục <strong>Logs</strong> trên Render Dashboard (hoặc cấu hình Brevo API Key).</small>`;
       } else {
         thongBaoBox.className = 'alert alert-info py-2 px-3 small mb-3';
         thongBaoBox.innerHTML = `Mã xác thực gồm 6 chữ số đã được gửi đến email <strong>${email}</strong>. Vui lòng kiểm tra hộp thư đến (hoặc hòm thư rác/Spam).`;

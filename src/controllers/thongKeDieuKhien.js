@@ -108,6 +108,7 @@ async function layThongKe(req, res) {
         danh_muc: { select: { ten_loai: true } },
         ma_phong: true,
         phong_hoc: { select: { ten_phong: true } },
+        vi_tri_phong: true,
         thoi_gian_tao: true,
         thoi_gian_tiep_nhan: true,
         thoi_gian_hoan_thanh: true,
@@ -123,8 +124,8 @@ async function layThongKe(req, res) {
       const tenThietBiNhom = yc.danh_muc ? yc.danh_muc.ten_loai : 'Chưa phân loại';
       gomThietBi[tenThietBiNhom] = (gomThietBi[tenThietBiNhom] || 0) + 1;
 
-      // Phân nhóm phòng học
-      const tenPhongNhom = yc.phong_hoc ? yc.phong_hoc.ten_phong : 'Chưa phân loại';
+      // Phân nhóm phòng học (ưu tiên lấy tên chuẩn mới nhất từ bảng phong)
+      const tenPhongNhom = yc.phong_hoc ? yc.phong_hoc.ten_phong : (yc.vi_tri_phong || 'Chưa phân loại');
       gomPhong[tenPhongNhom] = (gomPhong[tenPhongNhom] || 0) + 1;
     });
 

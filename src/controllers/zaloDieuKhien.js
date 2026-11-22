@@ -2,6 +2,7 @@
 const prisma = require('../config/coSoDuLieu');
 const zaloDichVu = require('../services/zaloDichVu');
 const cloudinaryDichVu = require('../services/cloudinaryDichVu');
+const { chuanHoaPhong, layDanhSachPhongDb } = require('../services/phongDichVu');
 const {
   lamSachDuLieu,
   boDau,
@@ -72,62 +73,30 @@ const dangXuLyBuoc4 = new Set();                  // Khóa In-Flight chống Rac
  * @param {object} dbClient - Instance prisma hoặc transaction
  * @returns {Promise<{ ma_phong: number|null, ten_phong: string }>}
  */
+/**
+ * Tự động chuẩn hóa và khớp mã phòng với bảng phong (5 tầng thông minh, không tạo phòng rác)
+ * @param {string} vanBanPhong 
+ * @param {object} dbClient - Instance prisma hoặc transaction
+ * @returns {Promise<{ hopLe: boolean, tuDongSuaKhu?: boolean, ma_phong: number|null, ten_phong: string, loai_phong?: string, thongTin?: object, goiY?: Array, thongDiep?: string }>}
+ */
 async function chuanHoaVaKhopPhong(vanBanPhong, dbClient = prisma) {
-  const tenPhongChuan = chuanHoaTenPhong(vanBanPhong);
-
   try {
-    // 1. Tìm kiếm trong bảng phong (khớp chính xác hoặc loại trừ tiền tố 'Phòng ')
-    const danhSachPhong = await dbClient.phong.findMany();
-    const tenChuanKhongDau = boDau(tenPhongChuan).toLowerCase();
-    const tenChuanCotLoi = tenChuanKhongDau.replace(/^phong\s+/i, '').trim();
-
-    const phongKhop = danhSachPhong.find((p) => {
-      const tenPKd = boDau(p.ten_phong).toLowerCase();
-      const tenPCotLoi = tenPKd.replace(/^phong\s+/i, '').trim();
-      return tenPKd === tenChuanKhongDau || tenPCotLoi === tenChuanCotLoi;
-    });
-
-    if (phongKhop) {
-      return {
-        ma_phong: phongKhop.ma_phong,
-        ten_phong: phongKhop.ten_phong
-      };
+    let danhSachPhong = [];
+    if (dbClient === prisma) {
+      danhSachPhong = await layDanhSachPhongDb(prisma);
+    } else {
+      danhSachPhong = await dbClient.phong.findMany();
     }
-
-    // 2. Nếu là định dạng phòng chuẩn (Phòng D71..., Phòng B3..., Phòng Lab..., Hội trường...) mà chưa có trong DB -> Tự động Upsert
-    const laPhongChuan = /^(Phòng|Hội trường)\s+[A-Za-z0-9.]+/i.test(tenPhongChuan);
-    if (laPhongChuan) {
-      try {
-        const phongMoi = await dbClient.phong.create({
-          data: { ten_phong: tenPhongChuan }
-        });
-        return {
-          ma_phong: phongMoi.ma_phong,
-          ten_phong: phongMoi.ten_phong
-        };
-      } catch (loiTao) {
-        // Nếu trùng do race condition
-        const phongVuaTao = await dbClient.phong.findFirst({
-          where: { ten_phong: tenPhongChuan }
-        });
-        if (phongVuaTao) {
-          return {
-            ma_phong: phongVuaTao.ma_phong,
-            ten_phong: phongVuaTao.ten_phong
-          };
-        }
-      }
-    }
-
-    return {
-      ma_phong: null,
-      ten_phong: tenPhongChuan
-    };
+    const ketQua = chuanHoaPhong(vanBanPhong, danhSachPhong);
+    return ketQua;
   } catch (loi) {
-    console.warn('⚠️ Lỗi khớp phòng trong DB, fallback chuỗi chuẩn:', loi.message);
+    console.warn('⚠️ Lỗi khớp phòng trong DB, fallback chuẩn hóa cơ bản:', loi.message);
+    const tenChuan = chuanHoaTenPhong(vanBanPhong);
     return {
+      hopLe: true,
       ma_phong: null,
-      ten_phong: tenPhongChuan
+      ten_phong: tenChuan,
+      loai_phong: /hội trường/i.test(tenChuan) ? 'Hội trường' : 'Phòng lý thuyết'
     };
   }
 }
@@ -986,11 +955,22 @@ async function tiepNhanWebhookZalo(req, res) {
         return;
       }
       const ketQuaPhong = await chuanHoaVaKhopPhong(vanBan, prisma);
+      if (!ketQuaPhong.hopLe) {
+        await guiTinNhanZalo(chatId, ketQuaPhong.thongDiep);
+        return;
+      }
+
       duLieuTam.phong = lamSachDuLieu(ketQuaPhong.ten_phong).slice(0, 100);
       duLieuTam.maPhong = ketQuaPhong.ma_phong;
+      duLieuTam.loaiPhong = ketQuaPhong.loai_phong;
       await capNhatPhien(chatId, 3, duLieuTam);
 
-      await guiTinNhanZalo(chatId, `👉 Bước 3/4: Hãy mô tả hiện trạng hư hỏng (Ví dụ: Không lên nguồn, nhấp nháy đèn đỏ...)`);
+      let thongBaoPhanHoi = `👉 Bước 3/4: Hãy mô tả hiện trạng hư hỏng (Ví dụ: Không lên nguồn, nhấp nháy đèn đỏ...)`;
+      if (ketQuaPhong.tuDongSuaKhu && ketQuaPhong.thongTin?.vi_tri) {
+        thongBaoPhanHoi = `Đã ghi nhận vị trí: ${ketQuaPhong.ten_phong} (${ketQuaPhong.thongTin.vi_tri}).\n\n${thongBaoPhanHoi}`;
+      }
+
+      await guiTinNhanZalo(chatId, thongBaoPhanHoi);
       return;
     }
 
@@ -1001,8 +981,14 @@ async function tiepNhanWebhookZalo(req, res) {
       }
       duLieuTam.moTa = lamSachDuLieu(vanBan).slice(0, 1000);
       let mucUuTien = tuDongGanMucDoUuTien(duLieuTam.moTa, duLieuTam.phong);
+      // Tự động nâng mức ưu tiên cho Hội trường (tối thiểu CAO)
+      if (duLieuTam.loaiPhong === 'Hội trường' || /^hội trường/i.test(duLieuTam.phong)) {
+        if (mucUuTien === 'BINH_THUONG' || mucUuTien === 'THAP') {
+          mucUuTien = 'CAO';
+        }
+      }
       // Tự động nâng độ ưu tiên lên CAO nếu Giảng viên báo sự cố
-      if (nguoiDungHienTai?.vai_tro === 'GIANG_VIEN' && mucUuTien === 'BINH_THUONG') {
+      if (nguoiDungHienTai?.vai_tro === 'GIANG_VIEN' && (mucUuTien === 'BINH_THUONG' || mucUuTien === 'THAP')) {
         mucUuTien = 'CAO';
       }
       duLieuTam.mucDoUuTien = mucUuTien;

@@ -1,0 +1,1622 @@
+[
+  {
+    "ma_phong_chuan": "A21.101",
+    "ten_phong": "Hội trường A21.101",
+    "loai_phong": "Hội trường",
+    "toa_nha": "A2",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Hội trường • Tòa nhà A2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "A21.102",
+    "ten_phong": "Hội trường A21.102",
+    "loai_phong": "Hội trường",
+    "toa_nha": "A2",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Hội trường • Tòa nhà A2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "A42.218",
+    "ten_phong": "Hội trường A42.218",
+    "loai_phong": "Hội trường",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Hội trường • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.317",
+    "ten_phong": "Hội trường A42.317",
+    "loai_phong": "Hội trường",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Hội trường • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "B11.204",
+    "ten_phong": "Hội trường B11.204",
+    "loai_phong": "Hội trường",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Hội trường • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B11.301",
+    "ten_phong": "Hội trường B11.301",
+    "loai_phong": "Hội trường",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Hội trường • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B11.407",
+    "ten_phong": "Hội trường B11.407",
+    "loai_phong": "Hội trường",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Hội trường • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B11.409",
+    "ten_phong": "Hội trường B11.409",
+    "loai_phong": "Hội trường",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Hội trường • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B51.209",
+    "ten_phong": "Hội trường B51.209",
+    "loai_phong": "Hội trường",
+    "toa_nha": "B5",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Hội trường • Tòa nhà B5, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B71.101",
+    "ten_phong": "Hội trường B71.101",
+    "loai_phong": "Hội trường",
+    "toa_nha": "B7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Hội trường • Tòa nhà B7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B91.401",
+    "ten_phong": "Hội trường B91.401",
+    "loai_phong": "Hội trường",
+    "toa_nha": "B9",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Hội trường • Tòa nhà B9, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C51.202",
+    "ten_phong": "Hội trường C51.202",
+    "loai_phong": "Hội trường",
+    "toa_nha": "C5",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Hội trường • Tòa nhà C5, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D51.101",
+    "ten_phong": "Hội trường D51.101",
+    "loai_phong": "Hội trường",
+    "toa_nha": "D5",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Hội trường • Tòa nhà D5, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.401",
+    "ten_phong": "Hội trường D61.401",
+    "loai_phong": "Hội trường",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Hội trường • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "E11.205",
+    "ten_phong": "Hội trường E11.205",
+    "loai_phong": "Hội trường",
+    "toa_nha": "E1",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 2,
+    "vi_tri": "Hội trường • Tòa nhà E1, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "E11.305",
+    "ten_phong": "Hội trường E11.305",
+    "loai_phong": "Hội trường",
+    "toa_nha": "E1",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 3,
+    "vi_tri": "Hội trường • Tòa nhà E1, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "E21.105",
+    "ten_phong": "Hội trường E21.105",
+    "loai_phong": "Hội trường",
+    "toa_nha": "E2",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 1,
+    "vi_tri": "Hội trường • Tòa nhà E2, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "E21.206",
+    "ten_phong": "Hội trường E21.206",
+    "loai_phong": "Hội trường",
+    "toa_nha": "E2",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 2,
+    "vi_tri": "Hội trường • Tòa nhà E2, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "E21.207",
+    "ten_phong": "Hội trường E21.207",
+    "loai_phong": "Hội trường",
+    "toa_nha": "E2",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 2,
+    "vi_tri": "Hội trường • Tòa nhà E2, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "E31.302",
+    "ten_phong": "Hội trường E31.302",
+    "loai_phong": "Hội trường",
+    "toa_nha": "E3",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 3,
+    "vi_tri": "Hội trường • Tòa nhà E3, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "E31.403",
+    "ten_phong": "Hội trường E31.403",
+    "loai_phong": "Hội trường",
+    "toa_nha": "E3",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 4,
+    "vi_tri": "Hội trường • Tòa nhà E3, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "B11.214",
+    "ten_phong": "Phòng B11.214",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B11.303",
+    "ten_phong": "Phòng B11.303",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B11.318",
+    "ten_phong": "Phòng B11.318",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C71.204",
+    "ten_phong": "Phòng C71.204",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "C7",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà C7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C71.205",
+    "ten_phong": "Phòng C71.205",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "C7",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà C7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C71.206",
+    "ten_phong": "Phòng C71.206",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "C7",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà C7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D41.107",
+    "ten_phong": "Phòng D41.107",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D4",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D4, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.103",
+    "ten_phong": "Phòng D71.103",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.104",
+    "ten_phong": "Phòng D71.104",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.105",
+    "ten_phong": "Phòng D71.105",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.106",
+    "ten_phong": "Phòng D71.106",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.107",
+    "ten_phong": "Phòng D71.107",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.108",
+    "ten_phong": "Phòng D71.108",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.109",
+    "ten_phong": "Phòng D71.109",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.110",
+    "ten_phong": "Phòng D71.110",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.111",
+    "ten_phong": "Phòng D71.111",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.112",
+    "ten_phong": "Phòng D71.112",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.113",
+    "ten_phong": "Phòng D71.113",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D71.114",
+    "ten_phong": "Phòng D71.114",
+    "loai_phong": "Phòng máy tính thực hành",
+    "toa_nha": "D7",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng máy tính thực hành • Tòa nhà D7, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.102",
+    "ten_phong": "Phòng C11.102",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.103",
+    "ten_phong": "Phòng C11.103",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.103/1",
+    "ten_phong": "Phòng C11.103/1",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.104/1",
+    "ten_phong": "Phòng C11.104/1",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.105",
+    "ten_phong": "Phòng C11.105",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.105/1",
+    "ten_phong": "Phòng C11.105/1",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.107",
+    "ten_phong": "Phòng C11.107",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.108",
+    "ten_phong": "Phòng C11.108",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.203",
+    "ten_phong": "Phòng C11.203",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.204",
+    "ten_phong": "Phòng C11.204",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.205",
+    "ten_phong": "Phòng C11.205",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.206",
+    "ten_phong": "Phòng C11.206",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.208/1",
+    "ten_phong": "Phòng C11.208/1",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.208/2",
+    "ten_phong": "Phòng C11.208/2",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.209",
+    "ten_phong": "Phòng C11.209",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.301",
+    "ten_phong": "Phòng C11.301",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.304",
+    "ten_phong": "Phòng C11.304",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.306",
+    "ten_phong": "Phòng C11.306",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.307",
+    "ten_phong": "Phòng C11.307",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.308",
+    "ten_phong": "Phòng C11.308",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.310",
+    "ten_phong": "Phòng C11.310",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.312",
+    "ten_phong": "Phòng C11.312",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.401",
+    "ten_phong": "Phòng C11.401",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.402",
+    "ten_phong": "Phòng C11.402",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.403",
+    "ten_phong": "Phòng C11.403",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.404",
+    "ten_phong": "Phòng C11.404",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.405",
+    "ten_phong": "Phòng C11.405",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.406",
+    "ten_phong": "Phòng C11.406",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.407",
+    "ten_phong": "Phòng C11.407",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C11.410",
+    "ten_phong": "Phòng C11.410",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "C1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà C1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "F11.103",
+    "ten_phong": "Phòng F11.103",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "F1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà F1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "F11.104",
+    "ten_phong": "Phòng F11.104",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "F1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà F1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "H11.101",
+    "ten_phong": "Phòng H11.101",
+    "loai_phong": "Phòng thực hành - thí nghiệm",
+    "toa_nha": "H1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng thực hành - thí nghiệm • Tòa nhà H1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "A42.102",
+    "ten_phong": "Phòng A42.102",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.103",
+    "ten_phong": "Phòng A42.103",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.201",
+    "ten_phong": "Phòng A42.201",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.202",
+    "ten_phong": "Phòng A42.202",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.205",
+    "ten_phong": "Phòng A42.205",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.206",
+    "ten_phong": "Phòng A42.206",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.207",
+    "ten_phong": "Phòng A42.207",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.208",
+    "ten_phong": "Phòng A42.208",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.209",
+    "ten_phong": "Phòng A42.209",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.210",
+    "ten_phong": "Phòng A42.210",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.213",
+    "ten_phong": "Phòng A42.213",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.214",
+    "ten_phong": "Phòng A42.214",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.216",
+    "ten_phong": "Phòng A42.216",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.217",
+    "ten_phong": "Phòng A42.217",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.301",
+    "ten_phong": "Phòng A42.301",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.302",
+    "ten_phong": "Phòng A42.302",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.303",
+    "ten_phong": "Phòng A42.303",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.304",
+    "ten_phong": "Phòng A42.304",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.305",
+    "ten_phong": "Phòng A42.305",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.306",
+    "ten_phong": "Phòng A42.306",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.307",
+    "ten_phong": "Phòng A42.307",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.309",
+    "ten_phong": "Phòng A42.309",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.310",
+    "ten_phong": "Phòng A42.310",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.311",
+    "ten_phong": "Phòng A42.311",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.312",
+    "ten_phong": "Phòng A42.312",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.313",
+    "ten_phong": "Phòng A42.313",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.314",
+    "ten_phong": "Phòng A42.314",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.401",
+    "ten_phong": "Phòng A42.401",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 4,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.402",
+    "ten_phong": "Phòng A42.402",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 4,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.403",
+    "ten_phong": "Phòng A42.403",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 4,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "A42.404",
+    "ten_phong": "Phòng A42.404",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "A4",
+    "khu_vuc": "Khu II",
+    "tang": 4,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà A4, Khu II"
+  },
+  {
+    "ma_phong_chuan": "B11.113",
+    "ten_phong": "Phòng B11.113",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B11.302",
+    "ten_phong": "Phòng B11.302",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B11.307",
+    "ten_phong": "Phòng B11.307",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B11.401",
+    "ten_phong": "Phòng B11.401",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B1",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B1, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.101",
+    "ten_phong": "Phòng B21.101",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.102",
+    "ten_phong": "Phòng B21.102",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.103",
+    "ten_phong": "Phòng B21.103",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.104",
+    "ten_phong": "Phòng B21.104",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.105",
+    "ten_phong": "Phòng B21.105",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.107",
+    "ten_phong": "Phòng B21.107",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.201",
+    "ten_phong": "Phòng B21.201",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.202",
+    "ten_phong": "Phòng B21.202",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.203",
+    "ten_phong": "Phòng B21.203",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.204",
+    "ten_phong": "Phòng B21.204",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.205",
+    "ten_phong": "Phòng B21.205",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.207",
+    "ten_phong": "Phòng B21.207",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.301",
+    "ten_phong": "Phòng B21.301",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.302",
+    "ten_phong": "Phòng B21.302",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.303",
+    "ten_phong": "Phòng B21.303",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.304",
+    "ten_phong": "Phòng B21.304",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.305",
+    "ten_phong": "Phòng B21.305",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B21.307",
+    "ten_phong": "Phòng B21.307",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B2",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B2, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.101",
+    "ten_phong": "Phòng B31.101",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.102",
+    "ten_phong": "Phòng B31.102",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.103",
+    "ten_phong": "Phòng B31.103",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.104",
+    "ten_phong": "Phòng B31.104",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.105",
+    "ten_phong": "Phòng B31.105",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.107",
+    "ten_phong": "Phòng B31.107",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.201",
+    "ten_phong": "Phòng B31.201",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.202",
+    "ten_phong": "Phòng B31.202",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.203",
+    "ten_phong": "Phòng B31.203",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.204",
+    "ten_phong": "Phòng B31.204",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.205",
+    "ten_phong": "Phòng B31.205",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.207",
+    "ten_phong": "Phòng B31.207",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.301",
+    "ten_phong": "Phòng B31.301",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.302",
+    "ten_phong": "Phòng B31.302",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.303",
+    "ten_phong": "Phòng B31.303",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.304",
+    "ten_phong": "Phòng B31.304",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.305",
+    "ten_phong": "Phòng B31.305",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B31.307",
+    "ten_phong": "Phòng B31.307",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B3",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B91.101",
+    "ten_phong": "Phòng B91.101",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B9",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B9, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B91.107",
+    "ten_phong": "Phòng B91.107",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B9",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B9, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B91.201",
+    "ten_phong": "Phòng B91.201",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B9",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B9, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B91.301",
+    "ten_phong": "Phòng B91.301",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B9",
+    "khu_vuc": "Khu I",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B9, Khu I"
+  },
+  {
+    "ma_phong_chuan": "B91.402",
+    "ten_phong": "Phòng B91.402",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "B9",
+    "khu_vuc": "Khu I",
+    "tang": 4,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà B9, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C31.201",
+    "ten_phong": "Phòng C31.201",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "C3",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà C3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C31.205",
+    "ten_phong": "Phòng C31.205",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "C3",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà C3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C61.102",
+    "ten_phong": "Phòng C61.102",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "C6",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà C6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C81.202",
+    "ten_phong": "Phòng C81.202",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "C8",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà C8, Khu I"
+  },
+  {
+    "ma_phong_chuan": "C81.203",
+    "ten_phong": "Phòng C81.203",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "C8",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà C8, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D31.101",
+    "ten_phong": "Phòng D31.101",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D31.102",
+    "ten_phong": "Phòng D31.102",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D31.103",
+    "ten_phong": "Phòng D31.103",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D31.104",
+    "ten_phong": "Phòng D31.104",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D31.105",
+    "ten_phong": "Phòng D31.105",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D31.106",
+    "ten_phong": "Phòng D31.106",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D31.107",
+    "ten_phong": "Phòng D31.107",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D31.108",
+    "ten_phong": "Phòng D31.108",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D3",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D3, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D51.202",
+    "ten_phong": "Phòng D51.202",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D5",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D5, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.101",
+    "ten_phong": "Phòng D61.101",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.102",
+    "ten_phong": "Phòng D61.102",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.103",
+    "ten_phong": "Phòng D61.103",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.104",
+    "ten_phong": "Phòng D61.104",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.107",
+    "ten_phong": "Phòng D61.107",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.108",
+    "ten_phong": "Phòng D61.108",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.201",
+    "ten_phong": "Phòng D61.201",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.202",
+    "ten_phong": "Phòng D61.202",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.203",
+    "ten_phong": "Phòng D61.203",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.204",
+    "ten_phong": "Phòng D61.204",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.206",
+    "ten_phong": "Phòng D61.206",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.207",
+    "ten_phong": "Phòng D61.207",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "D61.208",
+    "ten_phong": "Phòng D61.208",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "D6",
+    "khu_vuc": "Khu I",
+    "tang": 2,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà D6, Khu I"
+  },
+  {
+    "ma_phong_chuan": "E31.301",
+    "ten_phong": "Phòng E31.301",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "E3",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 3,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà E3, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "E31.401",
+    "ten_phong": "Phòng E31.401",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "E3",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 4,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà E3, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "E31.402",
+    "ten_phong": "Phòng E31.402",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "E3",
+    "khu_vuc": "Khu I dãy E",
+    "tang": 4,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà E3, Khu I dãy E"
+  },
+  {
+    "ma_phong_chuan": "I11.101",
+    "ten_phong": "Phòng I11.101",
+    "loai_phong": "Phòng lý thuyết",
+    "toa_nha": "I1",
+    "khu_vuc": "Khu I",
+    "tang": 1,
+    "vi_tri": "Phòng lý thuyết • Tòa nhà I1, Khu I"
+  }
+]

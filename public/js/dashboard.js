@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalNguoiDungEl = document.getElementById('modalNguoiDung');
   const modalDoiMatKhauEl = document.getElementById('modalDoiMatKhau');
   const modalXemAnhLonEl = document.getElementById('modalXemAnhLon');
+  const modalPhongEl = document.getElementById('modalPhong');
   const toastThongBaoEl = document.getElementById('toastThongBao');
 
   const bsModalChiTiet = modalChiTietEl ? new bootstrap.Modal(modalChiTietEl) : null;
@@ -35,21 +36,55 @@ document.addEventListener('DOMContentLoaded', () => {
   const bsModalNguoiDung = modalNguoiDungEl ? new bootstrap.Modal(modalNguoiDungEl) : null;
   let bsModalDoiMatKhau = modalDoiMatKhauEl ? new bootstrap.Modal(modalDoiMatKhauEl) : null;
   const bsModalXemAnhLon = modalXemAnhLonEl ? new bootstrap.Modal(modalXemAnhLonEl) : null;
+  const bsModalPhong = modalPhongEl ? new bootstrap.Modal(modalPhongEl) : null;
   const bsToast = toastThongBaoEl ? new bootstrap.Toast(toastThongBaoEl, { delay: 6000 }) : null;
 
   // DOM Elements
   const tabYeuCau = document.getElementById('tabYeuCau');
   const tabBaoCao = document.getElementById('tabBaoCao');
   const tabNhanSu = document.getElementById('tabNhanSu');
+  const tabPhong = document.getElementById('tabPhong');
   const khuVucTabYeuCau = document.getElementById('khuVucTabYeuCau');
   const khuVucTabBaoCao = document.getElementById('khuVucTabBaoCao');
   const khuVucTabNhanSu = document.getElementById('khuVucTabNhanSu');
+  const khuVucTabPhong = document.getElementById('khuVucTabPhong');
   const thanBangNhanSu = document.getElementById('thanBangNhanSu');
   const nutThemNhanSu = document.getElementById('nutThemNhanSu');
   const bieuMauNguoiDung = document.getElementById('bieuMauNguoiDung');
   const nutMoModalDoiMatKhau = document.getElementById('nutMoModalDoiMatKhau');
   const bieuMauDoiMatKhau = document.getElementById('bieuMauDoiMatKhau');
   const nutXuatCsv = document.getElementById('nutXuatCsv');
+
+  // DOM Elements Tab 4 Quản lý Phòng học
+  const thanBangPhong = document.getElementById('thanBangPhong');
+  const timKiemPhong = document.getElementById('timKiemPhong');
+  const locLoaiPhong = document.getElementById('locLoaiPhong');
+  const locToaNha = document.getElementById('locToaNha');
+  const nutThemPhong = document.getElementById('nutThemPhong');
+  const nutXoaLocPhong = document.getElementById('nutXoaLocPhong');
+  const demKetQuaPhong = document.getElementById('demKetQuaPhong');
+  const thongTinPhanTrangPhong = document.getElementById('thongTinPhanTrangPhong');
+  const nutTrangTruocPhong = document.getElementById('nutTrangTruocPhong');
+  const soTrangHienTaiPhong = document.getElementById('soTrangHienTaiPhong');
+  const nutTrangSauPhong = document.getElementById('nutTrangSauPhong');
+  const tieuDeModalPhong = document.getElementById('tieuDeModalPhong');
+  const bieuMauPhong = document.getElementById('bieuMauPhong');
+  const phongHienTaiId = document.getElementById('phongHienTaiId');
+  const nhapMaPhongChuan = document.getElementById('nhapMaPhongChuan');
+  const nhapLoaiPhong = document.getElementById('nhapLoaiPhong');
+  const xemTruocTenPhong = document.getElementById('xemTruocTenPhong');
+  const xemTruocToaNha = document.getElementById('xemTruocToaNha');
+  const xemTruocKhuVuc = document.getElementById('xemTruocKhuVuc');
+  const xemTruocToaTang = document.getElementById('xemTruocToaTang');
+  const hopLoiPhong = document.getElementById('hopLoiPhong');
+  const nutLuuPhong = document.getElementById('nutLuuPhong');
+
+  // Thẻ KPI Tab 4
+  const kpiTongPhong = document.getElementById('kpiTongPhong');
+  const kpiLyThuyet = document.getElementById('kpiLyThuyet');
+  const kpiHoiTruong = document.getElementById('kpiHoiTruong');
+  const kpiMayTinh = document.getElementById('kpiMayTinh');
+  const kpiThiNghiem = document.getElementById('kpiThiNghiem');
 
   // Công cụ tìm kiếm & lọc đa trường cho Quản lý Nhân sự & Phân công
   const oTimKiemNhanSu = document.getElementById('oTimKiemNhanSu');
@@ -392,6 +427,14 @@ document.addEventListener('DOMContentLoaded', () => {
           tabNhanSu.classList.remove('d-none');
         } else {
           tabNhanSu.classList.add('d-none');
+        }
+      }
+
+      if (tabPhong) {
+        if (laAdmin) {
+          tabPhong.classList.remove('d-none');
+        } else {
+          tabPhong.classList.add('d-none');
         }
       }
 
@@ -1319,9 +1362,11 @@ document.addEventListener('DOMContentLoaded', () => {
       tabYeuCau.classList.add('active');
       if (tabBaoCao) tabBaoCao.classList.remove('active');
       if (tabNhanSu) tabNhanSu.classList.remove('active');
+      if (tabPhong) tabPhong.classList.remove('active');
       khuVucTabYeuCau.classList.remove('d-none');
       if (khuVucTabBaoCao) khuVucTabBaoCao.classList.add('d-none');
       if (khuVucTabNhanSu) khuVucTabNhanSu.classList.add('d-none');
+      if (khuVucTabPhong) khuVucTabPhong.classList.add('d-none');
     });
   }
 
@@ -1330,9 +1375,11 @@ document.addEventListener('DOMContentLoaded', () => {
       tabBaoCao.classList.add('active');
       tabYeuCau.classList.remove('active');
       if (tabNhanSu) tabNhanSu.classList.remove('active');
+      if (tabPhong) tabPhong.classList.remove('active');
       khuVucTabBaoCao.classList.remove('d-none');
       khuVucTabYeuCau.classList.add('d-none');
       if (khuVucTabNhanSu) khuVucTabNhanSu.classList.add('d-none');
+      if (khuVucTabPhong) khuVucTabPhong.classList.add('d-none');
       taiBaoCaoHieuSuat();
     });
   }
@@ -1342,10 +1389,26 @@ document.addEventListener('DOMContentLoaded', () => {
       tabNhanSu.classList.add('active');
       tabYeuCau.classList.remove('active');
       if (tabBaoCao) tabBaoCao.classList.remove('active');
+      if (tabPhong) tabPhong.classList.remove('active');
       if (khuVucTabNhanSu) khuVucTabNhanSu.classList.remove('d-none');
       khuVucTabYeuCau.classList.add('d-none');
       if (khuVucTabBaoCao) khuVucTabBaoCao.classList.add('d-none');
+      if (khuVucTabPhong) khuVucTabPhong.classList.add('d-none');
       taiDanhSachNhanSu();
+    });
+  }
+
+  if (tabPhong) {
+    tabPhong.addEventListener('click', () => {
+      tabPhong.classList.add('active');
+      tabYeuCau.classList.remove('active');
+      if (tabBaoCao) tabBaoCao.classList.remove('active');
+      if (tabNhanSu) tabNhanSu.classList.remove('active');
+      if (khuVucTabPhong) khuVucTabPhong.classList.remove('d-none');
+      khuVucTabYeuCau.classList.add('d-none');
+      if (khuVucTabBaoCao) khuVucTabBaoCao.classList.add('d-none');
+      if (khuVucTabNhanSu) khuVucTabNhanSu.classList.add('d-none');
+      taiDanhSachPhong();
     });
   }
 
@@ -1980,6 +2043,404 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =========================================================================
+  // TAB 4: QUẢN LÝ PHÒNG HỌC & ĐỒNG BỘ ĐỘNG TVU (ADMIN ONLY)
+  // =========================================================================
+  const boLocPhong = {
+    tuKhoa: '',
+    loaiPhong: '',
+    toaNha: '',
+    trang: 1,
+    gioiHan: 20
+  };
+
+  function docThongTinPhongNhanh(maPhongNhap, loaiPhongChon) {
+    if (!maPhongNhap) return null;
+    const match = maPhongNhap.trim().toUpperCase().match(/^([A-Z]\d)(\d)\.(\d)(\d{2})(\/\d+)?$/);
+    if (!match) return null;
+
+    const toaNha = match[1];
+    const khuDigit = match[2];
+    const tang = match[3];
+    const khuVuc = khuDigit === '2' ? 'Khu II' : 'Khu I';
+    const tienTo = loaiPhongChon === 'Hội trường' ? 'Hội trường ' : 'Phòng ';
+    const tenChuan = `${tienTo}${match[0]}`;
+
+    return {
+      tenChuan,
+      toaNha,
+      khuVuc,
+      toaTang: `Tòa nhà ${toaNha} • Tầng ${tang}`
+    };
+  }
+
+  function capNhatGoiYPhong() {
+    if (!nhapMaPhongChuan || !xemTruocTenPhong) return;
+    const ma = nhapMaPhongChuan.value.trim().toUpperCase();
+    const loai = nhapLoaiPhong ? nhapLoaiPhong.value : 'Phòng lý thuyết';
+    const info = docThongTinPhongNhanh(ma, loai);
+
+    if (info) {
+      xemTruocTenPhong.textContent = info.tenChuan;
+      if (xemTruocToaNha) xemTruocToaNha.textContent = info.toaNha;
+      if (xemTruocKhuVuc) xemTruocKhuVuc.textContent = info.khuVuc;
+      if (xemTruocToaTang) xemTruocToaTang.textContent = info.toaTang;
+    } else {
+      xemTruocTenPhong.textContent = ma ? `${loai === 'Hội trường' ? 'Hội trường ' : 'Phòng '}${ma}` : '--';
+      if (xemTruocToaNha) xemTruocToaNha.textContent = '--';
+      if (xemTruocKhuVuc) xemTruocKhuVuc.textContent = '--';
+      if (xemTruocToaTang) xemTruocToaTang.textContent = '--';
+    }
+  }
+
+  if (nhapMaPhongChuan) {
+    nhapMaPhongChuan.addEventListener('input', () => {
+      nhapMaPhongChuan.value = nhapMaPhongChuan.value.toUpperCase();
+      capNhatGoiYPhong();
+    });
+  }
+
+  if (nhapLoaiPhong) {
+    nhapLoaiPhong.addEventListener('change', capNhatGoiYPhong);
+  }
+
+  async function taiDanhSachPhong() {
+    if (!thanBangPhong) return;
+
+    try {
+      const thamSo = new URLSearchParams({
+        tuKhoa: boLocPhong.tuKhoa,
+        loaiPhong: boLocPhong.loaiPhong,
+        toaNha: boLocPhong.toaNha,
+        trang: boLocPhong.trang,
+        gioiHan: boLocPhong.gioiHan
+      });
+
+      const res = await fetch(`/api/phong?${thamSo.toString()}`);
+      if (!res.ok) {
+        throw new Error('Lỗi tải danh sách phòng');
+      }
+
+      const ketQua = await res.json();
+      if (!ketQua.thanhCong) return;
+
+      const { duLieu, phanTrang, thongKe } = ketQua;
+
+      // Cập nhật 5 thẻ KPI
+      if (thongKe) {
+        if (kpiTongPhong) kpiTongPhong.textContent = thongKe.tongSoPhong || 0;
+        if (kpiLyThuyet) kpiLyThuyet.textContent = thongKe.soLyThuyet || 0;
+        if (kpiHoiTruong) kpiHoiTruong.textContent = thongKe.soHoiTruong || 0;
+        if (kpiMayTinh) kpiMayTinh.textContent = thongKe.soMayTinh || 0;
+        if (kpiThiNghiem) kpiThiNghiem.textContent = thongKe.soThiNghiem || 0;
+      }
+
+      if (demKetQuaPhong && phanTrang) {
+        demKetQuaPhong.textContent = `${phanTrang.tongSoPhong} phòng`;
+      }
+
+      // Nạp danh sách tòa nhà vào select #locToaNha nếu chưa có
+      if (locToaNha && locToaNha.options.length <= 1) {
+        const danhSachToa = [
+          'A2', 'A4', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9',
+          'C1', 'D1', 'D3', 'D4', 'D5', 'D6', 'D7', 'E', 'E1', 'E2', 'E3', 'E4', 'E5', 'I1'
+        ];
+        danhSachToa.forEach(toa => {
+          const opt = document.createElement('option');
+          opt.value = toa;
+          opt.textContent = `Tòa ${toa}`;
+          locToaNha.appendChild(opt);
+        });
+      }
+
+      // Xóa dữ liệu cũ trong bảng
+      thanBangPhong.replaceChildren();
+
+      if (!duLieu || duLieu.length === 0) {
+        const trTrong = document.createElement('tr');
+        const tdTrong = document.createElement('td');
+        tdTrong.colSpan = 5;
+        tdTrong.className = 'text-center py-4 text-muted small';
+        tdTrong.textContent = 'Không tìm thấy phòng học nào phù hợp với bộ lọc.';
+        trTrong.appendChild(tdTrong);
+        thanBangPhong.appendChild(trTrong);
+      } else {
+        const mauHang = document.getElementById('mauHangPhong');
+        duLieu.forEach(p => {
+          let hang;
+          if (mauHang && 'content' in mauHang) {
+            hang = mauHang.content.cloneNode(true);
+          } else {
+            return;
+          }
+
+          const oMa = hang.querySelector('.cot-ma-phong');
+          const oTen = hang.querySelector('.cot-ten-phong');
+          const oLoai = hang.querySelector('.cot-loai-phong');
+          const oViTri = hang.querySelector('.cot-vi-tri');
+          const oSoLuot = hang.querySelector('.cot-so-luot');
+          const nutSua = hang.querySelector('.nut-sua-phong');
+          const nutXoa = hang.querySelector('.nut-xoa-phong');
+
+          if (oMa) oMa.textContent = p.ma_phong_chuan || p.ten_phong;
+          if (oTen) oTen.textContent = p.ten_phong;
+          if (oLoai) {
+            oLoai.textContent = p.loai_phong;
+            if (p.loai_phong === 'Hội trường') {
+              oLoai.className = 'cot-loai-phong badge-phong-hoi-truong';
+            } else if (p.loai_phong === 'Phòng máy tính thực hành') {
+              oLoai.className = 'cot-loai-phong badge-phong-may-tinh';
+            } else if (p.loai_phong === 'Phòng thực hành - thí nghiệm') {
+              oLoai.className = 'cot-loai-phong badge-phong-thi-nghiem';
+            } else {
+              oLoai.className = 'cot-loai-phong badge-phong-ly-thuyet';
+            }
+          }
+          if (oViTri) oViTri.textContent = p.vi_tri || `${p.toa_nha || ''} (${p.khu_vuc || ''})`;
+          if (oSoLuot) {
+            oSoLuot.textContent = p.so_luot_bao_hong || 0;
+            if (p.so_luot_bao_hong > 0) {
+              oSoLuot.className = 'cot-so-luot badge bg-primary text-white font-mono';
+            }
+          }
+
+          if (nutSua) {
+            nutSua.addEventListener('click', () => moModalSuaPhong(p));
+          }
+
+          if (nutXoa) {
+            if (p.so_luot_bao_hong > 0) {
+              nutXoa.title = `Không thể xóa vì có ${p.so_luot_bao_hong} yêu cầu báo hỏng trong lịch sử`;
+            }
+            nutXoa.addEventListener('click', () => xuLyXoaPhong(p));
+          }
+
+          thanBangPhong.appendChild(hang);
+        });
+      }
+
+      // Cập nhật phân trang
+      if (thongTinPhanTrangPhong && phanTrang) {
+        const tuHang = phanTrang.tongSoPhong === 0 ? 0 : (phanTrang.trangHienTai - 1) * phanTrang.gioiHan + 1;
+        const denHang = Math.min(phanTrang.trangHienTai * phanTrang.gioiHan, phanTrang.tongSoPhong);
+        thongTinPhanTrangPhong.textContent = `Hiển thị ${tuHang} - ${denHang} trên tổng số ${phanTrang.tongSoPhong} phòng`;
+      }
+
+      if (soTrangHienTaiPhong && phanTrang) {
+        soTrangHienTaiPhong.textContent = `Trang ${phanTrang.trangHienTai} / ${phanTrang.tongSoTrang}`;
+      }
+
+      if (nutTrangTruocPhong && phanTrang) {
+        nutTrangTruocPhong.disabled = phanTrang.trangHienTai <= 1;
+      }
+      if (nutTrangSauPhong && phanTrang) {
+        nutTrangSauPhong.disabled = phanTrang.trangHienTai >= phanTrang.tongSoTrang;
+      }
+
+    } catch (loi) {
+      console.error('Lỗi nạp danh sách phòng:', loi);
+    }
+  }
+
+  function moModalThemPhong() {
+    if (!bsModalPhong) return;
+    if (bieuMauPhong) bieuMauPhong.reset();
+    if (phongHienTaiId) phongHienTaiId.value = '';
+    if (tieuDeModalPhong) tieuDeModalPhong.textContent = 'Thêm phòng học mới';
+    if (hopLoiPhong) {
+      hopLoiPhong.classList.add('d-none');
+      hopLoiPhong.textContent = '';
+    }
+    capNhatGoiYPhong();
+    bsModalPhong.show();
+  }
+
+  function moModalSuaPhong(phong) {
+    if (!bsModalPhong) return;
+    if (bieuMauPhong) bieuMauPhong.reset();
+    if (phongHienTaiId) phongHienTaiId.value = phong.ma_phong;
+    if (nhapMaPhongChuan) nhapMaPhongChuan.value = phong.ma_phong_chuan || phong.ten_phong.replace(/^(phòng|hội trường)\s+/i, '');
+    if (nhapLoaiPhong) nhapLoaiPhong.value = phong.loai_phong || 'Phòng lý thuyết';
+    if (tieuDeModalPhong) tieuDeModalPhong.textContent = `Cập nhật phòng học [${phong.ten_phong}]`;
+    if (hopLoiPhong) {
+      hopLoiPhong.classList.add('d-none');
+      hopLoiPhong.textContent = '';
+    }
+    capNhatGoiYPhong();
+    bsModalPhong.show();
+  }
+
+  if (bieuMauPhong) {
+    bieuMauPhong.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (hopLoiPhong) {
+        hopLoiPhong.classList.add('d-none');
+        hopLoiPhong.textContent = '';
+      }
+
+      const id = phongHienTaiId ? phongHienTaiId.value : '';
+      const maChuan = nhapMaPhongChuan ? nhapMaPhongChuan.value.trim().toUpperCase() : '';
+      const loai = nhapLoaiPhong ? nhapLoaiPhong.value : 'Phòng lý thuyết';
+
+      if (!maChuan) {
+        if (hopLoiPhong) {
+          hopLoiPhong.textContent = 'Vui lòng nhập mã phòng chuẩn TVU.';
+          hopLoiPhong.classList.remove('d-none');
+        }
+        return;
+      }
+
+      const laThem = !id;
+      const url = laThem ? '/api/phong' : `/api/phong/${id}`;
+      const method = laThem ? 'POST' : 'PUT';
+
+      try {
+        if (nutLuuPhong) {
+          nutLuuPhong.disabled = true;
+          nutLuuPhong.textContent = 'Đang lưu...';
+        }
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ma_phong_chuan: maChuan,
+            loai_phong: loai
+          })
+        });
+
+        const ketQua = await res.json();
+        if (!res.ok || !ketQua.thanhCong) {
+          if (hopLoiPhong) {
+            hopLoiPhong.textContent = ketQua.loi || 'Không thể lưu thông tin phòng.';
+            hopLoiPhong.classList.remove('d-none');
+          }
+          return;
+        }
+
+        if (bsModalPhong) bsModalPhong.hide();
+        thongBaoThanhCong(ketQua.thongBao || (laThem ? 'Thêm phòng thành công' : 'Cập nhật phòng thành công'));
+        await taiDanhSachPhong();
+        await taiDanhMucHeThong();
+      } catch (err) {
+        console.error('Lỗi lưu phòng:', err);
+        if (hopLoiPhong) {
+          hopLoiPhong.textContent = 'Lỗi kết nối máy chủ.';
+          hopLoiPhong.classList.remove('d-none');
+        }
+      } finally {
+        if (nutLuuPhong) {
+          nutLuuPhong.disabled = false;
+          nutLuuPhong.textContent = 'Lưu thông tin';
+        }
+      }
+    });
+  }
+
+  async function xuLyXoaPhong(phong) {
+    if (phong.so_luot_bao_hong > 0) {
+      await Swal.fire({
+        title: 'Không thể xóa phòng này',
+        text: `Phòng [${phong.ten_phong}] đang có ${phong.so_luot_bao_hong} yêu cầu báo hỏng gắn liền trong lịch sử. Hệ thống ngăn chặn việc xóa để đảm bảo toàn vẹn dữ liệu.`,
+        icon: 'warning',
+        confirmButtonColor: '#2563EB',
+        confirmButtonText: 'Đã hiểu'
+      });
+      return;
+    }
+
+    const dongY = await xacNhanHanhDong({
+      tieuDe: `Xóa phòng [${phong.ten_phong}]?`,
+      noiDung: 'Thao tác này sẽ xóa vĩnh viễn phòng học khỏi danh mục hệ thống.',
+      nutDongY: 'Xóa phòng',
+      nutHuy: 'Hủy bỏ',
+      loai: 'warning'
+    });
+
+    if (!dongY) return;
+
+    try {
+      const res = await fetch(`/api/phong/${phong.ma_phong}`, {
+        method: 'DELETE'
+      });
+      const ketQua = await res.json();
+
+      if (!res.ok || !ketQua.thanhCong) {
+        thongBaoCanhBao(ketQua.loi || 'Không thể xóa phòng học.');
+        return;
+      }
+
+      thongBaoThanhCong(ketQua.thongBao || 'Đã xóa phòng thành công.');
+      await taiDanhSachPhong();
+      await taiDanhMucHeThong();
+    } catch (err) {
+      console.error('Lỗi xóa phòng:', err);
+      thongBaoLoi('Lỗi kết nối khi xóa phòng.');
+    }
+  }
+
+  // Sự kiện bộ lọc Tab 4
+  let timerTimKiemPhong = null;
+  if (timKiemPhong) {
+    timKiemPhong.addEventListener('input', () => {
+      clearTimeout(timerTimKiemPhong);
+      timerTimKiemPhong = setTimeout(() => {
+        boLocPhong.tuKhoa = timKiemPhong.value.trim();
+        boLocPhong.trang = 1;
+        taiDanhSachPhong();
+      }, 300);
+    });
+  }
+
+  if (locLoaiPhong) {
+    locLoaiPhong.addEventListener('change', () => {
+      boLocPhong.loaiPhong = locLoaiPhong.value;
+      boLocPhong.trang = 1;
+      taiDanhSachPhong();
+    });
+  }
+
+  if (locToaNha) {
+    locToaNha.addEventListener('change', () => {
+      boLocPhong.toaNha = locToaNha.value;
+      boLocPhong.trang = 1;
+      taiDanhSachPhong();
+    });
+  }
+
+  if (nutXoaLocPhong) {
+    nutXoaLocPhong.addEventListener('click', () => {
+      if (timKiemPhong) timKiemPhong.value = '';
+      if (locLoaiPhong) locLoaiPhong.value = '';
+      if (locToaNha) locToaNha.value = '';
+      boLocPhong.tuKhoa = '';
+      boLocPhong.loaiPhong = '';
+      boLocPhong.toaNha = '';
+      boLocPhong.trang = 1;
+      taiDanhSachPhong();
+    });
+  }
+
+  if (nutThemPhong) {
+    nutThemPhong.addEventListener('click', moModalThemPhong);
+  }
+
+  if (nutTrangTruocPhong) {
+    nutTrangTruocPhong.addEventListener('click', () => {
+      if (boLocPhong.trang > 1) {
+        boLocPhong.trang--;
+        taiDanhSachPhong();
+      }
+    });
+  }
+
+  if (nutTrangSauPhong) {
+    nutTrangSauPhong.addEventListener('click', () => {
+      boLocPhong.trang++;
+      taiDanhSachPhong();
+    });
+  }
+
+  // =========================================================================
   // 14. ĐỒNG BỘ TỰ ĐỘNG THÔNG MINH (POLLING 20S)
   // =========================================================================
   function batDauDongBoTuDong() {
@@ -1995,6 +2456,8 @@ document.addEventListener('DOMContentLoaded', () => {
           taiBaoCaoHieuSuat();
         } else if (khuVucTabNhanSu && !khuVucTabNhanSu.classList.contains('d-none')) {
           taiDanhSachNhanSu();
+        } else if (khuVucTabPhong && !khuVucTabPhong.classList.contains('d-none')) {
+          taiDanhSachPhong();
         }
       }
     }, 20000); // 20 giây

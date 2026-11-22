@@ -27,6 +27,12 @@ const {
   capNhatNguoiDung,
   doiTrangThaiNguoiDung
 } = require('../controllers/nguoiDungDieuKhien');
+const {
+  layDanhSachPhong,
+  taoPhongMoi,
+  capNhatPhong,
+  xoaPhong
+} = require('../controllers/phongDieuKhien');
 
 // ==========================================
 // 1. CỤM API XÁC THỰC (AUTHENTICATION)
@@ -65,5 +71,13 @@ router.get('/nguoi-dung', kiemTraDangNhap, kiemTraQuyenAdmin, layDanhSachNguoiDu
 router.post('/nguoi-dung', kiemTraDangNhap, kiemTraQuyenAdmin, taoNguoiDung);
 router.put('/nguoi-dung/:id', kiemTraDangNhap, kiemTraQuyenAdmin, capNhatNguoiDung);
 router.patch('/nguoi-dung/:id/trang-thai', kiemTraDangNhap, kiemTraQuyenAdmin, doiTrangThaiNguoiDung);
+
+// ==========================================
+// 6. CỤM API QUẢN LÝ PHÒNG HỌC (TAB 4)
+// ==========================================
+router.get('/phong', kiemTraDangNhap, layDanhSachPhong);
+router.post('/phong', kiemTraDangNhap, kiemTraQuyenAdmin, taoPhongMoi);
+router.put('/phong/:id', kiemTraDangNhap, kiemTraQuyenAdmin, capNhatPhong);
+router.delete('/phong/:id', kiemTraDangNhap, kiemTraQuyenAdmin, xoaPhong);
 
 module.exports = router;
