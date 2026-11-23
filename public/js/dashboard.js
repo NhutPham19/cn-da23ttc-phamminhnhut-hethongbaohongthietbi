@@ -702,18 +702,49 @@ document.addEventListener('DOMContentLoaded', () => {
       const nutThaoTacChinh = clone.querySelector('.nut-thao-tac-chinh');
       const nutXemChiTiet = clone.querySelector('.nut-xem-chi-tiet');
 
+      const laAdmin = nguoiDungHienTai?.vai_tro === 'ADMIN';
+      const daCoKtv = Boolean(yc.ma_ky_thuat_vien);
+      const laNguoiPhuTrach = daCoKtv && yc.ma_ky_thuat_vien === nguoiDungHienTai?.ma_nguoi_dung;
+
       // Nút 1: Hành động chính theo ngữ cảnh
       if (yc.trang_thai === 'CHO_XU_LY') {
-        nutThaoTacChinh.textContent = 'Tiếp nhận';
-        nutThaoTacChinh.className = 'nut-thao-tac-chinh btn-chinh';
-        nutThaoTacChinh.onclick = () => xuLyTiepNhanNhanh(yc);
+        if (daCoKtv) {
+          if (laAdmin) {
+            // Admin có quyền đổi KTV
+            nutThaoTacChinh.textContent = 'Đổi KTV';
+            nutThaoTacChinh.className = 'nut-thao-tac-chinh btn btn-sm btn-outline-primary';
+            nutThaoTacChinh.onclick = () => moModalPhanCong(yc);
+            nutThaoTacChinh.classList.remove('d-none');
+          } else if (laNguoiPhuTrach) {
+            // Đúng KTV được phân công: hiển thị nút Tiếp nhận
+            nutThaoTacChinh.textContent = 'Tiếp nhận';
+            nutThaoTacChinh.className = 'nut-thao-tac-chinh btn-chinh';
+            nutThaoTacChinh.onclick = () => xuLyTiepNhanNhanh(yc);
+            nutThaoTacChinh.classList.remove('d-none');
+          } else {
+            // KTV khác: CHẶN lại, ẩn nút tiếp nhận hoàn toàn
+            nutThaoTacChinh.classList.add('d-none');
+          }
+        } else {
+          // Chưa phân công cho ai
+          if (laAdmin) {
+            nutThaoTacChinh.textContent = 'Phân công';
+            nutThaoTacChinh.className = 'nut-thao-tac-chinh btn btn-sm btn-outline-primary';
+            nutThaoTacChinh.onclick = () => moModalPhanCong(yc);
+            nutThaoTacChinh.classList.remove('d-none');
+          } else {
+            nutThaoTacChinh.textContent = 'Tiếp nhận';
+            nutThaoTacChinh.className = 'nut-thao-tac-chinh btn-chinh';
+            nutThaoTacChinh.onclick = () => xuLyTiepNhanNhanh(yc);
+            nutThaoTacChinh.classList.remove('d-none');
+          }
+        }
       } else if (yc.trang_thai === 'DANG_XU_LY') {
-        const laAdmin = nguoiDungHienTai?.vai_tro === 'ADMIN';
-        const laNguoiPhuTrach = yc.ma_ky_thuat_vien === nguoiDungHienTai?.ma_nguoi_dung;
         if (laAdmin || laNguoiPhuTrach) {
           nutThaoTacChinh.textContent = 'Hoàn thành';
           nutThaoTacChinh.className = 'nut-thao-tac-chinh btn btn-sm btn-success d-inline-flex align-items-center gap-1';
           nutThaoTacChinh.onclick = () => moModalCapNhat(yc, 'HOAN_THANH');
+          nutThaoTacChinh.classList.remove('d-none');
         } else {
           nutThaoTacChinh.classList.add('d-none');
         }
@@ -815,6 +846,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. XỬ LÝ TIẾP NHẬN & HOÀN THÀNH (BẢO VỆ KHÓA LẠC QUAN HTTP 409)
   // =========================================================================
   async function xuLyTiepNhanNhanh(yc) {
+    if (yc.ma_ky_thuat_vien && yc.ma_ky_thuat_vien !== nguoiDungHienTai?.ma_nguoi_dung && nguoiDungHienTai?.vai_tro !== 'ADMIN') {
+      thongBaoCanhBao('Yêu cầu này đã được phân công cho kỹ thuật viên khác xử lý.');
+      return;
+    }
+
     const dongY = await xacNhanHanhDong({
       tieuDe: 'Tiếp nhận sự cố?',
       noiDung: `Mã yêu cầu: ${yc.ma_yeu_cau}`,
@@ -1046,14 +1082,33 @@ document.addEventListener('DOMContentLoaded', () => {
       if (nutHuy) nutHuy.classList.add('d-none');
       if (nhanDaDong) nhanDaDong.classList.add('d-none');
 
+      const daCoKtv = Boolean(yeuCauDangXem.ma_ky_thuat_vien);
+
       if (trangThai === 'CHO_XU_LY') {
-        if (nutTiepNhan) {
-          nutTiepNhan.classList.remove('d-none');
+        if (daCoKtv) {
+          // ĐÃ PHÂN CÔNG:
+          // Admin có nút "Đổi KTV phân công"
+          if (nutPhanCong && laAdmin) {
+            nutPhanCong.textContent = 'Đổi KTV phân công';
+            nutPhanCong.classList.remove('d-none');
+          }
+          // CHỈ KTV được phân công mới thấy nút "Tiếp nhận ngay"
+          if (nutTiepNhan && laPhuTrach) {
+            nutTiepNhan.textContent = 'Tiếp nhận ngay';
+            nutTiepNhan.classList.remove('d-none');
+          }
+        } else {
+          // CHƯA PHÂN CÔNG:
+          if (nutPhanCong && laAdmin) {
+            nutPhanCong.textContent = 'Phân công KTV';
+            nutPhanCong.classList.remove('d-none');
+          }
+          if (nutTiepNhan) {
+            nutTiepNhan.textContent = 'Tiếp nhận ngay';
+            nutTiepNhan.classList.remove('d-none');
+          }
         }
-        if (nutPhanCong && laAdmin) {
-          nutPhanCong.classList.remove('d-none');
-        }
-        if (nutHuy) {
+        if (nutHuy && (laAdmin || laPhuTrach || !daCoKtv)) {
           nutHuy.classList.remove('d-none');
         }
       } else if (trangThai === 'DANG_XU_LY') {
@@ -1271,13 +1326,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      const kq = await phanHoi.json().catch(() => ({}));
       if (!phanHoi.ok) {
-        const kq = await phanHoi.json().catch(() => ({}));
         thongBaoLoi(kq.loi || 'Phân công không thành công');
         return;
       }
 
-      thongBaoThanhCong('Phân công kỹ thuật viên thành công');
+      thongBaoThanhCong(kq.thongBao || kq.thong_bao || 'Phân công kỹ thuật viên thành công');
       if (bsModalPhanCong) bsModalPhanCong.hide();
       try {
         await taiDanhSachYeuCau();

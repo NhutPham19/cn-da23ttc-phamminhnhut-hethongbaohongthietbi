@@ -388,7 +388,10 @@ async function phanCongYeuCau(req, res) {
 
     const whereClause = taoDieuKienTimKiemYeuCau(req.params.id || req.query.ma_yeu_cau);
 
-    const yeuCauHienTai = await prisma.yeu_cau_bao_hong.findFirst({ where: whereClause });
+    const yeuCauHienTai = await prisma.yeu_cau_bao_hong.findFirst({
+      where: whereClause,
+      include: { ky_thuat_vien: true }
+    });
     if (!yeuCauHienTai) {
       return res.status(404).json({ thanhCong: false, loi: 'Không tìm thấy yêu cầu' });
     }
@@ -401,6 +404,27 @@ async function phanCongYeuCau(req, res) {
         thong_bao: 'Không thể phân công yêu cầu đã hoàn thành hoặc đã hủy'
       });
     }
+
+    let ktvCu = (yeuCauHienTai.ma_ky_thuat_vien && yeuCauHienTai.ma_ky_thuat_vien !== ktv.ma_nguoi_dung)
+      ? yeuCauHienTai.ky_thuat_vien
+      : null;
+
+    if (!ktvCu && yeuCauHienTai.ma_ky_thuat_vien && yeuCauHienTai.ma_ky_thuat_vien !== ktv.ma_nguoi_dung) {
+      try {
+        ktvCu = await prisma.nguoi_dung.findUnique({
+          where: { ma_nguoi_dung: yeuCauHienTai.ma_ky_thuat_vien },
+          select: { ma_nguoi_dung: true, ho_ten: true, chat_id_zalo: true }
+        });
+      } catch (e) {
+        console.warn('⚠️ Lỗi tìm KTV cũ:', e.message);
+      }
+    }
+
+    const laDoiNguoiPhuTrach = Boolean(ktvCu);
+    const tenKtvCu = ktvCu?.ho_ten || 'kỹ thuật viên trước đó';
+    const ghiChuLichSu = laDoiNguoiPhuTrach
+      ? `Đổi phân công từ KTV ${tenKtvCu} sang KTV ${ktv.ho_ten}`
+      : `Phân công xử lý cho KTV ${ktv.ho_ten}`;
 
     const ketQua = await prisma.$transaction(async (tx) => {
       const ketQuaCapNhat = await tx.yeu_cau_bao_hong.updateMany({
@@ -419,7 +443,7 @@ async function phanCongYeuCau(req, res) {
           ma_yeu_cau_bao_hong: yeuCauHienTai.ma_yeu_cau_bao_hong,
           trang_thai: yeuCauHienTai.trang_thai,
           nguoi_thuc_hien: req.nguoiDung.ho_ten || 'Quản trị viên',
-          ghi_chu: `Phân công xử lý cho KTV ${ktv.ho_ten}`
+          ghi_chu: ghiChuLichSu
         }
       });
 
@@ -429,20 +453,60 @@ async function phanCongYeuCau(req, res) {
       });
     });
 
+    // 1. Gửi thông báo cho KTV mới
     if (ktv.chat_id_zalo) {
+      const thongBaoMoi = laDoiNguoiPhuTrach
+        ? `📋 BẠN ĐƯỢC ĐIỀU CHUYỂN PHÂN CÔNG SỰ CỐ\n\n` +
+          `• Mã yêu cầu: ${ketQua.ma_yeu_cau}\n` +
+          `• Thiết bị: ${ketQua.ten_thiet_bi}\n` +
+          `• Vị trí: ${ketQua.vi_tri_phong}\n` +
+          `• Mô tả sự cố: ${ketQua.mo_ta_loi || 'Không có mô tả'}\n` +
+          `• KTV trước đó: ${tenKtvCu}\n\n` +
+          `💡 Quản trị viên vừa điều chuyển yêu cầu này cho bạn phụ trách xử lý.`
+        : `📋 BẠN CÓ CÔNG VIỆC BÁO HỎNG MỚI ĐƯỢC PHÂN CÔNG\n\n` +
+          `• Mã yêu cầu: ${ketQua.ma_yeu_cau}\n` +
+          `• Thiết bị: ${ketQua.ten_thiet_bi}\n` +
+          `• Vị trí: ${ketQua.vi_tri_phong}\n` +
+          `• Mô tả sự cố: ${ketQua.mo_ta_loi || 'Không có mô tả'}`;
+
+      guiTinNhanZalo(ktv.chat_id_zalo, thongBaoMoi)
+        .catch((loiZalo) => console.error('⚠️ Lỗi gửi thông báo phân công qua Zalo:', loiZalo.message));
+    }
+
+    // 2. Gửi thông báo cho KTV cũ rằng đã đổi người phụ trách
+    if (laDoiNguoiPhuTrach && ktvCu?.chat_id_zalo) {
       guiTinNhanZalo(
-        ktv.chat_id_zalo,
-        `📋 BẠN CÓ CÔNG VIỆC BÁO HỎNG MỚI ĐƯỢC PHÂN CÔNG\n\n` +
+        ktvCu.chat_id_zalo,
+        `ℹ️ ĐIỀU CHUYỂN PHÂN CÔNG SỰ CỐ\n\n` +
+        `• Mã yêu cầu: ${ketQua.ma_yeu_cau}\n` +
+        `• Thiết bị: ${ketQua.ten_thiet_bi}\n` +
+        `• Vị trí: ${ketQua.vi_tri_phong}\n\n` +
+        `Quản trị viên đã chuyển giao yêu cầu này cho Kỹ thuật viên [${ktv.ho_ten}] phụ trách.\n` +
+        `Bạn không còn phụ trách xử lý yêu cầu này.`
+      ).catch((loiZalo) => console.error('⚠️ Lỗi gửi thông báo chuyển KTV cũ qua Zalo:', loiZalo.message));
+    }
+
+    // 3. Gửi thông báo cho người báo sự cố trên Zalo
+    if (yeuCauHienTai.ma_nguoi_bao_zalo) {
+      const tieuDeNguoiBao = laDoiNguoiPhuTrach ? 'THAY ĐỔI KỸ THUẬT VIÊN PHỤ TRÁCH' : 'PHÂN CÔNG KỸ THUẬT VIÊN XỬ LÝ';
+      guiTinNhanZalo(
+        yeuCauHienTai.ma_nguoi_bao_zalo,
+        `🛎️ ${tieuDeNguoiBao}\n\n` +
         `• Mã yêu cầu: ${ketQua.ma_yeu_cau}\n` +
         `• Thiết bị: ${ketQua.ten_thiet_bi}\n` +
         `• Vị trí: ${ketQua.vi_tri_phong}\n` +
-        `• Mô tả sự cố: ${ketQua.mo_ta_loi}`
-      ).catch((loiZalo) => console.error('⚠️ Lỗi gửi thông báo phân công qua Zalo:', loiZalo.message));
+        `• KTV phụ trách: ${ktv.ho_ten}\n` +
+        `💡 Kỹ thuật viên sẽ sớm có mặt để kiểm tra và xử lý sự cố.`
+      ).catch((loiZalo) => console.error('⚠️ Lỗi gửi thông báo phân công cho người báo:', loiZalo.message));
     }
+
+    const thongBaoKetQua = laDoiNguoiPhuTrach
+      ? `Đã đổi người phụ trách từ ${tenKtvCu} sang ${ktv.ho_ten}`
+      : `Đã phân công yêu cầu cho kỹ thuật viên: ${ktv.ho_ten}`;
 
     return res.status(200).json({
       thanhCong: true,
-      thongBao: `Đã phân công yêu cầu cho kỹ thuật viên: ${ktv.ho_ten}`,
+      thongBao: thongBaoKetQua,
       duLieu: ketQua
     });
   } catch (loi) {

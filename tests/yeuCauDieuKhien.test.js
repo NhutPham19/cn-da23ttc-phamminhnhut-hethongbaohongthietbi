@@ -34,14 +34,23 @@ const prismaGia = {
     }
   },
   lich_su_xu_ly: { create: async () => ({}) },
-  nguoi_dung: { findMany: async () => [] },
+  nguoi_dung: {
+    findMany: async () => [],
+    findUnique: async ({ where } = {}) => ({
+      ma_nguoi_dung: where?.ma_nguoi_dung || 2,
+      ho_ten: where?.ma_nguoi_dung === 1 ? 'Nguyễn Văn An' : 'Trần Thị Bình',
+      vai_tro: 'KTV',
+      chat_id_zalo: 'chat-ktv-zalo',
+      trang_thai_hoat_dong: true
+    })
+  },
   $transaction: async (fn) => fn(prismaGia)
 };
 
 datDoiTuongGia('../src/config/coSoDuLieu', prismaGia);
 datDoiTuongGia('../src/services/zaloDichVu', { guiTinNhanZalo: async () => {} });
 
-const { taoDieuKienTimKiemYeuCau, capNhatTrangThaiYeuCau, layDanhSachYeuCau } = require('../src/controllers/yeuCauDieuKhien');
+const { taoDieuKienTimKiemYeuCau, capNhatTrangThaiYeuCau, layDanhSachYeuCau, phanCongYeuCau } = require('../src/controllers/yeuCauDieuKhien');
 
 function taoResGia() {
   return {
@@ -168,4 +177,26 @@ test('yeuCauDieuKhien: layDanhSachYeuCau hỗ trợ lọc theo muc_do_uu_tien ch
   await layDanhSachYeuCau({ query: { muc_do_uu_tien: '' } }, res4);
   assert.equal(res4.statusCode, 200);
   assert.equal(dieuKienLocFindManyGia.muc_do_uu_tien, undefined);
+});
+
+test('yeuCauDieuKhien: phanCongYeuCau khi đổi người phụ trách ghi nhận thông báo đổi KTV rõ ràng', async () => {
+  const admin = { ma_nguoi_dung: 99, vai_tro: 'ADMIN', ho_ten: 'Quản trị viên' };
+  yeuCauHienTaiMock = {
+    ma_yeu_cau_bao_hong: 7,
+    ma_yeu_cau: '#YC202610281234',
+    trang_thai: 'CHO_XU_LY',
+    ma_ky_thuat_vien: 1,
+    ky_thuat_vien: { ma_nguoi_dung: 1, ho_ten: 'Nguyễn Văn An' },
+    ma_nguoi_bao_zalo: 'chat-sv-zalo'
+  };
+
+  const res = taoResGia();
+  await phanCongYeuCau(
+    { params: { id: '7' }, query: {}, body: { ma_ky_thuat_vien: 2 }, nguoiDung: admin },
+    res
+  );
+
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.thanhCong, true);
+  assert.ok(res.body.thongBao.includes('Đã đổi người phụ trách'));
 });
