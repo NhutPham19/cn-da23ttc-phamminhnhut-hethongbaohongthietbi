@@ -232,7 +232,7 @@ async function taoYeuCauTuPhien(chatId, duLieuTam, hinhAnh, nguoiDungHienTai = n
               create: {
                 trang_thai: 'CHO_XU_LY',
                 nguoi_thuc_hien: `Người báo: ${tenNguoiBao}`,
-                ghi_chu: `Tiếp nhận yêu cầu báo hỏng tự động qua Zalo Bot từ ${tenNguoiBao}`
+                ghi_chu: 'Tiếp nhận yêu cầu báo hỏng tự động qua Zalo Bot'
               }
             }
           }

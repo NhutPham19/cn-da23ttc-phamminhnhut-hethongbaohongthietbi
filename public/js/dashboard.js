@@ -218,11 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function taoSoftRoleBadge(nguoiBao, maZalo, laModal = false) {
     const wrap = document.createElement('div');
-    wrap.className = 'd-inline-flex align-items-center gap-1';
 
     if (nguoiBao) {
       const email = (nguoiBao.email || '').toLowerCase();
-      const hoTen = nguoiBao.ho_ten || 'Người dùng';
+      const hoTen = (nguoiBao.ho_ten || '').trim() || (nguoiBao.email ? nguoiBao.email.split('@')[0] : 'Người dùng');
       const laGv = nguoiBao.vai_tro === 'GIANG_VIEN' || (email.endsWith('@tvu.edu.vn') && !email.endsWith('@st.tvu.edu.vn'));
       const laSv = nguoiBao.vai_tro === 'SINH_VIEN' || email.endsWith('@st.tvu.edu.vn') || /^\d{8,}@/.test(email);
 
@@ -238,21 +237,35 @@ document.addEventListener('DOMContentLoaded', () => {
         badge.textContent = nguoiBao.vai_tro || 'Người báo';
       }
 
-      wrap.appendChild(badge);
-
       if (laModal) {
+        wrap.className = 'd-flex flex-column align-items-start';
+
+        // Dòng 1: Huy hiệu vai trò + Họ và tên (chống co ép ngắt dòng chữ cái)
+        const dongTen = document.createElement('div');
+        dongTen.className = 'd-flex align-items-center gap-1 flex-wrap';
+        dongTen.appendChild(badge);
+
         const spanTen = document.createElement('strong');
         spanTen.className = 'text-dark ms-1';
+        spanTen.style.fontSize = '13.5px';
+        spanTen.style.whiteSpace = 'nowrap';
         spanTen.textContent = hoTen;
-        wrap.appendChild(spanTen);
+        dongTen.appendChild(spanTen);
+        wrap.appendChild(dongTen);
 
+        // Dòng 2: Email người báo (dưới tên, không chèn ép họ tên)
         if (nguoiBao.email) {
-          const spanEmail = document.createElement('span');
-          spanEmail.className = 'small text-muted ms-1';
-          spanEmail.textContent = `(${nguoiBao.email})`;
+          const spanEmail = document.createElement('div');
+          spanEmail.className = 'small text-muted font-mono text-truncate mt-1';
+          spanEmail.style.fontSize = '12px';
+          spanEmail.textContent = nguoiBao.email;
+          spanEmail.title = nguoiBao.email;
           wrap.appendChild(spanEmail);
         }
       } else {
+        wrap.className = 'd-inline-flex align-items-center gap-1';
+        wrap.appendChild(badge);
+
         const spanDinhDanh = document.createElement('span');
         spanDinhDanh.className = 'text-truncate font-mono small text-secondary';
         spanDinhDanh.style.maxWidth = '170px';
@@ -270,10 +283,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const rutGon = maZalo.length > 8 ? `${maZalo.slice(0, 6)}...` : maZalo;
       badge.textContent = `Zalo • ${rutGon}`;
       badge.title = `Zalo Chat ID: ${maZalo}`;
-      wrap.appendChild(badge);
+
+      if (laModal) {
+        wrap.className = 'd-flex flex-column align-items-start';
+        const dongBadge = document.createElement('div');
+        dongBadge.className = 'd-flex align-items-center';
+        dongBadge.appendChild(badge);
+        wrap.appendChild(dongBadge);
+
+        const spanZalo = document.createElement('div');
+        spanZalo.className = 'small text-muted font-mono text-truncate mt-1';
+        spanZalo.style.fontSize = '12px';
+        spanZalo.textContent = `Chat ID: ${maZalo}`;
+        spanZalo.title = `Zalo Chat ID: ${maZalo}`;
+        wrap.appendChild(spanZalo);
+      } else {
+        wrap.className = 'd-inline-flex align-items-center gap-1';
+        wrap.appendChild(badge);
+      }
       return wrap;
     }
 
+    wrap.className = 'd-inline-flex align-items-center gap-1';
     const badge = document.createElement('span');
     badge.className = 'badge-role-zalo';
     badge.textContent = 'Hệ thống';
@@ -982,7 +1013,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
           let noiDungDong2 = nguoiThucHien;
           if (item.ghi_chu) {
-            noiDungDong2 += ` — ${item.ghi_chu}`;
+            let ghiChuSach = item.ghi_chu;
+            // Xóa phần lặp lại "từ [SV: ...]" hoặc "từ Zalo Bot (...)" nếu dòng đã ghi thông tin Người báo
+            if (nguoiThucHien.startsWith('Người báo:') && ghiChuSach.includes('từ ')) {
+              ghiChuSach = ghiChuSach.replace(/\s*từ\s+.*$/, '');
+            }
+            noiDungDong2 += ` — ${ghiChuSach}`;
           }
           ghiChu.textContent = noiDungDong2;
 
